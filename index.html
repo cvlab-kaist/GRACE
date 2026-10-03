@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GRACE: Generation-Aware Latent Compression for Efficient Video Generation</title>
+<meta name="description" content="GRACE compresses a pretrained video autoencoder so the pretrained DiT generates from 8x fewer latent tokens, 11.1x faster on Wan2.1-14B at matched VBench quality.">
+<meta property="og:title" content="GRACE: Generation-Aware Latent Compression for Efficient Video Generation">
+<meta property="og:description" content="GRACE compresses a pretrained video autoencoder so the pretrained DiT generates from 8x fewer latent tokens, 11.1x faster on Wan2.1-14B at matched VBench quality.">
+<meta property="og:image" content="static/images/fig2_arch.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,800&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="static/css/style.css?v=20261003235622">
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<a class="wordmark" href="#top">GRACE</a>
+<nav class="chapters" aria-label="Sections">
+<a href="#top" class="active">Overview</a><a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#comparison">Comparisons</a><a href="#quantitative">Quantitative</a><a href="#ablation">Ablation</a><a href="gallery.html">Gallery ↗</a><a href="#bibtex">BibTeX</a>
+</nav>
+<div class="affil">KAIST AI<br>Kakao Corp.</div>
+</aside>
+<main>
+<header class="hero" id="top">
+<h1><span class="t1">GRACE: Generation-Aware Latent Compression</span><br>for Efficient Video Generation</h1>
+<div class="authors">
+<div>Jiyoung Kim<sup>1</sup>, Paul Hyunbin Cho<sup>1</sup>, Jisu Nam<sup>1</sup>, Donghoon Lee<sup>2</sup>, Hyunsung Go<sup>2</sup>, Yeonkyeong Lee<sup>2</sup>,<br>Hansaem Kim<sup>2</sup>, Seungryong Kim<sup>1</sup></div>
+<div class="affiliations"><span><sup>1</sup>KAIST AI</span><span><sup>2</sup>Kakao Corp.</span></div>
+</div>
+<div class="logos"><img class="logo-kaist" src="static/images/kaistai_white.png" alt="KAIST Graduate School of AI"><img class="logo-kakao" src="static/images/kakao_white.png" alt="Kakao"></div>
+<div class="links">
+<a class="pill" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5h7l5 5V21a.5.5 0 0 1-.5.5h-11A.5.5 0 0 1 6 21z"/><path d="M13 2.5V8h5"/><path d="M9 13h6M9 16.5h6"/></svg>Paper</a>
+<a class="pill" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/><circle cx="12" cy="12" r="9.5"/></svg>arXiv</a>
+<span class="pill" aria-disabled="true" title="Code coming soon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 7L3.5 12l5 5M15.5 7l5 5-5 5M13.5 4.5l-3 15"/></svg>Code <span class="soon">(coming soon)</span></span>
+<span class="links-call"><a class="pill" href="gallery.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M10 9.5v5l4.5-2.5z"/></svg>Gallery</a><a class="curlnote" href="gallery.html"><svg class="curl" viewBox="0 0 56 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M52 8C38 4 26 10 27 19c1 7 10 7 9 0C35 11 24 12 17 20c-6 7-8 13-8 18"/><path d="M3.5 31.5L9 39.5 15 33"/></svg><span class="curltx">Explore more of our results!</span></a></span>
+<a class="pill" href="#bibtex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 4.5h6a2 2 0 0 1 2 2V20a1.5 1.5 0 0 0-1.5-1.5h-6.5zM19.5 4.5h-6a2 2 0 0 0-1.5 2V20a1.5 1.5 0 0 1 1.5-1.5h6z"/></svg>BibTeX</a>
+</div>
+<p class="links-note"><a href="gallery.html">Explore more of our results in the gallery →</a></p>
+<p class="hero-note">This work was done while the first three authors were interns at Kakao Corp.</p>
+<div class="player">
+<div class="stage two" id="stage">
+<div class="pane pane-left"><div class="ph ph-left"></div><div class="slot-left"></div></div>
+<div class="pane pane-right"><div class="ph ph-right"></div><div class="slot-right"></div></div>
+<div class="tag tag-left"><div class="tline"><b>Wan2.1-14B</b></div><div class="metrics"><span class="m"><span class="k">Inference time</span><span class="val lat">863 s</span></span><span class="m"><span class="k">Latent tokens #</span><span class="val tok">32.8k</span></span></div></div>
+<div class="tag tag-right"><div class="tline"><b>GRACE (Ours)</b><span class="stat"><em>11.1×</em><span class="lbl">faster inference</span></span></div><div class="metrics"><span class="m"><span class="k">Inference time</span><span class="val lat">78 s</span></span><span class="m"><span class="k">Latent tokens #</span><span class="val tok">4.3k</span></span></div></div>
+<div class="prompt"><span></span></div>
+</div>
+<p class="setup"><b>Inference time</b> = how long it takes to make one 81-frame video, autoencoder included. <span class="spec">Measured on one A100 80GB at 50 steps, CFG 5, batch 1, bf16.</span></p>
+<div class="controls">
+<button type="button" class="ctrl-btn" id="play" aria-label="Pause">❚❚</button>
+<span id="time">00:00 / 00:00</span>
+<input class="seek" id="seek" type="range" min="0" max="1000" value="0" aria-label="Seek">
+</div>
+<div class="thumbs" id="thumbs"></div>
+</div>
+<p class="lede"><b>GRACE</b> fine-tunes the pretrained Wan2.1 autoencoder and DiT to generate from <b>8× fewer latent tokens</b>. It matches the pretrained model on VBench while generating <b>11.1× faster</b> at 480×832×81 and <b>15.6× faster</b> at 736×1280×81.</p>
+</header>
+
+<section class="section film" id="film"><div class="col">
+<div class="filmwrap">
+<video id="film-v" class="filmv" src="static/videos/film/grace_film_real.mp4" poster="static/images/film_poster.jpg" autoplay muted playsinline preload="auto" controls></video>
+<button type="button" class="unmute" id="film-unmute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M16 9.5a4 4 0 0 1 0 5M18.8 7a7.5 7.5 0 0 1 0 10"/></svg>Sound on</button>
+</div>
+<p class="caption">Overview video &middot; 1 min 55 s</p>
+</div></section>
+<section class="section" id="abstract"><div class="col">
+<h2>Abstract</h2>
+<p class="abstract">Highly compressed video autoencoders offer an effective way to accelerate video diffusion models, as the Diffusion Transformer (DiT) operates on far fewer tokens. However, such autoencoders are challenging to train, since a higher compression ratio degrades reconstruction quality and recovering it requires more channels, which is known to slow the convergence of the DiT. The compressed latent also differs from the one the DiT was trained on, so the pretrained DiT must be either retrained from scratch or adapted at considerable cost. Compressing the autoencoder the DiT was trained with appears to preserve compatibility, yet optimizing it for reconstruction alone still shifts the latent away from the distribution the DiT has learned. To address this, we propose <b>Generation-Aware Latent Compression for Efficient Video Generation (GRACE)</b>, a two-stage framework that compresses a pretrained video autoencoder while keeping it compatible with the pretrained DiT. Specifically, we keep a frozen base latent from the pretrained encoder and learn a residual latent for the information lost under stronger compression, while aligning the compressed latent with the pretrained latent in the feature space of the frozen DiT so that the autoencoder is optimized for generation. We then adapt the DiT with lightweight fine-tuning and asymmetric denoising, where the base is denoised ahead of the residual. GRACE reduces the token count of Wan2.1-I2V-14B by 8× and its latency by 11.1× at 480×832×81, while matching the generation quality of the pretrained pipeline before compression on VBench.</p>
+</div></section>
+
+<section class="section" id="method"><div class="col">
+<h2>Method</h2>
+<p class="center">GRACE compresses Wan2.1's latent from f8t4p2 to f16t8p2 (32.8k → 4.3k tokens at 480×832) in two stages. In both, the pretrained pipeline guides its own compression.</p>
+<img class="figure" src="static/images/fig2_arch.png" alt="Overall architecture of GRACE, Stage 1 and Stage 2">
+<p class="caption"><b>Overall architecture.</b> Stage 1 trains the autoencoder against the frozen DiT. Stage 2 adapts the DiT with LoRA, denoising z<sub>base</sub> ahead of z<sub>res</sub>.</p>
+<div class="stage-block">
+<div class="stage-head"><span class="chip">Stage 1</span><h3>Autoencoder training</h3></div>
+<div class="cards">
+<div class="card"><h4>Dual-latent representation</h4><p>A frozen base latent from the pretrained Wan2.1 encoder anchors the compressed latent in the space the DiT already knows. A learned residual latent carries the detail and motion that stronger compression throws away.</p></div>
+<div class="card"><h4>Generation-aware alignment</h4><p>Instead of reconstruction losses alone, the compressed latent is matched to the pretrained one inside the frozen DiT's feature space, so the autoencoder is optimized for generation.</p></div>
+</div>
+<img class="figure" src="static/images/fig3_latent.png" alt="Latent t-SNE, samples and PCA for single latent, dual latent, and dual latent with alignment">
+<p class="caption"><b>Effect of the dual latent and L<sub>align</sub>.</b> (a) single latent, (b) dual latent without L<sub>align</sub>, (c) ours. The latent becomes more uniform and its principal components follow objects across frames.</p>
+</div>
+<div class="stage-block">
+<div class="stage-head"><span class="chip">Stage 2</span><h3>DiT adaptation</h3></div>
+<div class="split-2">
+<div class="split-text" style="display: flex; flex-direction: column; gap: 16px"><h4>Asymmetric denoising</h4><p>The DiT's input and output projections are extended to the residual channels, with LoRA on the transformer blocks. The base is denoised ahead of the residual by an offset δ in the same forward pass, so the residual always builds on a more settled base, at no extra sampling cost.</p></div>
+<div style="display: flex; flex-direction: column; gap: 12px"><img class="figure" src="static/images/fig4_order.png" alt="Denoising order comparison"><p class="note"><b>Denoising order.</b> Keeping z<sub>base</sub> δ ahead recovers facial detail under large motion.</p></div>
+</div>
+</div>
+</div></section>
+
+<section class="section" id="comparison"><div class="col">
+<h2>Qualitative comparison</h2>
+<p class="caption">Same caption and seed for every model, each run with its own prompt expansion. Videos in a row play in sync.</p>
+<div class="tabs" id="cmp-tabs" role="tablist">
+<button type="button" class="tab" role="tab" data-tab="t2v" aria-selected="true">Text-to-video</button>
+<button type="button" class="tab" role="tab" data-tab="i2v" aria-selected="false">Image-to-video</button>
+<button type="button" class="tab" role="tab" data-tab="hr" aria-selected="false">736×1280</button>
+</div>
+<div class="carousel" id="carousel">
+<div class="top"><span class="prompt-text"></span><span class="count"></span></div>
+<div class="cmp-grid"></div>
+<div class="nav"><button type="button" class="prev" aria-label="Previous example">←</button><div class="dots"></div><button type="button" class="next" aria-label="Next example">→</button></div>
+</div>
+<p class="caption">More comparisons, including GRACE-only samples, are in the <a href="gallery.html" style="color: var(--accent)">gallery</a>.</p>
+</div></section>
+
+<section class="section" id="quantitative"><div class="col">
+<h2>Quantitative results</h2>
+<div class="tabs" id="q-tabs" role="tablist">
+<button type="button" class="tab" role="tab" aria-controls="q-480" aria-selected="true">Generation 480p</button>
+<button type="button" class="tab" role="tab" aria-controls="q-736" aria-selected="false">Generation 736p</button>
+<button type="button" class="tab" role="tab" aria-controls="q-ae" aria-selected="false">Autoencoder</button>
+<button type="button" class="tab" role="tab" aria-controls="q-hu" aria-selected="false">User study</button>
+</div>
+<div class="q-panel col" id="q-480" style="gap: 16px"><div class="table-wrap"><table class=""><thead><tr class="group"><th colspan="3"></th><th colspan="2" class="g">Latency (s) ↓</th><th colspan="3" class="g">VBench-T2V ↑</th><th colspan="3" class="g">VBench-I2V ↑</th></tr><tr class="head"><th>Model</th><th>Config</th><th>Tokens</th><th>T2V</th><th>I2V</th><th>Quality</th><th>Semantic</th><th>Total</th><th>I2V</th><th>Quality</th><th>Total</th></tr></thead><tbody><tr><td>Wan2.1-14B</td><td>f8t4c16p2</td><td>32.8k</td><td>851.5</td><td>863.2</td><td>85.24</td><td>78.70</td><td>83.93</td><td class="best">95.82</td><td>80.01</td><td>87.92</td></tr><tr><td>Open-Sora 2.0</td><td>f32t4c128p1</td><td>8.2k</td><td>138.6</td><td>138.4</td><td>78.80</td><td>72.35</td><td>77.51</td><td>91.17</td><td>76.96</td><td>84.07</td></tr><tr><td>DC-Gen</td><td>f32t4c32p1</td><td>8.2k</td><td>157.1</td><td>165.0</td><td>85.85</td><td>79.70</td><td>84.62</td><td>88.25</td><td>80.01</td><td>84.13</td></tr><tr><td>LTX-Video 0.9.7</td><td>f32t8c128p1</td><td>4.3k</td><td>99.6</td><td>104.1</td><td>82.88</td><td>64.31</td><td>79.17</td><td>95.62</td><td class="best">80.32</td><td class="best">87.97</td></tr><tr><td>Baseline</td><td>f16t8c32p2</td><td>4.3k</td><td>76.1</td><td>77.8</td><td>83.21</td><td>77.75</td><td>82.12</td><td>93.67</td><td>79.21</td><td>86.44</td></tr><tr class="ours"><td>GRACE (ours)</td><td>f16t8c32p2</td><td>4.3k</td><td class="best">75.8</td><td class="best">77.7</td><td class="best">86.02</td><td class="best">84.98</td><td class="best">85.81</td><td>95.61</td><td>80.11</td><td>87.86</td></tr></tbody></table></div><p class="caption">Video generation on VBench at 480×832×81. GRACE uses 8× fewer tokens than Wan2.1-14B and runs 11.1× faster. Latency is end to end on a single A100.</p></div>
+<div class="q-panel col" id="q-736" style="gap: 16px" hidden><div class="table-wrap"><table class=""><thead><tr class="group"><th colspan="3"></th><th colspan="2" class="g">Latency (s) ↓</th><th colspan="3" class="g">VBench-T2V ↑</th><th colspan="3" class="g">VBench-I2V ↑</th></tr><tr class="head"><th>Model</th><th>Config</th><th>Tokens</th><th>T2V</th><th>I2V</th><th>Quality</th><th>Semantic</th><th>Total</th><th>I2V</th><th>Quality</th><th>Total</th></tr></thead><tbody><tr><td>Wan2.1-14B</td><td>f8t4c16p2</td><td>77.3k</td><td>3361.3</td><td>3396.8</td><td>84.69</td><td>76.01</td><td>82.96</td><td>95.56</td><td>80.20</td><td>87.88</td></tr><tr><td>Open-Sora 2.0</td><td>f32t4c128p1</td><td>19.3k</td><td>425.4</td><td>425.4</td><td>80.73</td><td>78.16</td><td>80.22</td><td>93.72</td><td>77.82</td><td>85.77</td></tr><tr><td>DC-Gen</td><td>f32t4c32p1</td><td>19.3k</td><td>456.4</td><td>550.7†</td><td class="best">86.08</td><td>78.80</td><td>84.62</td><td>92.04</td><td>80.73</td><td>86.39</td></tr><tr><td>LTX-Video 0.9.7</td><td>f32t8c128p1</td><td>10.1k</td><td>264.2</td><td>274.6</td><td>84.46</td><td>63.58</td><td>80.29</td><td class="best">95.71</td><td class="best">81.79</td><td class="best">88.75</td></tr><tr class="ours"><td>GRACE (ours)</td><td>f16t8c32p2</td><td>10.1k</td><td class="best">215.6</td><td class="best">218.8</td><td>85.42</td><td class="best">82.04</td><td class="best">84.74</td><td>95.44</td><td>79.90</td><td>87.67</td></tr></tbody></table></div><p class="caption">Video generation on VBench at 736×1280×81, 15.6× faster than Wan2.1-14B. † measured with spatial tiling in the VAE.</p></div>
+<div class="q-panel col" id="q-ae" style="gap: 16px" hidden><div class="table-wrap"><table class=""><thead><tr class="group"><th colspan="4"></th><th colspan="4" class="g">Reconstruction, 256×256×81</th><th colspan="1" class="g">Generation</th></tr><tr class="head"><th>Autoencoder</th><th>Config</th><th>Training</th><th>Tokens</th><th>PSNR ↑</th><th>SSIM ↑</th><th>LPIPS ↓</th><th>rFVD ↓</th><th>I2V total ↑</th></tr></thead><tbody><tr><td>Wan2.1-VAE</td><td>f8t4c16p2</td><td>scratch</td><td>32.8k</td><td class="best">35.15</td><td class="best">0.958</td><td class="best">0.016</td><td class="best">1.13</td><td class="best">87.92</td></tr><tr><td>Step-Video-VAE</td><td>f16t8c64p1</td><td>scratch</td><td>17.2k</td><td>33.88</td><td>0.950</td><td>0.029</td><td>3.16</td><td>84.05</td></tr><tr><td>Video DC-AE</td><td>f32t4c128p1</td><td>scratch</td><td>8.2k</td><td>34.61</td><td>0.956</td><td>0.024</td><td>3.70</td><td>84.94</td></tr><tr><td>LTX-VAE</td><td>f32t8c128p1</td><td>scratch</td><td>4.3k</td><td>31.97</td><td>0.914</td><td>0.051</td><td>19.53</td><td>87.06</td></tr><tr><td>Baseline</td><td>f16t8c32p2</td><td>fine-tuned</td><td>4.3k</td><td>33.76</td><td>0.956</td><td>0.031</td><td>13.11</td><td>86.44</td></tr><tr class="ours"><td>GRACE-VAE (ours)</td><td>f16t8c32p2</td><td>fine-tuned</td><td>4.3k</td><td>32.63</td><td>0.930</td><td>0.032</td><td>13.53</td><td>87.86</td></tr></tbody></table></div><p class="caption">Autoencoder comparison. Better reconstruction does not mean better generation: GRACE-VAE reaches the highest VBench-I2V total among compressed autoencoders at the fewest tokens.</p></div>
+<div class="q-panel col" id="q-hu" style="gap: 20px" hidden><div class="study"><div class="h"></div><div class="h"></div><div class="h">vs. Wan2.1-14B</div><div class="h">vs. DC-Gen</div><div style="color: var(--mute)">T2V</div><div>Visual quality</div><div class="stack" role="img" aria-label="Prefer GRACE 49.4%, equal 15.4%, prefer baseline 35.3%"><span class="o" style="width:49.4%">49.4</span><span class="e" style="width:15.4%">15.4</span><span class="b" style="width:35.3%">35.3</span></div><div class="stack" role="img" aria-label="Prefer GRACE 71.2%, equal 11.5%, prefer baseline 17.3%"><span class="o" style="width:71.2%">71.2</span><span class="e" style="width:11.5%">11.5</span><span class="b" style="width:17.3%">17.3</span></div><div style="color: var(--mute)">T2V</div><div>Temporal consistency</div><div class="stack" role="img" aria-label="Prefer GRACE 46.8%, equal 21.2%, prefer baseline 32.1%"><span class="o" style="width:46.8%">46.8</span><span class="e" style="width:21.2%">21.2</span><span class="b" style="width:32.1%">32.1</span></div><div class="stack" role="img" aria-label="Prefer GRACE 64.7%, equal 21.2%, prefer baseline 14.1%"><span class="o" style="width:64.7%">64.7</span><span class="e" style="width:21.2%">21.2</span><span class="b" style="width:14.1%">14.1</span></div><div style="color: var(--mute)">T2V</div><div>Text alignment</div><div class="stack" role="img" aria-label="Prefer GRACE 52.6%, equal 21.8%, prefer baseline 25.6%"><span class="o" style="width:52.6%">52.6</span><span class="e" style="width:21.8%">21.8</span><span class="b" style="width:25.6%">25.6</span></div><div class="stack" role="img" aria-label="Prefer GRACE 62.2%, equal 23.1%, prefer baseline 14.7%"><span class="o" style="width:62.2%">62.2</span><span class="e" style="width:23.1%">23.1</span><span class="b" style="width:14.7%">14.7</span></div><div style="color: var(--mute)">I2V</div><div>Visual quality</div><div class="stack" role="img" aria-label="Prefer GRACE 23.7%, equal 32.7%, prefer baseline 43.6%"><span class="o" style="width:23.7%">23.7</span><span class="e" style="width:32.7%">32.7</span><span class="b" style="width:43.6%">43.6</span></div><div class="stack" role="img" aria-label="Prefer GRACE 60.3%, equal 16.7%, prefer baseline 23.1%"><span class="o" style="width:60.3%">60.3</span><span class="e" style="width:16.7%">16.7</span><span class="b" style="width:23.1%">23.1</span></div><div style="color: var(--mute)">I2V</div><div>Temporal consistency</div><div class="stack" role="img" aria-label="Prefer GRACE 29.5%, equal 25.6%, prefer baseline 44.9%"><span class="o" style="width:29.5%">29.5</span><span class="e" style="width:25.6%">25.6</span><span class="b" style="width:44.9%">44.9</span></div><div class="stack" role="img" aria-label="Prefer GRACE 64.1%, equal 11.5%, prefer baseline 24.4%"><span class="o" style="width:64.1%">64.1</span><span class="e" style="width:11.5%">11.5</span><span class="b" style="width:24.4%">24.4</span></div><div style="color: var(--mute)">I2V</div><div>Text alignment</div><div class="stack" role="img" aria-label="Prefer GRACE 22.4%, equal 42.9%, prefer baseline 34.6%"><span class="o" style="width:22.4%">22.4</span><span class="e" style="width:42.9%">42.9</span><span class="b" style="width:34.6%">34.6</span></div><div class="stack" role="img" aria-label="Prefer GRACE 46.8%, equal 29.5%, prefer baseline 23.7%"><span class="o" style="width:46.8%">46.8</span><span class="e" style="width:29.5%">29.5</span><span class="b" style="width:23.7%">23.7</span></div></div><div class="legend"><span><i style="background: var(--accent)"></i>Prefer GRACE</span><span><i style="background: #C9C7BF"></i>About equal</span><span><i style="background: #5C616D"></i>Prefer baseline</span></div><p class="caption">Blind user study, 39 raters, 156 votes per setting, baseline, and criterion. Values are the percentage of votes.</p></div>
+</div></section>
+
+<section class="section" id="ablation"><div class="col">
+<h2>Ablation</h2>
+<h3>Design components</h3>
+<div class="table-wrap"><table class="ablation"><thead><tr class="group"><th colspan="4"></th><th colspan="3" class="g">Reconstruction</th><th colspan="3" class="g">VBench-T2V ↑</th><th colspan="3" class="g">VBench-I2V ↑</th></tr><tr class="head"><th>Setting</th><th>Dual</th><th>&#8466;<sub>align</sub></th><th>δ &gt; 0</th><th>PSNR ↑</th><th>LPIPS ↓</th><th>rFVD ↓</th><th>Quality</th><th>Semantic</th><th>Total</th><th>I2V</th><th>Quality</th><th>Total</th></tr></thead><tbody><tr class="dim"><td>(I) Wan2.1-I2V-14B</td><td>–</td><td>–</td><td>–</td><td>35.15</td><td>0.016</td><td>1.13</td><td>85.24</td><td>78.70</td><td>83.93</td><td>95.82</td><td>80.01</td><td>87.92</td></tr><tr><td>(II) Baseline</td><td>×</td><td>×</td><td>×</td><td>33.76</td><td>0.031</td><td>13.11</td><td>83.21</td><td>77.75</td><td>82.12</td><td>93.67</td><td>79.21</td><td>86.44</td></tr><tr><td>(III) + dual latent</td><td>✓</td><td>×</td><td>×</td><td>33.10</td><td>0.031</td><td>13.89</td><td>84.77</td><td>78.65</td><td>83.55</td><td>93.96</td><td>79.32</td><td>86.64</td></tr><tr><td>(IV) + &#8466;<sub>align</sub></td><td>✓</td><td>✓</td><td>×</td><td>32.63</td><td>0.032</td><td>13.53</td><td>85.22</td><td>82.55</td><td>84.68</td><td>95.23</td><td>79.78</td><td>87.51</td></tr><tr class="ours"><td>(V) + δ &gt; 0 (ours)</td><td>✓</td><td>✓</td><td>✓</td><td>32.63</td><td>0.032</td><td>13.53</td><td>86.02</td><td>84.98</td><td>85.81</td><td>95.61</td><td>80.11</td><td>87.86</td></tr><tr class="dim"><td>(VI) Baseline, DiT from scratch</td><td>×</td><td>×</td><td>×</td><td>33.76</td><td>0.031</td><td>13.11</td><td>74.20</td><td>58.40</td><td>71.04</td><td>53.06</td><td>73.94</td><td>63.50</td></tr></tbody></table></div>
+<p class="caption">Each component improves generation on both tasks. Row (VI) keeps the baseline autoencoder but trains the DiT from scratch for the same number of steps.</p>
+<div class="two-col">
+<div><h3>Alignment target</h3><div class="table-wrap"><table class="small"><thead><tr class="head"><th>Alignment target</th><th>PSNR ↑</th><th>rFVD ↓</th><th>Quality</th><th>Semantic</th><th>Total</th></tr></thead><tbody><tr><td>None</td><td>33.10</td><td>13.89</td><td>84.77</td><td>78.65</td><td>83.55</td></tr><tr><td>V-JEPA 2.1 features</td><td>32.61</td><td>13.93</td><td>84.98</td><td>80.04</td><td>83.99</td></tr><tr class="ours"><td>Pretrained DiT features (ours)</td><td>32.63</td><td>13.53</td><td>85.22</td><td>82.55</td><td>84.68</td></tr></tbody></table></div><p class="note">Aligning inside the pretrained DiT beats a video foundation model target (V-JEPA 2.1) on every generation score.</p></div>
+<div><h3>Denoising order</h3><div class="table-wrap"><table class="small"><thead><tr class="head"><th>Denoising order</th><th>I2V ↑</th><th>Quality ↑</th><th>Total ↑</th></tr></thead><tbody><tr><td>τ<sub>base</sub> = τ<sub>res</sub> (δ = 0)</td><td>95.23</td><td>79.78</td><td>87.51</td></tr><tr><td>τ<sub>base</sub> &gt; τ<sub>res</sub> (δ &lt; 0)</td><td>94.61</td><td>79.72</td><td>87.17</td></tr><tr class="ours"><td>τ<sub>base</sub> &lt; τ<sub>res</sub> (δ &gt; 0, ours)</td><td>95.61</td><td>80.11</td><td>87.86</td></tr></tbody></table></div><p class="note">Denoising the base first helps; reversing the order falls below the synchronous schedule.</p></div>
+</div>
+</div></section>
+
+<section class="section" id="bibtex" style="border-bottom: 0"><div class="col">
+<h2>BibTeX</h2>
+<div class="bib"><pre id="bibtex">@article{kim2026grace,
+  title   = {Generation-Aware Latent Compression
+             for Efficient Video Generation},
+  author  = {Kim, Jiyoung and Cho, Paul Hyunbin and Nam, Jisu
+             and Lee, Donghoon and Go, Hyunsung and Lee, Yeonkyeong
+             and Kim, Hansaem and Kim, Seungryong},
+  journal = {arXiv preprint arXiv:[id]},
+  year    = {2026}
+}</pre><button type="button" class="copy" id="copy">Copy</button></div>
+</div></section>
+
+<footer class="site">KAIST AI · Kakao Corp.</footer>
+</main>
+</div>
+<script src="static/js/data.js?v=20261003235622"></script>
+<script src="static/js/main.js?v=20261003235622"></script>
+</body>
+</html>

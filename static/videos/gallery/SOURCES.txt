@@ -1,0 +1,602 @@
+# gallery 슬롯 ← 원본 · crf24 · vs=Wan vs GRACE, mb=+DC-Gen, s=GRACE only
+static/videos/gallery/vs_01_wan.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A person is rock climbing-0.mp4
+static/videos/gallery/vs_01_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is rock climbing-0.mp4
+static/videos/gallery/vs_02_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a blue bowl-0.mp4
+static/videos/gallery/vs_02_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_color/a blue bowl-0.mp4
+static/videos/gallery/vs_03_wan.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/an apple on the bottom of a sandwich, front view-0.mp4
+static/videos/gallery/vs_03_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_sr/an apple on the bottom of a sandwich, front view-0.mp4
+static/videos/gallery/vs_04_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a cow on the right of an elephant, front view-0.mp4
+static/videos/gallery/vs_04_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_sr/a cow on the right of an elephant, front view-0.mp4
+static/videos/gallery/vs_05_wan.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A tranquil tableau of a dining table-0.mp4
+static/videos/gallery/vs_05_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_rest/A tranquil tableau of a dining table-0.mp4
+static/videos/gallery/vs_06_wan.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/In a still frame, a tranquil pond was fringed by weeping cherry trees, their blossoms drifting lazily onto the glassy surface-0.mp4
+static/videos/gallery/vs_06_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_rest/In a still frame, a tranquil pond was fringed by weeping cherry trees, their blossoms drifting lazily onto the glassy surface-0.mp4
+static/videos/gallery/vs_07_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/Yoda playing guitar on the stage-0.mp4
+static/videos/gallery/vs_07_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/Yoda playing guitar on the stage-0.mp4
+static/videos/gallery/vs_08_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a zebra and a giraffe-0.mp4
+static/videos/gallery/vs_08_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/a zebra and a giraffe-0.mp4
+static/videos/gallery/vs_09_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a toaster and a teddy bear-0.mp4
+static/videos/gallery/vs_09_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/a toaster and a teddy bear-0.mp4
+static/videos/gallery/vs_10_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a white umbrella-0.mp4
+static/videos/gallery/vs_10_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_color/a white umbrella-0.mp4
+static/videos/gallery/vs_11_wan.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a surfboard on the bottom of skis, front view-0.mp4
+static/videos/gallery/vs_11_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_sr/a surfboard on the bottom of skis, front view-0.mp4
+static/videos/gallery/vs_12_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a white bicycle-0.mp4
+static/videos/gallery/vs_12_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_color/a white bicycle-0.mp4
+static/videos/gallery/vs_13_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A person is hugging-0.mp4
+static/videos/gallery/vs_13_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is hugging-0.mp4
+static/videos/gallery/vs_14_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a donut on the top of broccoli, front view-0.mp4
+static/videos/gallery/vs_14_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_sr/a donut on the top of broccoli, front view-0.mp4
+static/videos/gallery/vs_15_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a spoon on the right of a bowl, front view-0.mp4
+static/videos/gallery/vs_15_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_sr/a spoon on the right of a bowl, front view-0.mp4
+static/videos/gallery/vs_16_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a blue bird-0.mp4
+static/videos/gallery/vs_16_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_color/a blue bird-0.mp4
+static/videos/gallery/vs_17_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A person is sword fighting-0.mp4
+static/videos/gallery/vs_17_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is sword fighting-0.mp4
+static/videos/gallery/vs_18_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A person is crying-0.mp4
+static/videos/gallery/vs_18_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is crying-0.mp4
+static/videos/gallery/vs_19_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a green vase-0.mp4
+static/videos/gallery/vs_19_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_color/a green vase-0.mp4
+static/videos/gallery/vs_20_wan.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/underwater coral reef-0.mp4
+static/videos/gallery/vs_20_grace.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_scene4/underwater coral reef-0.mp4
+static/videos/gallery/vs_21_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/Gwen Stacy reading a book, tilt down-0.mp4
+static/videos/gallery/vs_21_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ts/Gwen Stacy reading a book, tilt down-0.mp4
+static/videos/gallery/vs_22_wan.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a cup and a couch-0.mp4
+static/videos/gallery/vs_22_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/a cup and a couch-0.mp4
+static/videos/gallery/vs_23_input.jpg	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a large wave in the ocean with a lot of spray coming from it.png
+static/videos/gallery/vs_23_wan.mp4	3.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a large wave in the ocean with a lot of spray coming from it-0.mp4
+static/videos/gallery/vs_23_grace.mp4	2.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a large wave in the ocean with a lot of spray coming from it-0.mp4
+static/videos/gallery/vs_24_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/A man in a black suit and a sombrero, shouting loudly.png
+static/videos/gallery/vs_24_wan.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/A man in a black suit and a sombrero, shouting loudly-0.mp4
+static/videos/gallery/vs_24_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/A man in a black suit and a sombrero, shouting loudly-0.mp4
+static/videos/gallery/vs_25_input.jpg	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/A yellow boat is cruising in front of a bridge.png
+static/videos/gallery/vs_25_wan.mp4	4.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/A yellow boat is cruising in front of a bridge-0.mp4
+static/videos/gallery/vs_25_grace.mp4	2.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/A yellow boat is cruising in front of a bridge-0.mp4
+static/videos/gallery/vs_26_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/an older woman sitting in a room with a cigarette in her hand.png
+static/videos/gallery/vs_26_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/an older woman sitting in a room with a cigarette in her hand-0.mp4
+static/videos/gallery/vs_26_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/an older woman sitting in a room with a cigarette in her hand-0.mp4
+static/videos/gallery/vs_27_input.jpg	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a person riding a motorcycle down a road.png
+static/videos/gallery/vs_27_wan.mp4	2.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a person riding a motorcycle down a road-0.mp4
+static/videos/gallery/vs_27_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a person riding a motorcycle down a road-0.mp4
+static/videos/gallery/vs_28_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a person riding a skateboard on a concrete floor.png
+static/videos/gallery/vs_28_wan.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a person riding a skateboard on a concrete floor-0.mp4
+static/videos/gallery/vs_28_grace.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a person riding a skateboard on a concrete floor-0.mp4
+static/videos/gallery/vs_29_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a monochromatic video capturing a cat's gaze into the camera.png
+static/videos/gallery/vs_29_wan.mp4	1.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a monochromatic video capturing a cat's gaze into the camera-0.mp4
+static/videos/gallery/vs_29_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a monochromatic video capturing a cat's gaze into the camera-0.mp4
+static/videos/gallery/vs_30_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a brown and white cow eating hay.png
+static/videos/gallery/vs_30_wan.mp4	1.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a brown and white cow eating hay-0.mp4
+static/videos/gallery/vs_30_grace.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a brown and white cow eating hay-0.mp4
+static/videos/gallery/vs_31_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a squirrel sitting on the ground eating a piece of bread.png
+static/videos/gallery/vs_31_wan.mp4	2.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a squirrel sitting on the ground eating a piece of bread-0.mp4
+static/videos/gallery/vs_31_grace.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a squirrel sitting on the ground eating a piece of bread-0.mp4
+static/videos/gallery/vs_32_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a person riding an atv on a dirt track.png
+static/videos/gallery/vs_32_wan.mp4	4.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a person riding an atv on a dirt track-0.mp4
+static/videos/gallery/vs_32_grace.mp4	1.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a person riding an atv on a dirt track-0.mp4
+static/videos/gallery/vs_33_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a red panda eating bamboo in a zoo.png
+static/videos/gallery/vs_33_wan.mp4	2.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a red panda eating bamboo in a zoo-0.mp4
+static/videos/gallery/vs_33_grace.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a red panda eating bamboo in a zoo-0.mp4
+static/videos/gallery/vs_34_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a woman in a hat is putting salt into a basket.png
+static/videos/gallery/vs_34_wan.mp4	2.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a woman in a hat is putting salt into a basket-0.mp4
+static/videos/gallery/vs_34_grace.mp4	1.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a woman in a hat is putting salt into a basket-0.mp4
+static/videos/gallery/vs_35_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a man in a mexican outfit holding an acoustic guitar.png
+static/videos/gallery/vs_35_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a man in a mexican outfit holding an acoustic guitar-0.mp4
+static/videos/gallery/vs_35_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a man in a mexican outfit holding an acoustic guitar-0.mp4
+static/videos/gallery/vs_36_input.jpg	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a zebra walking across a dirt road near a field.png
+static/videos/gallery/vs_36_wan.mp4	3.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a zebra walking across a dirt road near a field-0.mp4
+static/videos/gallery/vs_36_grace.mp4	2.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a zebra walking across a dirt road near a field-0.mp4
+static/videos/gallery/vs_37_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a close-up of a hippopotamus eating grass in a field.png
+static/videos/gallery/vs_37_wan.mp4	1.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a close-up of a hippopotamus eating grass in a field-0.mp4
+static/videos/gallery/vs_37_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a close-up of a hippopotamus eating grass in a field-0.mp4
+static/videos/gallery/vs_38_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a pot is sitting on top of a campfire.png
+static/videos/gallery/vs_38_wan.mp4	2.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a pot is sitting on top of a campfire-0.mp4
+static/videos/gallery/vs_38_grace.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a pot is sitting on top of a campfire-0.mp4
+static/videos/gallery/vs_39_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/A person is using tongs to pick up meat from a plate.png
+static/videos/gallery/vs_39_wan.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/A person is using tongs to pick up meat from a plate-0.mp4
+static/videos/gallery/vs_39_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/A person is using tongs to pick up meat from a plate-0.mp4
+static/videos/gallery/vs_40_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/two bees are flying over a lavender plant.png
+static/videos/gallery/vs_40_wan.mp4	1.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/two bees are flying over a lavender plant-0.mp4
+static/videos/gallery/vs_40_grace.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/two bees are flying over a lavender plant-0.mp4
+static/videos/gallery/vs_41_input.jpg	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a tiger walking through a wooded area.png
+static/videos/gallery/vs_41_wan.mp4	3.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a tiger walking through a wooded area-0.mp4
+static/videos/gallery/vs_41_grace.mp4	2.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a tiger walking through a wooded area-0.mp4
+static/videos/gallery/vs_42_input.jpg	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a penguin walking on a beach near the water.png
+static/videos/gallery/vs_42_wan.mp4	4.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a penguin walking on a beach near the water-0.mp4
+static/videos/gallery/vs_42_grace.mp4	2.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a penguin walking on a beach near the water-0.mp4
+static/videos/gallery/vs_43_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a monkey is holding a banana in its mouth.png
+static/videos/gallery/vs_43_wan.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a monkey is holding a banana in its mouth-0.mp4
+static/videos/gallery/vs_43_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a monkey is holding a banana in its mouth-0.mp4
+static/videos/gallery/vs_44_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a panda bear is eating a piece of bamboo.png
+static/videos/gallery/vs_44_wan.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a panda bear is eating a piece of bamboo-0.mp4
+static/videos/gallery/vs_44_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a panda bear is eating a piece of bamboo-0.mp4
+static/videos/gallery/vs_45_input.jpg	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a giraffe walking in a field.png
+static/videos/gallery/vs_45_wan.mp4	2.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a giraffe walking in a field-0.mp4
+static/videos/gallery/vs_45_grace.mp4	2.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a giraffe walking in a field-0.mp4
+static/videos/gallery/vs_46_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/three geishas walking down the street in traditional clothing.png
+static/videos/gallery/vs_46_wan.mp4	2.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/three geishas walking down the street in traditional clothing-0.mp4
+static/videos/gallery/vs_46_grace.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/three geishas walking down the street in traditional clothing-0.mp4
+static/videos/gallery/vs_47_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a bunch of food is cooking on a grill over an open fire.png
+static/videos/gallery/vs_47_wan.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a bunch of food is cooking on a grill over an open fire-0.mp4
+static/videos/gallery/vs_47_grace.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a bunch of food is cooking on a grill over an open fire-0.mp4
+static/videos/gallery/vs_48_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a man holding a baby in his arms.png
+static/videos/gallery/vs_48_wan.mp4	1.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a man holding a baby in his arms-0.mp4
+static/videos/gallery/vs_48_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a man holding a baby in his arms-0.mp4
+static/videos/gallery/vs_49_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a man snorkling in the ocean.png
+static/videos/gallery/vs_49_wan.mp4	2.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a man snorkling in the ocean-0.mp4
+static/videos/gallery/vs_49_grace.mp4	1.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a man snorkling in the ocean-0.mp4
+static/videos/gallery/vs_50_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a person pouring coffee into a pot on a stove.png
+static/videos/gallery/vs_50_wan.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a person pouring coffee into a pot on a stove-0.mp4
+static/videos/gallery/vs_50_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a person pouring coffee into a pot on a stove-0.mp4
+static/videos/gallery/vs_51_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a woman wearing a hijab reading a book on the beach.png
+static/videos/gallery/vs_51_wan.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a woman wearing a hijab reading a book on the beach-0.mp4
+static/videos/gallery/vs_51_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a woman wearing a hijab reading a book on the beach-0.mp4
+static/videos/gallery/vs_52_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a woman with green hair smiling for the camera.png
+static/videos/gallery/vs_52_wan.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a woman with green hair smiling for the camera-0.mp4
+static/videos/gallery/vs_52_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a woman with green hair smiling for the camera-0.mp4
+static/videos/gallery/vs_53_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a woman in a wetsuit is swimming in the ocean.png
+static/videos/gallery/vs_53_wan.mp4	1.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a woman in a wetsuit is swimming in the ocean-0.mp4
+static/videos/gallery/vs_53_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a woman in a wetsuit is swimming in the ocean-0.mp4
+static/videos/gallery/vs_54_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/two women eating pizza at a restaurant.png
+static/videos/gallery/vs_54_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/two women eating pizza at a restaurant-0.mp4
+static/videos/gallery/vs_54_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/two women eating pizza at a restaurant-0.mp4
+static/videos/gallery/vs_55_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a blue fishing boat is navigating in the ocean next to a cruise ship.png
+static/videos/gallery/vs_55_wan.mp4	2.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a blue fishing boat is navigating in the ocean next to a cruise ship-0.mp4
+static/videos/gallery/vs_55_grace.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a blue fishing boat is navigating in the ocean next to a cruise ship-0.mp4
+static/videos/gallery/vs_56_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a small bird sits on a moss covered branch.png
+static/videos/gallery/vs_56_wan.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a small bird sits on a moss covered branch-0.mp4
+static/videos/gallery/vs_56_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a small bird sits on a moss covered branch-0.mp4
+static/videos/gallery/vs_57_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a brown bear in the water with a fish in its mouth.png
+static/videos/gallery/vs_57_wan.mp4	2.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a brown bear in the water with a fish in its mouth-0.mp4
+static/videos/gallery/vs_57_grace.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a brown bear in the water with a fish in its mouth-0.mp4
+static/videos/gallery/vs_58_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a young boy leaning on a wooden pole.png
+static/videos/gallery/vs_58_wan.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a young boy leaning on a wooden pole-0.mp4
+static/videos/gallery/vs_58_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a young boy leaning on a wooden pole-0.mp4
+static/videos/gallery/vs_59_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a woman smiles while holding a yellow flower.png
+static/videos/gallery/vs_59_wan.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a woman smiles while holding a yellow flower-0.mp4
+static/videos/gallery/vs_59_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a woman smiles while holding a yellow flower-0.mp4
+static/videos/gallery/vs_60_input.jpg	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/two sheep grazing in the grass next to a wooden bridge.png
+static/videos/gallery/vs_60_wan.mp4	4.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/two sheep grazing in the grass next to a wooden bridge-0.mp4
+static/videos/gallery/vs_60_grace.mp4	2.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/two sheep grazing in the grass next to a wooden bridge-0.mp4
+static/videos/gallery/vs_61_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/A person is pouring water into a teacup.png
+static/videos/gallery/vs_61_wan.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/A person is pouring water into a teacup-0.mp4
+static/videos/gallery/vs_61_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/A person is pouring water into a teacup-0.mp4
+static/videos/gallery/vs_62_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a close up of a piece of sushi on chopsticks.png
+static/videos/gallery/vs_62_wan.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a close up of a piece of sushi on chopsticks-0.mp4
+static/videos/gallery/vs_62_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a close up of a piece of sushi on chopsticks-0.mp4
+static/videos/gallery/vs_63_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a seagull is flying towards a person's hand.png
+static/videos/gallery/vs_63_wan.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a seagull is flying towards a person's hand-0.mp4
+static/videos/gallery/vs_63_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a seagull is flying towards a person's hand-0.mp4
+static/videos/gallery/vs_64_input.jpg	0.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a blue train traveling through a lush green area.png
+static/videos/gallery/vs_64_wan.mp4	5.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a blue train traveling through a lush green area-0.mp4
+static/videos/gallery/vs_64_grace.mp4	2.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a blue train traveling through a lush green area-0.mp4
+static/videos/gallery/vs_65_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a person is putting sauce on a burger.png
+static/videos/gallery/vs_65_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a person is putting sauce on a burger-0.mp4
+static/videos/gallery/vs_65_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a person is putting sauce on a burger-0.mp4
+static/videos/gallery/vs_66_input.jpg	0.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a seagull is flying towards a person's hand.png
+static/videos/gallery/vs_66_wan.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a seagull is flying towards a person's hand-0.mp4
+static/videos/gallery/vs_66_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a seagull is flying towards a person's hand-0.mp4
+static/videos/gallery/vs_67_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a white car is swiftly driving on a dirt road near a bush, kicking up dust.png
+static/videos/gallery/vs_67_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a white car is swiftly driving on a dirt road near a bush, kicking up dust-0.mp4
+static/videos/gallery/vs_67_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a white car is swiftly driving on a dirt road near a bush, kicking up dust-0.mp4
+static/videos/gallery/vs_68_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a clown fish hiding in a purple anemone.png
+static/videos/gallery/vs_68_wan.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a clown fish hiding in a purple anemone-0.mp4
+static/videos/gallery/vs_68_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a clown fish hiding in a purple anemone-0.mp4
+static/videos/gallery/vs_69_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a woman walking down a sidewalk with a bag.png
+static/videos/gallery/vs_69_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a woman walking down a sidewalk with a bag-0.mp4
+static/videos/gallery/vs_69_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a woman walking down a sidewalk with a bag-0.mp4
+static/videos/gallery/vs_70_input.jpg	0.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a great white shark swimming in the ocean.png
+static/videos/gallery/vs_70_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a great white shark swimming in the ocean-0.mp4
+static/videos/gallery/vs_70_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a great white shark swimming in the ocean-0.mp4
+static/videos/gallery/vs_71_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/fried onion rings in a basket.png
+static/videos/gallery/vs_71_wan.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/fried onion rings in a basket-0.mp4
+static/videos/gallery/vs_71_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/fried onion rings in a basket-0.mp4
+static/videos/gallery/vs_72_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a couple of boats floating on a body of water.png
+static/videos/gallery/vs_72_wan.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a couple of boats floating on a body of water-0.mp4
+static/videos/gallery/vs_72_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a couple of boats floating on a body of water-0.mp4
+static/videos/gallery/vs_73_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a basket of french fries in a fryer.png
+static/videos/gallery/vs_73_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a basket of french fries in a fryer-0.mp4
+static/videos/gallery/vs_73_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a basket of french fries in a fryer-0.mp4
+static/videos/gallery/vs_74_input.jpg	0.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a man standing on top of a mountain with a backpack.png
+static/videos/gallery/vs_74_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a man standing on top of a mountain with a backpack-0.mp4
+static/videos/gallery/vs_74_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a man standing on top of a mountain with a backpack-0.mp4
+static/videos/gallery/vs_75_input.jpg	0.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a large wave crashes into a lighthouse.png
+static/videos/gallery/vs_75_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a large wave crashes into a lighthouse-0.mp4
+static/videos/gallery/vs_75_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a large wave crashes into a lighthouse-0.mp4
+static/videos/gallery/vs_76_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a close up of a piece of sushi on chopsticks.png
+static/videos/gallery/vs_76_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a close up of a piece of sushi on chopsticks-0.mp4
+static/videos/gallery/vs_76_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a close up of a piece of sushi on chopsticks-0.mp4
+static/videos/gallery/vs_77_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a yellow and white jellyfish is floating in the ocean.png
+static/videos/gallery/vs_77_wan.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a yellow and white jellyfish is floating in the ocean-0.mp4
+static/videos/gallery/vs_77_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a yellow and white jellyfish is floating in the ocean-0.mp4
+static/videos/gallery/vs_78_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a close up of a blue and orange liquid.png
+static/videos/gallery/vs_78_wan.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a close up of a blue and orange liquid-0.mp4
+static/videos/gallery/vs_78_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a close up of a blue and orange liquid-0.mp4
+static/videos/gallery/vs_79_input.jpg	0.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a view of a star trail in the night sky.png
+static/videos/gallery/vs_79_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a view of a star trail in the night sky-0.mp4
+static/videos/gallery/vs_79_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a view of a star trail in the night sky-0.mp4
+static/videos/gallery/vs_80_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/an airplane is flying through the sky at sunset.png
+static/videos/gallery/vs_80_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/an airplane is flying through the sky at sunset-0.mp4
+static/videos/gallery/vs_80_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/an airplane is flying through the sky at sunset-0.mp4
+static/videos/gallery/vs_81_input.jpg	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a person riding a dirt bike.png
+static/videos/gallery/vs_81_wan.mp4	3.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a person riding a dirt bike-0.mp4
+static/videos/gallery/vs_81_grace.mp4	1.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a person riding a dirt bike-0.mp4
+static/videos/gallery/vs_82_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a large cargo ship sailing in the water.png
+static/videos/gallery/vs_82_wan.mp4	1.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a large cargo ship sailing in the water-0.mp4
+static/videos/gallery/vs_82_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a large cargo ship sailing in the water-0.mp4
+static/videos/gallery/vs_83_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a large wave crashes into a lighthouse on a stormy day.png
+static/videos/gallery/vs_83_wan.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a large wave crashes into a lighthouse on a stormy day-0.mp4
+static/videos/gallery/vs_83_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a large wave crashes into a lighthouse on a stormy day-0.mp4
+static/videos/gallery/vs_84_input.jpg	0.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a man and a boy sitting on a beach near the ocean.png
+static/videos/gallery/vs_84_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a man and a boy sitting on a beach near the ocean-0.mp4
+static/videos/gallery/vs_84_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a man and a boy sitting on a beach near the ocean-0.mp4
+static/videos/gallery/vs_85_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a blue and white smoke is swirly in the dark.png
+static/videos/gallery/vs_85_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a blue and white smoke is swirly in the dark-0.mp4
+static/videos/gallery/vs_85_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a blue and white smoke is swirly in the dark-0.mp4
+static/videos/gallery/vs_86_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a large waterfall in the middle of a building.png
+static/videos/gallery/vs_86_wan.mp4	2.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a large waterfall in the middle of a building-0.mp4
+static/videos/gallery/vs_86_grace.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a large waterfall in the middle of a building-0.mp4
+static/videos/gallery/vs_87_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/an aerial view of a rocky beach in indonesia.png
+static/videos/gallery/vs_87_wan.mp4	1.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/an aerial view of a rocky beach in indonesia-0.mp4
+static/videos/gallery/vs_87_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/an aerial view of a rocky beach in indonesia-0.mp4
+static/videos/gallery/vs_88_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a lioness yawning in a field.png
+static/videos/gallery/vs_88_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a lioness yawning in a field-0.mp4
+static/videos/gallery/vs_88_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a lioness yawning in a field-0.mp4
+static/videos/gallery/vs_89_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/the sun is shining through the trees near a waterfall.png
+static/videos/gallery/vs_89_wan.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/the sun is shining through the trees near a waterfall-0.mp4
+static/videos/gallery/vs_89_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/the sun is shining through the trees near a waterfall-0.mp4
+static/videos/gallery/vs_90_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a frog sitting on top of water lily leaves.png
+static/videos/gallery/vs_90_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a frog sitting on top of water lily leaves-0.mp4
+static/videos/gallery/vs_90_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a frog sitting on top of water lily leaves-0.mp4
+static/videos/gallery/vs_91_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/an elephant walking through a forest.png
+static/videos/gallery/vs_91_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/an elephant walking through a forest-0.mp4
+static/videos/gallery/vs_91_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/an elephant walking through a forest-0.mp4
+static/videos/gallery/vs_92_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a bird soaring gracefully in the sky-0.mp4
+static/videos/gallery/vs_92_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a bird soaring gracefully in the sky-0.mp4
+static/videos/gallery/vs_93_wan.mp4	3.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/underwater coral reef-0.mp4
+static/videos/gallery/vs_93_grace.mp4	2.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/underwater coral reef-0.mp4
+static/videos/gallery/vs_94_wan.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a blue bird-0.mp4
+static/videos/gallery/vs_94_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a blue bird-0.mp4
+static/videos/gallery/vs_95_wan.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/A person is hugging-0.mp4
+static/videos/gallery/vs_95_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A person is hugging-0.mp4
+static/videos/gallery/vs_96_wan.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/A person is sword fighting-0.mp4
+static/videos/gallery/vs_96_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A person is sword fighting-0.mp4
+static/videos/gallery/vs_97_wan.mp4	1.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/A tranquil tableau of a dining table-0.mp4
+static/videos/gallery/vs_97_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A tranquil tableau of a dining table-0.mp4
+static/videos/gallery/vs_98_wan.mp4	1.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/A tranquil tableau of the old red barn stood weathered and iconic against the backdrop of the countryside-0.mp4
+static/videos/gallery/vs_98_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A tranquil tableau of the old red barn stood weathered and iconic against the backdrop of the countryside-0.mp4
+static/videos/gallery/vs_99_wan.mp4	1.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/A tranquil tableau of the Parthenon stands resolute in its classical elegance, a timeless symbol of Athens' cultural legacy-0.mp4
+static/videos/gallery/vs_99_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A tranquil tableau of the Parthenon stands resolute in its classical elegance, a timeless symbol of Athens' cultural legacy-0.mp4
+static/videos/gallery/vs_100_wan.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/A tranquil tableau of the Stonehenge presented itself as an enigmatic puzzle, each colossal stone meticulously placed against the backdrop of tranquility-0.mp4
+static/videos/gallery/vs_100_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A tranquil tableau of the Stonehenge presented itself as an enigmatic puzzle, each colossal stone meticulously placed against the backdrop of tranquility-0.mp4
+static/videos/gallery/vs_101_wan.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/In a still frame, a park bench with a view of the lake-0.mp4
+static/videos/gallery/vs_101_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/In a still frame, a park bench with a view of the lake-0.mp4
+static/videos/gallery/vs_102_wan.mp4	2.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/In a still frame, a tranquil pond was fringed by weeping cherry trees, their blossoms drifting lazily onto the glassy surface-0.mp4
+static/videos/gallery/vs_102_grace.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/In a still frame, a tranquil pond was fringed by weeping cherry trees, their blossoms drifting lazily onto the glassy surface-0.mp4
+static/videos/gallery/vs_103_wan.mp4	1.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/In a still frame, the Temple of Hephaestus, with its timeless Doric grace, stands stoically against the backdrop of a quiet Athens-0.mp4
+static/videos/gallery/vs_103_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/In a still frame, the Temple of Hephaestus, with its timeless Doric grace, stands stoically against the backdrop of a quiet Athens-0.mp4
+static/videos/gallery/vs_104_wan.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/Yoda playing guitar on the stage-0.mp4
+static/videos/gallery/vs_104_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/Yoda playing guitar on the stage-0.mp4
+static/videos/gallery/vs_105_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a cup and a couch-0.mp4
+static/videos/gallery/vs_105_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a cup and a couch-0.mp4
+static/videos/gallery/vs_106_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a toaster and a teddy bear-0.mp4
+static/videos/gallery/vs_106_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a toaster and a teddy bear-0.mp4
+static/videos/gallery/vs_107_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a zebra and a giraffe-0.mp4
+static/videos/gallery/vs_107_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a zebra and a giraffe-0.mp4
+static/videos/gallery/vs_108_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a blue bowl-0.mp4
+static/videos/gallery/vs_108_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a blue bowl-0.mp4
+static/videos/gallery/vs_109_wan.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a blue umbrella-0.mp4
+static/videos/gallery/vs_109_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a blue umbrella-0.mp4
+static/videos/gallery/vs_110_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a green vase-0.mp4
+static/videos/gallery/vs_110_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a green vase-0.mp4
+static/videos/gallery/vs_111_wan.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a white bicycle-0.mp4
+static/videos/gallery/vs_111_grace.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a white bicycle-0.mp4
+static/videos/gallery/vs_112_wan.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a white umbrella-0.mp4
+static/videos/gallery/vs_112_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a white umbrella-0.mp4
+static/videos/gallery/vs_113_wan.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a cow on the right of an elephant, front view-0.mp4
+static/videos/gallery/vs_113_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a cow on the right of an elephant, front view-0.mp4
+static/videos/gallery/vs_114_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a donut on the top of broccoli, front view-0.mp4
+static/videos/gallery/vs_114_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a donut on the top of broccoli, front view-0.mp4
+static/videos/gallery/vs_115_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a spoon on the right of a bowl, front view-0.mp4
+static/videos/gallery/vs_115_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a spoon on the right of a bowl, front view-0.mp4
+static/videos/gallery/vs_116_wan.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a surfboard on the bottom of skis, front view-0.mp4
+static/videos/gallery/vs_116_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a surfboard on the bottom of skis, front view-0.mp4
+static/videos/gallery/vs_117_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/an apple on the bottom of a sandwich, front view-0.mp4
+static/videos/gallery/vs_117_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/an apple on the bottom of a sandwich, front view-0.mp4
+static/videos/gallery/vs_118_wan.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/Gwen Stacy reading a book, tilt down-0.mp4
+static/videos/gallery/vs_118_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/Gwen Stacy reading a book, tilt down-0.mp4
+static/videos/gallery/vs_119_wan.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a dog drinking water-0.mp4
+static/videos/gallery/vs_119_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a dog drinking water-0.mp4
+static/videos/gallery/vs_120_wan.mp4	1.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a person walking in the snowstorm-0.mp4
+static/videos/gallery/vs_120_grace.mp4	1.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a person walking in the snowstorm-0.mp4
+static/videos/gallery/vs_121_wan.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/A cat wearing sunglasses at a pool-0.mp4
+static/videos/gallery/vs_121_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A cat wearing sunglasses at a pool-0.mp4
+static/videos/gallery/vs_122_wan.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/Close up of grapes on a rotating table.-0.mp4
+static/videos/gallery/vs_122_grace.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/Close up of grapes on a rotating table.-0.mp4
+static/videos/gallery/vs_123_wan.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/Iron Man flying in the sky-0.mp4
+static/videos/gallery/vs_123_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/Iron Man flying in the sky-0.mp4
+static/videos/gallery/vs_124_wan.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/Sunset time lapse at the beach with moving clouds and colors in the sky.-0.mp4
+static/videos/gallery/vs_124_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/Sunset time lapse at the beach with moving clouds and colors in the sky.-0.mp4
+static/videos/gallery/vs_125_wan.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A person is filling eyebrows-0.mp4
+static/videos/gallery/vs_125_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is filling eyebrows-0.mp4
+static/videos/gallery/vs_126_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/Close up of grapes on a rotating table.-0.mp4
+static/videos/gallery/vs_126_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/Close up of grapes on a rotating table.-0.mp4
+static/videos/gallery/vs_127_wan.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A cute happy Corgi playing in park, sunset, tilt down-0.mp4
+static/videos/gallery/vs_127_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ts/A cute happy Corgi playing in park, sunset, tilt down-0.mp4
+static/videos/gallery/vs_128_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/skis and a snowboard-0.mp4
+static/videos/gallery/vs_128_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/skis and a snowboard-0.mp4
+static/videos/gallery/vs_129_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/Sunset time lapse at the beach with moving clouds and colors in the sky.-0.mp4
+static/videos/gallery/vs_129_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/Sunset time lapse at the beach with moving clouds and colors in the sky.-0.mp4
+static/videos/gallery/vs_130_wan.mp4	1.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/Fireworks.-0.mp4
+static/videos/gallery/vs_130_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/Fireworks.-0.mp4
+static/videos/gallery/vs_131_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/Iron Man flying in the sky-0.mp4
+static/videos/gallery/vs_131_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/Iron Man flying in the sky-0.mp4
+static/videos/gallery/vs_132_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/an older man playing a saxophone on the street.png
+static/videos/gallery/vs_132_wan.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/an older man playing a saxophone on the street-0.mp4
+static/videos/gallery/vs_132_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/an older man playing a saxophone on the street-0.mp4
+static/videos/gallery/vs_133_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a woman carrying a bundle of plants over their head.png
+static/videos/gallery/vs_133_wan.mp4	1.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a woman carrying a bundle of plants over their head-0.mp4
+static/videos/gallery/vs_133_grace.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a woman carrying a bundle of plants over their head-0.mp4
+static/videos/gallery/vs_134_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a person holding a sparkler in front of a sunset.png
+static/videos/gallery/vs_134_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a person holding a sparkler in front of a sunset-0.mp4
+static/videos/gallery/vs_134_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a person holding a sparkler in front of a sunset-0.mp4
+static/videos/gallery/vs_135_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a large wave crashes over a rocky cliff.png
+static/videos/gallery/vs_135_wan.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a large wave crashes over a rocky cliff-0.mp4
+static/videos/gallery/vs_135_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a large wave crashes over a rocky cliff-0.mp4
+static/videos/gallery/vs_136_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/lighthouse-0.mp4
+static/videos/gallery/vs_136_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/lighthouse-0.mp4
+static/videos/gallery/vs_137_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A person is playing flute-0.mp4
+static/videos/gallery/vs_137_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/A person is playing flute-0.mp4
+static/videos/gallery/vs_138_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a giraffe on the right of a bird, front view-0.mp4
+static/videos/gallery/vs_138_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/arm_spatial_relationship_wanraw/a giraffe on the right of a bird, front view-0.mp4
+static/videos/gallery/vs_139_wan.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a giraffe on the right of a bird, front view-0.mp4
+static/videos/gallery/vs_139_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/armswap736_wanraw/a giraffe on the right of a bird, front view-0.mp4
+static/videos/gallery/vs_140_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a kite on the top of a skateboard, front view-0.mp4
+static/videos/gallery/vs_140_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/armswap736_wanraw/a kite on the top of a skateboard, front view-0.mp4
+static/videos/gallery/vs_141_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a sandwich on the bottom of an orange, front view-0.mp4
+static/videos/gallery/vs_141_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/armswap736_wanraw/a sandwich on the bottom of an orange, front view-0.mp4
+static/videos/gallery/vs_142_wan.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a sandwich on the top of an orange, front view-0.mp4
+static/videos/gallery/vs_142_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/arm_spatial_relationship_wanraw/a sandwich on the top of an orange, front view-0.mp4
+static/videos/gallery/vs_143_wan.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a sink on the right of a toilet, front view-0.mp4
+static/videos/gallery/vs_143_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/armswap736_wanraw/a sink on the right of a toilet, front view-0.mp4
+static/videos/gallery/mb_01_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a blue umbrella-0.mp4
+static/videos/gallery/mb_01_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_color/a blue umbrella-0.mp4
+static/videos/gallery/mb_01_dcgen.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/0b750ae3a129/a blue umbrella-0.mp4
+static/videos/gallery/mb_02_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a blue bowl-0.mp4
+static/videos/gallery/mb_02_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_color/a blue bowl-0.mp4
+static/videos/gallery/mb_02_dcgen.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/0b750ae3a129/a blue bowl-0.mp4
+static/videos/gallery/mb_03_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a toaster and a teddy bear-0.mp4
+static/videos/gallery/mb_03_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/a toaster and a teddy bear-0.mp4
+static/videos/gallery/mb_03_dcgen.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/0b750ae3a129/a toaster and a teddy bear-0.mp4
+static/videos/gallery/mb_04_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/Gwen Stacy reading a book, tilt down-0.mp4
+static/videos/gallery/mb_04_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ts/Gwen Stacy reading a book, tilt down-0.mp4
+static/videos/gallery/mb_04_dcgen.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/0b750ae3a129/Gwen Stacy reading a book, tilt down-0.mp4
+static/videos/gallery/mb_05_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a cow on the right of an elephant, front view-0.mp4
+static/videos/gallery/mb_05_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_sr/a cow on the right of an elephant, front view-0.mp4
+static/videos/gallery/mb_05_dcgen.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/0b750ae3a129/a cow on the right of an elephant, front view-0.mp4
+static/videos/gallery/mb_06_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a green vase-0.mp4
+static/videos/gallery/mb_06_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_color/a green vase-0.mp4
+static/videos/gallery/mb_06_dcgen.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/0b750ae3a129/a green vase-0.mp4
+static/videos/gallery/mb_07_wan.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A cute happy Corgi playing in park, sunset, tilt down-0.mp4
+static/videos/gallery/mb_07_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ts/A cute happy Corgi playing in park, sunset, tilt down-0.mp4
+static/videos/gallery/mb_07_dcgen.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/0b750ae3a129/A cute happy Corgi playing in park, sunset, tilt down-0.mp4
+static/videos/gallery/mb_08_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/metal balls are suspended in the air.png
+static/videos/gallery/mb_08_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/metal balls are suspended in the air-0.mp4
+static/videos/gallery/mb_08_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/metal balls are suspended in the air-0.mp4
+static/videos/gallery/mb_08_dcgen.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/dc_videogen/6e4a2403f82b/metal balls are suspended in the air-0.mp4
+static/videos/gallery/mb_09_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a clown fish hiding in a purple anemone.png
+static/videos/gallery/mb_09_wan.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a clown fish hiding in a purple anemone-0.mp4
+static/videos/gallery/mb_09_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a clown fish hiding in a purple anemone-0.mp4
+static/videos/gallery/mb_09_ltx.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2266a7df08ee/a clown fish hiding in a purple anemone-0.mp4
+static/videos/gallery/mb_10_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a person riding an atv on a dirt track.png
+static/videos/gallery/mb_10_wan.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a person riding an atv on a dirt track-0.mp4
+static/videos/gallery/mb_10_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a person riding an atv on a dirt track-0.mp4
+static/videos/gallery/mb_10_ltx.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2266a7df08ee/a person riding an atv on a dirt track-0.mp4
+static/videos/gallery/mb_11_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/Chopsticks are slowly picking up the buns from the plastic container.png
+static/videos/gallery/mb_11_wan.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/Chopsticks are slowly picking up the buns from the plastic container-0.mp4
+static/videos/gallery/mb_11_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/Chopsticks are slowly picking up the buns from the plastic container-0.mp4
+static/videos/gallery/mb_11_ltx.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/Chopsticks are slowly picking up the buns from the plastic container-0.mp4
+static/videos/gallery/mb_12_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/an older woman and a young girl are knitting together.png
+static/videos/gallery/mb_12_wan.mp4	2.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/an older woman and a young girl are knitting together-0.mp4
+static/videos/gallery/mb_12_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/an older woman and a young girl are knitting together-0.mp4
+static/videos/gallery/mb_12_ltx.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/an older woman and a young girl are knitting together-0.mp4
+static/videos/gallery/mb_13_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a smiling woman with her hands clasped.png
+static/videos/gallery/mb_13_wan.mp4	1.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a smiling woman with her hands clasped-0.mp4
+static/videos/gallery/mb_13_grace.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a smiling woman with her hands clasped-0.mp4
+static/videos/gallery/mb_13_ltx.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a smiling woman with her hands clasped-0.mp4
+static/videos/gallery/mb_14_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a person holding chopsticks over a bowl of food.png
+static/videos/gallery/mb_14_wan.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a person holding chopsticks over a bowl of food-0.mp4
+static/videos/gallery/mb_14_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a person holding chopsticks over a bowl of food-0.mp4
+static/videos/gallery/mb_14_ltx.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a person holding chopsticks over a bowl of food-0.mp4
+static/videos/gallery/mb_15_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a seal swimming in the water.png
+static/videos/gallery/mb_15_wan.mp4	2.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a seal swimming in the water-0.mp4
+static/videos/gallery/mb_15_grace.mp4	1.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a seal swimming in the water-0.mp4
+static/videos/gallery/mb_15_ltx.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a seal swimming in the water-0.mp4
+static/videos/gallery/mb_16_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a man holding a baby in his arms.png
+static/videos/gallery/mb_16_wan.mp4	1.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a man holding a baby in his arms-0.mp4
+static/videos/gallery/mb_16_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a man holding a baby in his arms-0.mp4
+static/videos/gallery/mb_16_ltx.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a man holding a baby in his arms-0.mp4
+static/videos/gallery/mb_17_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a couple of horses are running in the dirt.png
+static/videos/gallery/mb_17_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a couple of horses are running in the dirt-0.mp4
+static/videos/gallery/mb_17_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a couple of horses are running in the dirt-0.mp4
+static/videos/gallery/mb_17_ltx.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a couple of horses are running in the dirt-0.mp4
+static/videos/gallery/mb_18_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a bald eagle flying over a tree filled forest.png
+static/videos/gallery/mb_18_wan.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a bald eagle flying over a tree filled forest-0.mp4
+static/videos/gallery/mb_18_grace.mp4	1.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a bald eagle flying over a tree filled forest-0.mp4
+static/videos/gallery/mb_18_ltx.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a bald eagle flying over a tree filled forest-0.mp4
+static/videos/gallery/mb_19_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a small bird sits on a moss covered branch.png
+static/videos/gallery/mb_19_wan.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a small bird sits on a moss covered branch-0.mp4
+static/videos/gallery/mb_19_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a small bird sits on a moss covered branch-0.mp4
+static/videos/gallery/mb_19_ltx.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a small bird sits on a moss covered branch-0.mp4
+static/videos/gallery/mb_20_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a great white shark swimming in the ocean.png
+static/videos/gallery/mb_20_wan.mp4	2.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a great white shark swimming in the ocean-0.mp4
+static/videos/gallery/mb_20_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a great white shark swimming in the ocean-0.mp4
+static/videos/gallery/mb_20_ltx.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a great white shark swimming in the ocean-0.mp4
+static/videos/gallery/mb_21_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/three geishas walking down the street in traditional clothing.png
+static/videos/gallery/mb_21_wan.mp4	2.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/three geishas walking down the street in traditional clothing-0.mp4
+static/videos/gallery/mb_21_grace.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/three geishas walking down the street in traditional clothing-0.mp4
+static/videos/gallery/mb_21_ltx.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/three geishas walking down the street in traditional clothing-0.mp4
+static/videos/gallery/mb_22_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a chef is preparing a dish with mushrooms on a wooden board.png
+static/videos/gallery/mb_22_wan.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a chef is preparing a dish with mushrooms on a wooden board-0.mp4
+static/videos/gallery/mb_22_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a chef is preparing a dish with mushrooms on a wooden board-0.mp4
+static/videos/gallery/mb_22_ltx.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a chef is preparing a dish with mushrooms on a wooden board-0.mp4
+static/videos/gallery/mb_23_input.jpg	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a group of hot air balloons flying over a valley.png
+static/videos/gallery/mb_23_wan.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a group of hot air balloons flying over a valley-0.mp4
+static/videos/gallery/mb_23_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a group of hot air balloons flying over a valley-0.mp4
+static/videos/gallery/mb_23_ltx.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a group of hot air balloons flying over a valley-0.mp4
+static/videos/gallery/mb_24_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a large wave crashes into a lighthouse.png
+static/videos/gallery/mb_24_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a large wave crashes into a lighthouse-0.mp4
+static/videos/gallery/mb_24_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a large wave crashes into a lighthouse-0.mp4
+static/videos/gallery/mb_24_ltx.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a large wave crashes into a lighthouse-0.mp4
+static/videos/gallery/mb_25_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a person holding a sparkler in their hand.png
+static/videos/gallery/mb_25_wan.mp4	1.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a person holding a sparkler in their hand-0.mp4
+static/videos/gallery/mb_25_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a person holding a sparkler in their hand-0.mp4
+static/videos/gallery/mb_25_ltx.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a person holding a sparkler in their hand-0.mp4
+static/videos/gallery/mb_26_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a man in sunglasses laying on a wooden bench.png
+static/videos/gallery/mb_26_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a man in sunglasses laying on a wooden bench-0.mp4
+static/videos/gallery/mb_26_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a man in sunglasses laying on a wooden bench-0.mp4
+static/videos/gallery/mb_26_ltx.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a man in sunglasses laying on a wooden bench-0.mp4
+static/videos/gallery/mb_27_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/A boiling pot cooking vegetables.png
+static/videos/gallery/mb_27_wan.mp4	1.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/A boiling pot cooking vegetables-0.mp4
+static/videos/gallery/mb_27_grace.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/A boiling pot cooking vegetables-0.mp4
+static/videos/gallery/mb_27_ltx.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/A boiling pot cooking vegetables-0.mp4
+static/videos/gallery/mb_28_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a hand holding a slice of pizza.png
+static/videos/gallery/mb_28_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a hand holding a slice of pizza-0.mp4
+static/videos/gallery/mb_28_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a hand holding a slice of pizza-0.mp4
+static/videos/gallery/mb_28_ltx.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/ltx_video_097_13b_dev/2069fa0a7d94/a hand holding a slice of pizza-0.mp4
+static/videos/gallery/s_01_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_grpBC/a person playing guitar-0.mp4
+static/videos/gallery/s_02_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is ironing-0.mp4
+static/videos/gallery/s_03_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is riding a bike-0.mp4
+static/videos/gallery/s_04_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_sr/an elephant on the left of a bear, front view-0.mp4
+static/videos/gallery/s_05_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/A cute fluffy panda eating Chinese food in a restaurant-0.mp4
+static/videos/gallery/s_06_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/One person is riding on the back of a horse led by another person.png
+static/videos/gallery/s_06_grace.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/One person is riding on the back of a horse led by another person-0.mp4
+static/videos/gallery/s_07_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a man and a woman sitting on a bench playing instruments.png
+static/videos/gallery/s_07_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a man and a woman sitting on a bench playing instruments-0.mp4
+static/videos/gallery/s_08_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/Chopsticks are picking up noodles from the bowl.png
+static/videos/gallery/s_08_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/Chopsticks are picking up noodles from the bowl-0.mp4
+static/videos/gallery/s_09_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a plant with water droplets on it.png
+static/videos/gallery/s_09_grace.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a plant with water droplets on it-0.mp4
+static/videos/gallery/s_10_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a person is cooking eggs on an outdoor grill.png
+static/videos/gallery/s_10_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a person is cooking eggs on an outdoor grill-0.mp4
+static/videos/gallery/s_11_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a person slicing salmon on a cutting board.png
+static/videos/gallery/s_11_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a person slicing salmon on a cutting board-0.mp4
+static/videos/gallery/s_12_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a person playing guitar-0.mp4
+static/videos/gallery/s_13_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A person is ironing-0.mp4
+static/videos/gallery/s_14_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A person is riding a bike-0.mp4
+static/videos/gallery/s_15_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/an oven and scissors-0.mp4
+static/videos/gallery/s_16_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A cute fluffy panda eating Chinese food in a restaurant-0.mp4
+static/videos/gallery/s_17_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/an elephant on the left of a bear, front view-0.mp4
+static/videos/gallery/s_18_grace.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a shark is swimming in the ocean, in cyberpunk style-0.mp4
+static/videos/gallery/s_19_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_grpBC/a dog drinking water-0.mp4
+static/videos/gallery/s_20_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_grpBC/a motorcycle cruising along a coastal highway-0.mp4
+static/videos/gallery/s_21_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_grpBC/a person walking in the snowstorm-0.mp4
+static/videos/gallery/s_22_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_grpBC/a truck turning a corner-0.mp4
+static/videos/gallery/s_23_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_grpBC/an elephant running to join a herd of its kind-0.mp4
+static/videos/gallery/s_24_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_scene4/iceberg-0.mp4
+static/videos/gallery/s_25_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_rest/A tranquil tableau of a bed-0.mp4
+static/videos/gallery/s_26_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_rest/A tranquil tableau of the old red barn stood weathered and iconic against the backdrop of the countryside-0.mp4
+static/videos/gallery/s_27_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_rest/A tranquil tableau of the Parthenon stands resolute in its classical elegance, a timeless symbol of Athens' cultural legacy-0.mp4
+static/videos/gallery/s_28_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_rest/A tranquil tableau of the Stonehenge presented itself as an enigmatic puzzle, each colossal stone meticulously placed against the backdrop of tranquility-0.mp4
+static/videos/gallery/s_29_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_rest/In a still frame, a pear-0.mp4
+static/videos/gallery/s_30_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_rest/In a still frame, the Parthenon's majestic Doric columns stand in serene solitude atop the Acropolis, framed by the tranquil Athenian landscape-0.mp4
+static/videos/gallery/s_31_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_rest/In a still frame, the Temple of Hephaestus, with its timeless Doric grace, stands stoically against the backdrop of a quiet Athens-0.mp4
+static/videos/gallery/s_32_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a car turning a corner-0.mp4
+static/videos/gallery/s_33_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a motorcycle accelerating to gain speed-0.mp4
+static/videos/gallery/s_34_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a truck turning a corner-0.mp4
+static/videos/gallery/s_35_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/an elephant running to join a herd of its kind-0.mp4
+static/videos/gallery/s_36_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/iceberg-0.mp4
+static/videos/gallery/s_37_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A boat sailing leisurely along the Seine River with the Eiffel Tower in background by Vincent van Gogh-0.mp4
+static/videos/gallery/s_38_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A tranquil tableau of a bed-0.mp4
+static/videos/gallery/s_39_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/In a still frame, a pear-0.mp4
+static/videos/gallery/s_40_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/In a still frame, the Parthenon's majestic Doric columns stand in serene solitude atop the Acropolis, framed by the tranquil Athenian landscape-0.mp4
+static/videos/gallery/s_41_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/windmill-0.mp4
+static/videos/gallery/s_42_grace.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a cow bending down to drink water from a river-0.mp4
+static/videos/gallery/s_43_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a cow chewing cud while resting in a tranquil barn-0.mp4
+static/videos/gallery/s_44_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a horse bending down to drink water from a river-0.mp4
+static/videos/gallery/s_45_grace.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a horse running to join a herd of its kind-0.mp4
+static/videos/gallery/s_46_grace.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a horse taking a peaceful walk-0.mp4
+static/videos/gallery/s_47_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a person drinking coffee in a cafe-0.mp4
+static/videos/gallery/s_48_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a zebra bending down to drink water from a river-0.mp4
+static/videos/gallery/s_49_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/volcano-0.mp4
+static/videos/gallery/s_50_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/waterfall-0.mp4
+static/videos/gallery/s_51_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A person is eating watermelon-0.mp4
+static/videos/gallery/s_52_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A person is knitting-0.mp4
+static/videos/gallery/s_53_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A person is peeling apples-0.mp4
+static/videos/gallery/s_54_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A person is push up-0.mp4
+static/videos/gallery/s_55_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A happy fuzzy panda playing guitar nearby a campfire, snow mountain in the background-0.mp4
+static/videos/gallery/s_56_grace.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/Fireworks.-0.mp4
+static/videos/gallery/s_57_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a handbag and a tie-0.mp4
+static/videos/gallery/s_58_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a baseball glove on the right of a tennis racket, front view-0.mp4
+static/videos/gallery/s_59_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a sheep on the left of a cow, front view-0.mp4
+static/videos/gallery/s_60_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a toaster on the bottom of a microwave, front view-0.mp4
+static/videos/gallery/s_61_grace.mp4	2.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A cute happy Corgi playing in park, sunset, tilt down-0.mp4
+static/videos/gallery/s_62_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a shark is swimming in the ocean, in super slow motion-0.mp4
+static/videos/gallery/s_63_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/An astronaut flying in space, in super slow motion-0.mp4
+static/videos/gallery/s_64_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A boat sailing leisurely along the Seine River with the Eiffel Tower in background by Hokusai, in the style of Ukiyo-0.mp4
+static/videos/gallery/s_65_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A boat sailing leisurely along the Seine River with the Eiffel Tower in background, oil painting-0.mp4
+static/videos/gallery/s_66_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A boat sailing leisurely along the Seine River with the Eiffel Tower in background, surrealism style-0.mp4
+static/videos/gallery/s_67_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A boat sailing leisurely along the Seine River with the Eiffel Tower in background, watercolor painting-0.mp4
+static/videos/gallery/s_68_grace.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A cute happy Corgi playing in park, sunset, black and white-0.mp4
+static/videos/gallery/s_69_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A cute happy Corgi playing in park, sunset, watercolor painting-0.mp4
+static/videos/gallery/s_70_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a shark is swimming in the ocean by Hokusai, in the style of Ukiyo-0.mp4
+static/videos/gallery/s_71_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a shark is swimming in the ocean, black and white-0.mp4
+static/videos/gallery/s_72_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a shark is swimming in the ocean, Van Gogh style-0.mp4
+static/videos/gallery/s_73_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a shark is swimming in the ocean, watercolor painting-0.mp4
+static/videos/gallery/s_74_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/An astronaut flying in space, black and white-0.mp4
+static/videos/gallery/s_75_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/Gwen Stacy reading a book, Van Gogh style-0.mp4
+static/videos/gallery/s_76_grace.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/Snow rocky mountains peaks canyon. snow blanketed rocky mountains surround and shadow deep canyons. the canyons twist and bend through the high elevated mountain peaks, Van Gogh style-0.mp4
+static/videos/gallery/s_77_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/The bund Shanghai, pixel art-0.mp4
+static/videos/gallery/s_78_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/The bund Shanghai, Van Gogh style-0.mp4
+static/videos/gallery/s_79_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is brushing teeth-0.mp4
+static/videos/gallery/s_80_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_grpBC/a cow bending down to drink water from a river-0.mp4
+static/videos/gallery/s_81_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_sr/a baseball glove on the right of a tennis racket, front view-0.mp4
+static/videos/gallery/s_82_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is reading book-0.mp4
+static/videos/gallery/s_83_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is sweeping floor-0.mp4
+static/videos/gallery/s_84_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_grpBC/a cow chewing cud while resting in a tranquil barn-0.mp4
+static/videos/gallery/s_85_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_grpBC/a horse taking a peaceful walk-0.mp4
+static/videos/gallery/s_86_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/A happy fuzzy panda playing guitar nearby a campfire, snow mountain in the background-0.mp4
+static/videos/gallery/s_87_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is massaging legs-0.mp4
+static/videos/gallery/s_88_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_scene4/volcano-0.mp4
+static/videos/gallery/s_89_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is taking a shower-0.mp4
+static/videos/gallery/s_90_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_sr/a sheep on the left of a cow, front view-0.mp4
+static/videos/gallery/s_91_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ts/An astronaut flying in space, in super slow motion-0.mp4
+static/videos/gallery/s_92_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ts/a shark is swimming in the ocean, in super slow motion-0.mp4
+static/videos/gallery/s_93_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is washing hands-0.mp4
+static/videos/gallery/s_94_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_scene4/waterfall-0.mp4
+static/videos/gallery/s_95_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_grpBC/a horse bending down to drink water from a river-0.mp4
+static/videos/gallery/s_96_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/a handbag and a tie-0.mp4
+static/videos/gallery/s_97_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_sr/a horse on the right of a sheep, front view-0.mp4
+static/videos/gallery/s_98_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_grpBC/a zebra bending down to drink water from a river-0.mp4
+static/videos/gallery/s_99_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_grpBC/a horse running to join a herd of its kind-0.mp4
+static/videos/gallery/s_100_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is push up-0.mp4
+static/videos/gallery/s_101_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_sr/a toaster on the bottom of a microwave, front view-0.mp4
+static/videos/gallery/s_102_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/A boat sailing leisurely along the Seine River with the Eiffel Tower in background, surrealism style-0.mp4
+static/videos/gallery/s_103_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/A boat sailing leisurely along the Seine River with the Eiffel Tower in background, watercolor painting-0.mp4
+static/videos/gallery/s_104_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/A cute happy Corgi playing in park, sunset, watercolor painting-0.mp4
+static/videos/gallery/s_105_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/The bund Shanghai, pixel art-0.mp4
+static/videos/gallery/s_106_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/a shark is swimming in the ocean, watercolor painting-0.mp4
+static/videos/gallery/s_107_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/Snow rocky mountains peaks canyon. snow blanketed rocky mountains surround and shadow deep canyons. the canyons twist and bend through the high elevated mountain peaks, Van Gogh style-0.mp4
+static/videos/gallery/s_108_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/Gwen Stacy reading a book, Van Gogh style-0.mp4
+static/videos/gallery/s_109_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/A boat sailing leisurely along the Seine River with the Eiffel Tower in background, oil painting-0.mp4
+static/videos/gallery/s_110_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/An astronaut flying in space, black and white-0.mp4
+static/videos/gallery/s_111_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/A boat sailing leisurely along the Seine River with the Eiffel Tower in background by Hokusai, in the style of Ukiyo-0.mp4
+static/videos/gallery/s_112_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/The bund Shanghai, Van Gogh style-0.mp4
+static/videos/gallery/s_113_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/a shark is swimming in the ocean, oil painting-0.mp4
+static/videos/gallery/s_114_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/a shark is swimming in the ocean, in cyberpunk style-0.mp4
+static/videos/gallery/s_115_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/An astronaut flying in space, Van Gogh style-0.mp4
+static/videos/gallery/s_116_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ts/A cute happy Corgi playing in park, sunset, tilt down-0.mp4
+static/videos/gallery/s_117_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/a shark is swimming in the ocean, Van Gogh style-0.mp4
+static/videos/gallery/s_118_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/a shark is swimming in the ocean, black and white-0.mp4
+static/videos/gallery/s_119_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/a shark is swimming in the ocean by Hokusai, in the style of Ukiyo-0.mp4
+static/videos/gallery/s_120_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/A cute happy Corgi playing in park, sunset, black and white-0.mp4
+static/videos/gallery/s_121_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/Fireworks.-0.mp4
+static/videos/gallery/s_122_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a group of jellyfish swimming in an aquarium.png
+static/videos/gallery/s_122_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a group of jellyfish swimming in an aquarium-0.mp4
+static/videos/gallery/s_123_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/a kettle is sitting on top of a campfire.png
+static/videos/gallery/s_123_grace.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a kettle is sitting on top of a campfire-0.mp4
+static/videos/gallery/s_124_input.jpg	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/1280x736/A little girl, lost in thought, is quietly sitting on the bus.png
+static/videos/gallery/s_124_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/A little girl, lost in thought, is quietly sitting on the bus-0.mp4
+static/videos/gallery/s_125_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/A person is bending back-0.mp4
+static/videos/gallery/s_126_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A boat sailing leisurely along the Seine River with the Eiffel Tower in background, black and white-0.mp4
+static/videos/gallery/s_127_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a shark is swimming in the ocean, oil painting-0.mp4
+static/videos/gallery/s_128_grace.mp4	1.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/An astronaut flying in space, Van Gogh style-0.mp4

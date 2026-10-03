@@ -1,0 +1,3 @@
+*.mp4 -diff -merge
+*.jpg -diff -merge
+*.png -diff -merge

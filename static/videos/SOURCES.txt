@@ -1,0 +1,89 @@
+# static/videos/<file> ← 원본 (ours=확정 픽 staged, wan/dc=폴 baseline run) · crf24
+teaser/01_wan.mp4	1.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a person walking in the snowstorm-0.mp4
+teaser/01_grace.mp4	1.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a person walking in the snowstorm-0.mp4
+teaser/02_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A person is crying-0.mp4
+teaser/02_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/A person is crying-0.mp4
+teaser/03_wan.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A person is filling eyebrows-0.mp4
+teaser/03_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/A person is filling eyebrows-0.mp4
+teaser/04_wan.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a seagull is flying towards a person's hand-0.mp4
+teaser/04_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a seagull is flying towards a person's hand-0.mp4
+teaser/05_wan.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a dog drinking water-0.mp4
+teaser/05_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a dog drinking water-0.mp4
+teaser/06_wan.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/A cat wearing sunglasses at a pool-0.mp4
+teaser/06_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A cat wearing sunglasses at a pool-0.mp4
+teaser/07_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/skis and a snowboard-0.mp4
+teaser/07_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/skis and a snowboard-0.mp4
+teaser/08_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/Close up of grapes on a rotating table.-0.mp4
+teaser/08_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/Close up of grapes on a rotating table.-0.mp4
+teaser/10_wan.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/Iron Man flying in the sky-0.mp4
+teaser/10_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/Iron Man flying in the sky-0.mp4
+teaser/11_wan.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/Sunset time lapse at the beach with moving clouds and colors in the sky.-0.mp4
+teaser/11_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/Sunset time lapse at the beach with moving clouds and colors in the sky.-0.mp4
+teaser/12_wan.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a cup and a couch-0.mp4
+teaser/12_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/a cup and a couch-0.mp4
+teaser/16_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/a shark is swimming in the ocean by Hokusai, in the style of Ukiyo-0.mp4
+teaser/16_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_as/a shark is swimming in the ocean by Hokusai, in the style of Ukiyo-0.mp4
+teaser/21_wan.mp4	2.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/An astronaut flying in space, Van Gogh style-0.mp4
+teaser/21_grace.mp4	1.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/An astronaut flying in space, Van Gogh style-0.mp4
+teaser/23_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a person is putting sauce on a burger-0.mp4
+teaser/23_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a person is putting sauce on a burger-0.mp4
+teaser/24_wan.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a clown fish hiding in a purple anemone-0.mp4
+teaser/24_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a clown fish hiding in a purple anemone-0.mp4
+teaser/25_wan.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a squirrel sitting on the ground eating a piece of bread-0.mp4
+teaser/25_grace.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a squirrel sitting on the ground eating a piece of bread-0.mp4
+teaser/26_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a frog sitting on top of water lily leaves-0.mp4
+teaser/26_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a frog sitting on top of water lily leaves-0.mp4
+teaser/27_wan.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a person riding a skateboard on a concrete floor-0.mp4
+teaser/27_grace.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a person riding a skateboard on a concrete floor-0.mp4
+teaser/28_wan.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a monkey is holding a banana in its mouth-0.mp4
+teaser/28_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a monkey is holding a banana in its mouth-0.mp4
+teaser/29_wan.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a person pouring coffee into a pot on a stove-0.mp4
+teaser/29_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a person pouring coffee into a pot on a stove-0.mp4
+teaser/30_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/two women eating pizza at a restaurant-0.mp4
+teaser/30_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/two women eating pizza at a restaurant-0.mp4
+teaser/31_wan.mp4	1.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/2c29286edcb0/a man holding a baby in his arms-0.mp4
+teaser/31_grace.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/ours_6zebmuc2_picked12_i2v736/a man holding a baby in his arms-0.mp4
+teaser/32_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a man and a boy sitting on a beach near the ocean-0.mp4
+teaser/32_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a man and a boy sitting on a beach near the ocean-0.mp4
+teaser/33_wan.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a yellow and white jellyfish is floating in the ocean-0.mp4
+teaser/33_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a yellow and white jellyfish is floating in the ocean-0.mp4
+cmp/t2v_01_wan.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A person is rock climbing-0.mp4
+cmp/t2v_01_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/A person is rock climbing-0.mp4
+cmp/t2v_01_dcgen.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/0b750ae3a129/A person is rock climbing-0.mp4
+cmp/t2v_02_wan.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A person is crying-0.mp4
+cmp/t2v_02_grace.mp4	0.1MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/A person is crying-0.mp4
+cmp/t2v_02_dcgen.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/0b750ae3a129/A person is crying-0.mp4
+cmp/t2v_03_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/lighthouse-0.mp4
+cmp/t2v_03_grace.mp4	0.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/lighthouse-0.mp4
+cmp/t2v_03_dcgen.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/0b750ae3a129/lighthouse-0.mp4
+cmp/t2v_04_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A person is playing flute-0.mp4
+cmp/t2v_04_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480/A person is playing flute-0.mp4
+cmp/t2v_04_dcgen.mp4	0.6MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/0b750ae3a129/A person is playing flute-0.mp4
+cmp/i2v_01_wan.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a white car is swiftly driving on a dirt road near a bush, kicking up dust-0.mp4
+cmp/i2v_01_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a white car is swiftly driving on a dirt road near a bush, kicking up dust-0.mp4
+cmp/i2v_01_dcgen.mp4	1.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/dc_videogen/cce306f5215e/a white car is swiftly driving on a dirt road near a bush, kicking up dust-0.mp4
+cmp/i2v_01_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a white car is swiftly driving on a dirt road near a bush, kicking up dust.png
+cmp/i2v_02_wan.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a small bird sits on a moss covered branch-0.mp4
+cmp/i2v_02_grace.mp4	0.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a small bird sits on a moss covered branch-0.mp4
+cmp/i2v_02_dcgen.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/dc_videogen/cce306f5215e/a small bird sits on a moss covered branch-0.mp4
+cmp/i2v_02_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a small bird sits on a moss covered branch.png
+cmp/i2v_03_wan.mp4	2.3MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a penguin walking on a beach near the water-0.mp4
+cmp/i2v_03_grace.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a penguin walking on a beach near the water-0.mp4
+cmp/i2v_03_dcgen.mp4	1.7MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/dc_videogen/cce306f5215e/a penguin walking on a beach near the water-0.mp4
+cmp/i2v_03_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a penguin walking on a beach near the water.png
+cmp/i2v_04_wan.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/wan/6a95563cb8f2/a clown fish hiding in a purple anemone-0.mp4
+cmp/i2v_04_grace.mp4	0.4MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked12_i2v480/a clown fish hiding in a purple anemone-0.mp4
+cmp/i2v_04_dcgen.mp4	1.2MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-i2v/dc_videogen/cce306f5215e/a clown fish hiding in a purple anemone-0.mp4
+cmp/i2v_04_input.jpg	0.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/datasets/vbench-i2v/832x480/a clown fish hiding in a purple anemone.png
+cmp/hr_01_wan.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a dog drinking water-0.mp4
+cmp/hr_01_grace.mp4	0.5MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a dog drinking water-0.mp4
+cmp/hr_01_dcgen.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/94cb3a3715cc/a dog drinking water-0.mp4
+cmp/hr_02_wan.mp4	3.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/underwater coral reef-0.mp4
+cmp/hr_02_grace.mp4	2.3MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/underwater coral reef-0.mp4
+cmp/hr_02_dcgen.mp4	3.0MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/94cb3a3715cc/underwater coral reef-0.mp4
+cmp/hr_03_wan.mp4	1.5MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/a truck turning a corner-0.mp4
+cmp/hr_03_grace.mp4	0.7MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/a truck turning a corner-0.mp4
+cmp/hr_03_dcgen.mp4	1.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/94cb3a3715cc/a truck turning a corner-0.mp4
+cmp/hr_04_wan.mp4	0.9MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/7e463c3f73f3/A tranquil tableau of the Stonehenge presented itself as an enigmatic puzzle, each colossal stone meticulously placed against the backdrop of tranquility-0.mp4
+cmp/hr_04_grace.mp4	0.8MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v736/A tranquil tableau of the Stonehenge presented itself as an enigmatic puzzle, each colossal stone meticulously placed against the backdrop of tranquility-0.mp4
+cmp/hr_04_dcgen.mp4	1.8MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/dc_videogen/94cb3a3715cc/A tranquil tableau of the Stonehenge presented itself as an enigmatic puzzle, each colossal stone meticulously placed against the backdrop of tranquility-0.mp4
