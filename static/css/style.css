@@ -26,8 +26,8 @@ button { font: inherit; }
 /* layout */
 .layout { display: flex; min-height: 100vh; }
 .sidebar { width: 300px; flex-shrink: 0; position: sticky; top: 0; height: 100vh; background: var(--side); border-right: 1px solid #D9D7D0; padding: 40px 24px; display: flex; flex-direction: column; align-items: center; gap: 36px; }
-.wordmark { display: block; align-self: stretch; margin: 0 -16px; }
-.wordmark img { display: block; width: 100%; max-width: 284px; height: auto; margin: 0 auto; }
+.wordmark { display: block; align-self: stretch; margin: 0 -20px; }
+.wordmark img { display: block; width: 100%; max-width: 292px; height: auto; margin: 0 auto; }
 .g-top .wordmark img { width: auto; height: 34px; max-width: none; }
 .wordmark { font-family: var(--display); font-weight: 800; font-size: 32px; letter-spacing: -0.02em; text-decoration: none; }
 .chapters { position: relative; display: flex; flex-direction: column; }
