@@ -143,7 +143,7 @@ a.pill:hover { background: #FFFFFF; }
 .vcell .label .metrics .k { color: var(--mute); }
 .vcell .label .metrics .val { font-size: 15px; color: var(--ink); }
 .vcell.ours .label .metrics .val { color: var(--accent); }
-.vcell .label .stat { display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.02em; color: #fff; background: var(--accent); border-radius: 999px; padding: 1px 8px; }
+.vcell .label .stat { display: inline-flex; align-items: center; gap: 8px; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.02em; color: #fff; background: var(--accent); border-radius: 999px; padding: 2px 11px; }
 .vcell .label .stat em { font-size: 19px; font-weight: 800; font-style: normal; color: #fff; line-height: 1; }
 /* [10-03] 이 줄이 accent 배경 위에 accent 글자를 올려 배지가 안 보였다 — 흰색(146·147행)을 쓴다 */
 .nav { display: flex; justify-content: center; align-items: center; gap: 14px; }
