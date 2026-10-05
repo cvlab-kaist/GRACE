@@ -38,6 +38,7 @@ main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
 /* hero */
 .hero { background: var(--hero); color: var(--on-dark); padding: 64px 72px 56px; display: flex; flex-direction: column; gap: 26px; }
+.tagline { margin: 14px 0 0; font-family: var(--display); font-weight: 500; font-size: clamp(20px, 2.1vw, 30px); letter-spacing: -0.01em; color: var(--accent); }
 .hero h1 { margin: 0; font-family: var(--display); font-weight: 500; font-size: clamp(38px, 4.8vw, 68px); line-height: 1.04; letter-spacing: -0.03em; max-width: 1040px; }
 .authors { font-size: 22px; line-height: 1.55; }
 .authors a { text-decoration: none; color: inherit; } .authors a:hover { text-decoration: underline; }
