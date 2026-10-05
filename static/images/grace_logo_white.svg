@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="400" height="110" viewBox="0 0 400 110">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="388" height="110" viewBox="0 0 388 110">
 <defs>
 <g>
 <g id="glyph-0-0">
@@ -44,10 +44,10 @@
 <path fill="none" stroke-width="1.54" stroke-linecap="butt" stroke-linejoin="round" stroke="rgb(100%, 100%, 100%)" stroke-opacity="1" stroke-miterlimit="10" d="M 71.265625 41.75 L 71.265625 60.75 M 63 56 L 79.53125 46.5 " transform="matrix(1, 0, 0, 1, 5, 5)"/>
 <path fill="none" stroke-width="1.54" stroke-linecap="butt" stroke-linejoin="round" stroke="rgb(100%, 100%, 100%)" stroke-opacity="1" stroke-miterlimit="10" d="M 71.265625 32.25 L 54.734375 41.75 M 54.734375 32.25 L 71.265625 41.75 " transform="matrix(1, 0, 0, 1, 5, 5)"/>
 <g fill="rgb(100%, 100%, 100%)" fill-opacity="1">
-<use xlink:href="#glyph-0-0" x="103" y="76"/>
-<use xlink:href="#glyph-0-1" x="143.238" y="76"/>
-<use xlink:href="#glyph-0-2" x="181.368" y="76"/>
-<use xlink:href="#glyph-0-3" x="222.226" y="76"/>
-<use xlink:href="#glyph-0-4" x="261.348" y="76"/>
+<use xlink:href="#glyph-0-0" x="91" y="76"/>
+<use xlink:href="#glyph-0-1" x="131.238" y="76"/>
+<use xlink:href="#glyph-0-2" x="169.368" y="76"/>
+<use xlink:href="#glyph-0-3" x="210.226" y="76"/>
+<use xlink:href="#glyph-0-4" x="249.348" y="76"/>
 </g>
 </svg>
