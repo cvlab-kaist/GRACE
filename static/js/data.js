@@ -16,7 +16,6 @@ window.GRACE = {
     { prompt: "T2V 480×832 · Iron Man flying in the sky", caption: "Iron Man flying in the sky", wan: 'static/videos/teaser/10_wan.mp4', grace: 'static/videos/teaser/10_grace.mp4' },
     { prompt: "T2V 480×832 · Sunset time lapse at the beach with moving clouds and colors in the sky.", caption: "Sunset time lapse at the beach with moving clouds and colors in the sky.", wan: 'static/videos/teaser/11_wan.mp4', grace: 'static/videos/teaser/11_grace.mp4' },
     { prompt: "T2V 480×832 · a cup and a couch", caption: "a cup and a couch", wan: 'static/videos/teaser/12_wan.mp4', grace: 'static/videos/teaser/12_grace.mp4' },
-    { prompt: "T2V 480×832 · a shark is swimming in the ocean by Hokusai, in the style of Ukiyo", caption: "a shark is swimming in the ocean by Hokusai, in the style of Ukiyo", wan: 'static/videos/teaser/16_wan.mp4', grace: 'static/videos/teaser/16_grace.mp4' },
     { prompt: "T2V 736×1280 · An astronaut flying in space, Van Gogh style", caption: "An astronaut flying in space, Van Gogh style", wan: 'static/videos/teaser/21_wan.mp4', grace: 'static/videos/teaser/21_grace.mp4' },
     { prompt: "I2V · a person is putting sauce on a burger", caption: "a person is putting sauce on a burger", wan: 'static/videos/teaser/23_wan.mp4', grace: 'static/videos/teaser/23_grace.mp4' },
     { prompt: "I2V · a clown fish hiding in a purple anemone", caption: "a clown fish hiding in a purple anemone", wan: 'static/videos/teaser/24_wan.mp4', grace: 'static/videos/teaser/24_grace.mp4' },
@@ -29,6 +28,7 @@ window.GRACE = {
     { prompt: "I2V 736×1280 · a man holding a baby in his arms", caption: "a man holding a baby in his arms", wan: 'static/videos/teaser/31_wan.mp4', grace: 'static/videos/teaser/31_grace.mp4' },
     { prompt: "I2V · a man and a boy sitting on a beach near the ocean", caption: "a man and a boy sitting on a beach near the ocean", wan: 'static/videos/teaser/32_wan.mp4', grace: 'static/videos/teaser/32_grace.mp4' },
     { prompt: "I2V · a yellow and white jellyfish is floating in the ocean", caption: "a yellow and white jellyfish is floating in the ocean", wan: 'static/videos/teaser/33_wan.mp4', grace: 'static/videos/teaser/33_grace.mp4' },
+    { prompt: "T2V 480×832 · A person is playing flute", caption: "A person is playing flute", wan: 'static/videos/teaser/34_wan.mp4', grace: 'static/videos/teaser/34_grace.mp4' },
   ],
 
   // Qualitative comparison carousel on the main page.
