@@ -25,9 +25,9 @@ button { font: inherit; }
 
 /* layout */
 .layout { display: flex; min-height: 100vh; }
-.sidebar { width: 340px; flex-shrink: 0; position: sticky; top: 0; height: 100vh; background: var(--side); border-right: 1px solid #D9D7D0; padding: 40px 28px; display: flex; flex-direction: column; gap: 36px; }
-.wordmark { display: block; margin: 0 -22px; }
-.wordmark img { display: block; width: 100%; max-width: 328px; height: auto; }
+.sidebar { width: 300px; flex-shrink: 0; position: sticky; top: 0; height: 100vh; background: var(--side); border-right: 1px solid #D9D7D0; padding: 40px 24px; display: flex; flex-direction: column; align-items: center; gap: 36px; }
+.wordmark { display: block; align-self: stretch; margin: 0 -16px; }
+.wordmark img { display: block; width: 100%; max-width: 284px; height: auto; margin: 0 auto; }
 .g-top .wordmark img { width: auto; height: 34px; max-width: none; }
 .wordmark { font-family: var(--display); font-weight: 800; font-size: 32px; letter-spacing: -0.02em; text-decoration: none; }
 .chapters { position: relative; display: flex; flex-direction: column; }
@@ -36,7 +36,7 @@ button { font: inherit; }
 .chapters a::before { content: ""; position: absolute; left: 0; top: 50%; width: 9px; height: 9px; margin-top: -5px; border-radius: 50%; border: 1.5px solid #A7ACB8; background: var(--side); }
 .chapters a.active { color: var(--accent); font-weight: 500; }
 .chapters a.active::before { background: var(--accent); border-color: var(--accent); }
-.sidebar .affil { margin-top: auto; font-size: 15px; color: var(--mute); }
+.sidebar .affil { margin-top: auto; font-size: 15px; color: var(--mute); text-align: center; }
 main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
 /* hero */
