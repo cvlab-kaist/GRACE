@@ -26,8 +26,8 @@ button { font: inherit; }
 /* layout */
 .layout { display: flex; min-height: 100vh; }
 .sidebar { width: 240px; flex-shrink: 0; position: sticky; top: 0; height: 100vh; background: var(--side); border-right: 1px solid #D9D7D0; padding: 40px 28px; display: flex; flex-direction: column; gap: 36px; }
-.wordmark img { display: block; height: 34px; width: auto; }
-.g-top .wordmark img { height: 26px; }
+.wordmark img { display: block; width: 100%; max-width: 184px; height: auto; }
+.g-top .wordmark img { width: auto; height: 34px; max-width: none; }
 .wordmark { font-family: var(--display); font-weight: 800; font-size: 32px; letter-spacing: -0.02em; text-decoration: none; }
 .chapters { position: relative; display: flex; flex-direction: column; }
 .chapters::before { content: ""; position: absolute; left: 4px; top: 22px; bottom: 22px; width: 1px; background: #C9C7BF; }
@@ -40,7 +40,6 @@ main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
 /* hero */
 .hero { background: var(--hero); color: var(--on-dark); padding: 64px 72px 56px; display: flex; flex-direction: column; gap: 26px; }
-.tagline { margin: 14px 0 0; font-family: var(--display); font-weight: 500; font-size: clamp(20px, 2.1vw, 30px); letter-spacing: -0.01em; color: var(--accent); }
 .hero h1 { margin: 0; font-family: var(--display); font-weight: 500; font-size: clamp(38px, 4.8vw, 68px); line-height: 1.04; letter-spacing: -0.03em; max-width: 1040px; }
 .authors { font-size: 22px; line-height: 1.55; }
 .authors a { text-decoration: none; color: inherit; } .authors a:hover { text-decoration: underline; }
