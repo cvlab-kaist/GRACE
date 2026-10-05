@@ -27,6 +27,8 @@ button { font: inherit; }
 .layout { display: flex; min-height: 100vh; }
 .sidebar { width: 240px; flex-shrink: 0; position: sticky; top: 0; height: 100vh; background: var(--side); border-right: 1px solid #D9D7D0; padding: 40px 28px; display: flex; flex-direction: column; gap: 36px; }
 .wordmark { font-family: var(--display); font-weight: 800; font-size: 32px; letter-spacing: -0.02em; text-decoration: none; }
+.mascot { display: block; margin: -14px 0 -10px; }
+.mascot img { width: 100%; max-width: 184px; height: auto; display: block; }
 .chapters { position: relative; display: flex; flex-direction: column; }
 .chapters::before { content: ""; position: absolute; left: 4px; top: 22px; bottom: 22px; width: 1px; background: #C9C7BF; }
 .chapters a { position: relative; display: flex; align-items: center; min-height: 44px; padding-left: 24px; font-size: 17px; text-decoration: none; }
@@ -40,7 +42,7 @@ main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .hero { background: var(--hero); color: var(--on-dark); padding: 64px 72px 56px; display: flex; flex-direction: column; gap: 26px; }
 .hero h1 { margin: 0; font-family: var(--display); font-weight: 500; font-size: clamp(38px, 4.8vw, 68px); line-height: 1.04; letter-spacing: -0.03em; max-width: 1040px; }
 .authors { font-size: 22px; line-height: 1.55; }
-.authors a { text-decoration: none; } .authors a:hover { text-decoration: underline; }
+.authors a { text-decoration: none; color: inherit; } .authors a:hover { text-decoration: underline; }
 .affiliations { font-size: 21px; margin-top: 6px; color: rgba(244,242,236,0.9); }
 .affiliations span + span { margin-left: 28px; }
 .logos { display: flex; gap: 44px; align-items: center; }
