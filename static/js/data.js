@@ -5,6 +5,7 @@
 window.GRACE = {
   // Teaser: split-compare pairs at the top of the page (Wan2.1 left, GRACE right).
   teasers: [
+    { prompt: "T2V 480×832 · A golden retriever in a sunlit park behind a sign reading ‘FEWER TOKENS / NO LESS QUALITY’, a navy ‘GRACE’ bandana at its neck", caption: "A golden retriever in a sunlit park behind a sign reading ‘FEWER TOKENS / NO LESS QUALITY’, a navy ‘GRACE’ bandana at its neck", wan: 'static/videos/teaser/dog_wan.mp4', grace: 'static/videos/teaser/dog_grace.mp4' },
     { prompt: "T2V 736×1280 · a person walking in the snowstorm", caption: "a person walking in the snowstorm", wan: 'static/videos/teaser/01_wan.mp4', grace: 'static/videos/teaser/01_grace.mp4' },
     { prompt: "T2V 480×832 · A person is crying", caption: "A person is crying", wan: 'static/videos/teaser/02_wan.mp4', grace: 'static/videos/teaser/02_grace.mp4' },
     { prompt: "T2V 480×832 · A person is filling eyebrows", caption: "A person is filling eyebrows", wan: 'static/videos/teaser/03_wan.mp4', grace: 'static/videos/teaser/03_grace.mp4' },
