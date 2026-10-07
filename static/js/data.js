@@ -27,7 +27,7 @@ window.GRACE = {
     { prompt: "I2V 736×1280 · a person pouring coffee into a pot on a stove", caption: "a person pouring coffee into a pot on a stove", wan: 'static/videos/teaser/29_wan.mp4', grace: 'static/videos/teaser/29_grace.mp4' },
     { prompt: "I2V 736×1280 · two women eating pizza at a restaurant", caption: "two women eating pizza at a restaurant", wan: 'static/videos/teaser/30_wan.mp4', grace: 'static/videos/teaser/30_grace.mp4' },
     { prompt: "I2V 736×1280 · a man holding a baby in his arms", caption: "a man holding a baby in his arms", wan: 'static/videos/teaser/31_wan.mp4', grace: 'static/videos/teaser/31_grace.mp4' },
-      { prompt: "I2V 736×1280 · a man and a boy sitting on a beach near the ocean", caption: "a man and a boy sitting on a beach near the ocean", wan: 'static/videos/teaser/32_wan.mp4', grace: 'static/videos/teaser/32_grace.mp4' },
+      { prompt: "I2V 736×1280 · a man sitting on the ground playing a musical instrument", caption: "a man sitting on the ground playing a musical instrument", wan: 'static/videos/teaser/32_wan.mp4', grace: 'static/videos/teaser/32_grace.mp4' },
     { prompt: "I2V · a yellow and white jellyfish is floating in the ocean", caption: "a yellow and white jellyfish is floating in the ocean", wan: 'static/videos/teaser/33_wan.mp4', grace: 'static/videos/teaser/33_grace.mp4' },
     { prompt: "T2V 480×832 · A person is playing flute", caption: "A person is playing flute", wan: 'static/videos/teaser/34_wan.mp4', grace: 'static/videos/teaser/34_grace.mp4' },
   ],
