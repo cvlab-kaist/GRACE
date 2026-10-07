@@ -49,7 +49,7 @@ window.GRACE = {
     hr: [
       { caption: "a dog drinking water", prompt: 'a dog drinking water', wan: 'static/videos/cmp/hr_01_wan.mp4', grace: 'static/videos/cmp/hr_01_grace.mp4', dcgen: 'static/videos/cmp/hr_01_dcgen.mp4' },
       { caption: "underwater coral reef", prompt: 'underwater coral reef', wan: 'static/videos/cmp/hr_02_wan.mp4', grace: 'static/videos/cmp/hr_02_grace.mp4', dcgen: 'static/videos/cmp/hr_02_dcgen.mp4' },
-      { caption: "a truck turning a corner", prompt: 'a truck turning a corner', wan: 'static/videos/cmp/hr_03_wan.mp4', grace: 'static/videos/cmp/hr_03_grace.mp4', dcgen: 'static/videos/cmp/hr_03_dcgen.mp4' },
+      { caption: "In a still frame, a park bench with a view of the lake", prompt: 'In a still frame, a park bench with a view of the lake', wan: 'static/videos/cmp/hr_03_wan.mp4', grace: 'static/videos/cmp/hr_03_grace.mp4', dcgen: 'static/videos/cmp/hr_03_dcgen.mp4' },
       { caption: "A tranquil tableau of the Stonehenge presented itself as an enigmatic puzzle, each colossal stone meticulously placed against the backdrop of tranquility", prompt: 'A tranquil tableau of the Stonehenge presented itself as an enigmatic puzzle, each colossal stone meticulously placed against the backdrop of tranquility', wan: 'static/videos/cmp/hr_04_wan.mp4', grace: 'static/videos/cmp/hr_04_grace.mp4', dcgen: 'static/videos/cmp/hr_04_dcgen.mp4' }
     ]
   },

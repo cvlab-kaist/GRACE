@@ -165,12 +165,16 @@
       // 생성 시간(초)·토큰 — 논문 Quantitative 표와 같은 값. 두 숫자를 같이 보여줘야 '몇 배 빠름' 이 무엇 대비인지 분명해진다.
       const LATG = { '480': { T2V: { wan: 851.5, ours: 75.8, dc: 157.1, ltx: 99.6 }, I2V: { wan: 863.2, ours: 77.7, dc: 165.0, ltx: 104.1 } },
                      '736': { T2V: { wan: 3361.3, ours: 215.6, dc: 456.4, ltx: 264.2 }, I2V: { wan: 3396.8, ours: 218.8, dc: 550.7, ltx: 274.6 } } };
+      // [10-07] 배수는 논문·본문과 같은 수치를 쓴다. 계산하면 t2v 가 11.2(851.5/75.8), i2v 가
+      //   11.1(863.2/77.7) 로 갈려 같은 사이트에서 두 값이 보였다. 논문 abstract 가 I2V 기준
+      //   11.1x / 15.5x 를 쓰므로 거기에 맞춘다 (t2v 카드는 표시 초수와 0.1 차이가 난다).
+      const FASTG = { '480': '11.1\u00d7', '736': '15.5\u00d7' };
       const TOKG = { '480': { wan: '32.8k', ours: '4.3k', dc: '8.2k', ltx: '4.3k' }, '736': { wan: '77.3k', ours: '10.1k', dc: '19.3k', ltx: '10.1k' } };
       const rs = it.res === '736' ? '736' : '480', tsk = it.tag === 'I2V' ? 'I2V' : 'T2V', L = LATG[rs][tsk], T = TOKG[rs];
       const sec = (v) => Math.round(v).toLocaleString() + ' s';
       const tn = (x) => parseFloat(x), TP = tn(T.wan);   // 토큰도 Wan 을 기준 속도로 → 우리가 먼저 멈춘다
       const TK = { wan: { secs: L.wan, peer: L.wan, inf: sec(L.wan), tok: T.wan, tnum: tn(T.wan), tpeer: TP },
-                   ours: { secs: L.ours, peer: L.wan, inf: sec(L.ours), tok: T.ours, tnum: tn(T.ours), tpeer: TP, fast: (L.wan / L.ours).toFixed(1) + '\u00d7' },
+                   ours: { secs: L.ours, peer: L.wan, inf: sec(L.ours), tok: T.ours, tnum: tn(T.ours), tpeer: TP, fast: FASTG[rs] },
                    dc: { secs: L.dc, peer: L.wan, inf: sec(L.dc), tok: T.dc, tnum: tn(T.dc), tpeer: TP },
                    ltx: { secs: L.ltx, peer: L.wan, inf: sec(L.ltx), tok: T.ltx, tnum: tn(T.ltx), tpeer: TP } };
       const rows = [['Wan2.1-14B', TK.wan, it.wan, false], ['GRACE (Ours)', TK.ours, it.grace, true]];
