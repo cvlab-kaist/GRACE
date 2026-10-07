@@ -6,7 +6,12 @@
   function hlStyle(text) {
     var esc = String(text).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; });
     var re = /(in the (?:iconic |distinctive |signature |classic )?style of [^,.;…”]+|Van Gogh[- ]?(?:style|inspired|esque)?[^,.;…”]*|Hokusai[^,.;…”]*|Ukiyo-e[^,.;…”]*|pixel art[^,.;…”]*|oil painting[^,.;…”]*|watercolor[^,.;…”]*|black and white[^,.;…”]*|cyberpunk[^,.;…”]*|surrealist[^,.;…”]*|surrealism[^,.;…”]*|impressionist[^,.;…”]*|anime[- ]style[^,.;…”]*|cartoon[- ]style[^,.;…”]*|Picasso[^,.;…”]*|Monet[^,.;…”]*|pencil sketch[^,.;…”]*|charcoal[^,.;…”]*|retro[- ]style[^,.;…”]*|vintage[- ]style[^,.;…”]*)/gi;
-    return esc.replace(re, '<em class="style">$1</em>');
+    esc = esc.replace(re, '<em class="style">$1</em>');
+    // [10-07] 카메라 문구도 칠한다. VBench i2v 캡션은 ", camera <동작>" 을 꼬리에 붙이는데
+    //   그게 프롬프트의 어느 부분인지 눈에 보여야 모션 비교를 읽을 수 있다.
+    //   스타일(노란색)과 구분되게 별 클래스를 쓴다.
+    var cam = /(,\s*camera\s+(?:pans?|tilts?|zooms?|rotat\w*|track\w*|dolly|push\w*|pull\w*|orbit\w*|static|moves?|turns?)[^,.;…”]*)/gi;
+    return esc.replace(cam, '<em class="cam">$1</em>');
   }
 
   let filter = 'All';

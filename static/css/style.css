@@ -292,6 +292,9 @@ body.gallery { background: #101217; color: var(--on-dark); }
 /* 스타일 문구 강조 */
 .stage .prompt .cap em.style, .pop-input .ptext em.style, .pop i em.style { font-style: italic; font-weight: 700; color: #FFE27A; }
 .carousel .prompt-text em.style { font-style: italic; font-weight: 700; color: var(--accent); }
+/* [10-07] 카메라 문구 — 스타일(노란색)과 구분되게 청록으로 */
+.stage .prompt .cap em.cam, .pop-input .ptext em.cam, .pop i em.cam { font-style: normal; font-weight: 700; color: #7FD4C1; }
+.carousel .prompt-text em.cam { font-style: normal; font-weight: 700; color: #2E8B77; }
 
 /* 배속 배지: 라벨을 큰 숫자의 세로 중앙에 + 은은한 맥박 강조 */
 .stat .lbl { line-height: 1; display: inline-block; }
