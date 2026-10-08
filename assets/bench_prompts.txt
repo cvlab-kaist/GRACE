@@ -1,0 +1,8 @@
+# Prompts for tools/benchmark_latency.py. Content does not affect latency (the text
+# context length is fixed), but the first video is a warm-up and is dropped, so keep
+# at least two lines. These five give one warm-up and four measured videos.
+A red panda eating bamboo on a mossy branch
+A paper boat drifting down a rain-filled gutter
+A hot air balloon rising over a patchwork of fields
+A blacksmith hammering glowing metal on an anvil
+A jellyfish drifting through deep blue water

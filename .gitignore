@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.DS_Store
+
+# weights and outputs are never committed
+*.ckpt
+*.safetensors
+*.pth
+*.pt
+*.mp4
+outputs/
+weights/
+_provenance/
+
+# local scratch: generated test videos, the paper PDF, equivalence-test outputs
+_vbrepro/
+_eqtest*/
+_foldcheck/
+_demo_nametext/
+*.pdf
+
+# NFS silly-rename placeholders (appear when an open file is deleted)
+.nfs*

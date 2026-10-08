@@ -1,0 +1,19 @@
+# Install PyTorch first, matched to your CUDA build: https://pytorch.org/get-started/locally/
+#   e.g.  pip install torch --index-url https://download.pytorch.org/whl/cu121
+torch>=2.4
+numpy
+einops
+safetensors
+peft>=0.11
+imageio
+imageio-ffmpeg
+Pillow
+tqdm
+# pulled in by the bundled DiffSynth-Studio
+transformers
+torchvision
+sentencepiece
+ftfy
+accelerate
+# Optional: FlashAttention. The model falls back FA4 -> FA3 -> FA2 -> PyTorch SDPA,
+# so it runs without any of these, just slower.
