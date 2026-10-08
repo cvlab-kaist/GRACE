@@ -29,15 +29,15 @@ without retraining the DiT from scratch.
 GRACE compresses both axes at once — 16× spatially and 8× temporally — and reaches the generation quality of the
 pretrained pipeline with three pieces:
 
-- **Dual latent.** A frozen **base latent** keeps the representation in the space the DiT already knows; a learned
+- **Dual-latent representation.** A frozen **base latent** keeps the representation in the space the DiT already knows; a learned
   **residual latent** carries the detail that stronger compression would otherwise throw away. The DiT therefore starts
   from a latent space it already models instead of learning one from scratch.
 - **Generation-aware alignment.** During training the compressed latent is matched to the pretrained one **inside the
   frozen DiT's feature space**, so the autoencoder is optimized for generation rather than for reconstruction alone.
   Better reconstruction does not mean better generation — the tables below show autoencoders that reconstruct 1–2 dB
   higher yet score lower on VBench.
-- **Base-ahead denoising.** At inference the base is denoised slightly ahead of the residual (a fixed offset δ=0.15), so
-  the residual adds detail onto content that is already settled.
+- **Asymmetric denoising.** At inference the base is denoised ahead of the residual by a fixed offset (δ=0.15), so the
+  residual adds detail onto content that is already settled.
 
 The result: **8× fewer latent tokens and VBench scores that match the uncompressed model**, at **11.1× lower latency
 at 480×832×81** and **15.5× at 736×1280×81** — the speedup grows with resolution. More results are on the
