@@ -309,12 +309,12 @@ window.GRACE = {
     {"tag": "T2V", "prompt": "A person is riding a bike", "res": "480", "grace": "static/videos/gallery/s_03_grace.mp4", "poster": "static/videos/gallery/s_03_grace.poster.jpg"},
     {"tag": "T2V", "prompt": "an elephant on the left of a bear, front view", "res": "480", "grace": "static/videos/gallery/s_04_grace.mp4", "poster": "static/videos/gallery/s_04_grace.poster.jpg"},
     {"tag": "T2V", "prompt": "A cute fluffy panda eating Chinese food in a restaurant", "res": "480", "grace": "static/videos/gallery/s_05_grace.mp4", "poster": "static/videos/gallery/s_05_grace.poster.jpg"},
-    {"tag": "I2V", "prompt": "One person is riding on the back of a horse led by another person", "res": "736", "input": "static/videos/gallery/s_06_input.jpg", "grace": "static/videos/gallery/s_06_grace.mp4", "poster": "static/videos/gallery/s_06_grace.poster.jpg"},
-    {"tag": "I2V", "prompt": "a man and a woman sitting on a bench playing instruments", "res": "736", "input": "static/videos/gallery/s_07_input.jpg", "grace": "static/videos/gallery/s_07_grace.mp4", "poster": "static/videos/gallery/s_07_grace.poster.jpg"},
-    {"tag": "I2V", "prompt": "Chopsticks are picking up noodles from the bowl", "res": "736", "input": "static/videos/gallery/s_08_input.jpg", "grace": "static/videos/gallery/s_08_grace.mp4", "poster": "static/videos/gallery/s_08_grace.poster.jpg"},
+    
+    
+    
     {"tag": "I2V", "prompt": "a plant with water droplets on it", "res": "736", "input": "static/videos/gallery/s_09_input.jpg", "grace": "static/videos/gallery/s_09_grace.mp4", "poster": "static/videos/gallery/s_09_grace.poster.jpg"},
-    {"tag": "I2V", "prompt": "a person is cooking eggs on an outdoor grill", "res": "736", "input": "static/videos/gallery/s_10_input.jpg", "grace": "static/videos/gallery/s_10_grace.mp4", "poster": "static/videos/gallery/s_10_grace.poster.jpg"},
-    {"tag": "I2V", "prompt": "a person slicing salmon on a cutting board", "res": "736", "input": "static/videos/gallery/s_11_input.jpg", "grace": "static/videos/gallery/s_11_grace.mp4", "poster": "static/videos/gallery/s_11_grace.poster.jpg"},
+    
+    
     {"tag": "736×1280", "prompt": "a person playing guitar", "res": "736", "grace": "static/videos/gallery/s_12_grace.mp4", "poster": "static/videos/gallery/s_12_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "A person is ironing", "res": "736", "grace": "static/videos/gallery/s_13_grace.mp4", "poster": "static/videos/gallery/s_13_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "A person is riding a bike", "res": "736", "grace": "static/videos/gallery/s_14_grace.mp4", "poster": "static/videos/gallery/s_14_grace.poster.jpg"},
@@ -334,12 +334,12 @@ window.GRACE = {
     {"tag": "T2V", "prompt": "In a still frame, a pear", "res": "480", "grace": "static/videos/gallery/s_29_grace.mp4", "poster": "static/videos/gallery/s_29_grace.poster.jpg"},
     {"tag": "T2V", "prompt": "In a still frame, the Parthenon's majestic Doric columns stand in serene solitude atop the Acropolis, framed by the tranquil Athenian landscape", "res": "480", "grace": "static/videos/gallery/s_30_grace.mp4", "poster": "static/videos/gallery/s_30_grace.poster.jpg"},
     {"tag": "T2V", "prompt": "In a still frame, the Temple of Hephaestus, with its timeless Doric grace, stands stoically against the backdrop of a quiet Athens", "res": "480", "grace": "static/videos/gallery/s_31_grace.mp4", "poster": "static/videos/gallery/s_31_grace.poster.jpg"},
-    {"tag": "736×1280", "prompt": "a car turning a corner", "res": "736", "grace": "static/videos/gallery/s_32_grace.mp4", "poster": "static/videos/gallery/s_32_grace.poster.jpg"},
+    
     {"tag": "736×1280", "prompt": "a motorcycle accelerating to gain speed", "res": "736", "grace": "static/videos/gallery/s_33_grace.mp4", "poster": "static/videos/gallery/s_33_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "an elephant running to join a herd of its kind", "res": "736", "grace": "static/videos/gallery/s_35_grace.mp4", "poster": "static/videos/gallery/s_35_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "iceberg", "res": "736", "grace": "static/videos/gallery/s_36_grace.mp4", "poster": "static/videos/gallery/s_36_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "A boat sailing leisurely along the Seine River with the Eiffel Tower in background by Vincent van Gogh", "res": "736", "grace": "static/videos/gallery/s_37_grace.mp4", "poster": "static/videos/gallery/s_37_grace.poster.jpg"},
-    {"tag": "736×1280", "prompt": "A tranquil tableau of a bed", "res": "736", "grace": "static/videos/gallery/s_38_grace.mp4", "poster": "static/videos/gallery/s_38_grace.poster.jpg"},
+    
     {"tag": "736×1280", "prompt": "In a still frame, a pear", "res": "736", "grace": "static/videos/gallery/s_39_grace.mp4", "poster": "static/videos/gallery/s_39_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "In a still frame, the Parthenon's majestic Doric columns stand in serene solitude atop the Acropolis, framed by the tranquil Athenian landscape", "res": "736", "grace": "static/videos/gallery/s_40_grace.mp4", "poster": "static/videos/gallery/s_40_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "windmill", "res": "736", "grace": "static/videos/gallery/s_41_grace.mp4", "poster": "static/videos/gallery/s_41_grace.poster.jpg"},
@@ -354,23 +354,23 @@ window.GRACE = {
     {"tag": "736×1280", "prompt": "waterfall", "res": "736", "grace": "static/videos/gallery/s_50_grace.mp4", "poster": "static/videos/gallery/s_50_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "A person is eating watermelon", "res": "736", "grace": "static/videos/gallery/s_51_grace.mp4", "poster": "static/videos/gallery/s_51_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "A person is knitting", "res": "736", "grace": "static/videos/gallery/s_52_grace.mp4", "poster": "static/videos/gallery/s_52_grace.poster.jpg"},
-    {"tag": "736×1280", "prompt": "A person is peeling apples", "res": "736", "grace": "static/videos/gallery/s_53_grace.mp4", "poster": "static/videos/gallery/s_53_grace.poster.jpg"},
-    {"tag": "736×1280", "prompt": "A person is push up", "res": "736", "grace": "static/videos/gallery/s_54_grace.mp4", "poster": "static/videos/gallery/s_54_grace.poster.jpg"},
+    
+    
     {"tag": "736×1280", "prompt": "A happy fuzzy panda playing guitar nearby a campfire, snow mountain in the background", "res": "736", "grace": "static/videos/gallery/s_55_grace.mp4", "poster": "static/videos/gallery/s_55_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "Fireworks.", "res": "736", "grace": "static/videos/gallery/s_56_grace.mp4", "poster": "static/videos/gallery/s_56_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "a handbag and a tie", "res": "736", "grace": "static/videos/gallery/s_57_grace.mp4", "poster": "static/videos/gallery/s_57_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "a baseball glove on the right of a tennis racket, front view", "res": "736", "grace": "static/videos/gallery/s_58_grace.mp4", "poster": "static/videos/gallery/s_58_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "a sheep on the left of a cow, front view", "res": "736", "grace": "static/videos/gallery/s_59_grace.mp4", "poster": "static/videos/gallery/s_59_grace.poster.jpg"},
-    {"tag": "736×1280", "prompt": "a toaster on the bottom of a microwave, front view", "res": "736", "grace": "static/videos/gallery/s_60_grace.mp4", "poster": "static/videos/gallery/s_60_grace.poster.jpg"},
-    {"tag": "736×1280", "prompt": "A cute happy Corgi playing in park, sunset, tilt down", "res": "736", "grace": "static/videos/gallery/s_61_grace.mp4", "poster": "static/videos/gallery/s_61_grace.poster.jpg"},
+    
+    
     {"tag": "736×1280", "prompt": "a shark is swimming in the ocean, in super slow motion", "res": "736", "grace": "static/videos/gallery/s_62_grace.mp4", "poster": "static/videos/gallery/s_62_grace.poster.jpg"},
     {"tag": "736×1280", "prompt": "An astronaut flying in space, in super slow motion", "res": "736", "grace": "static/videos/gallery/s_63_grace.mp4", "poster": "static/videos/gallery/s_63_grace.poster.jpg"},
     {"tag": "Styles", "prompt": "A boat sailing leisurely along the Seine River with the Eiffel Tower in background by Hokusai, in the style of Ukiyo", "res": "736", "grace": "static/videos/gallery/s_64_grace.mp4", "poster": "static/videos/gallery/s_64_grace.poster.jpg"},
     {"tag": "Styles", "prompt": "A boat sailing leisurely along the Seine River with the Eiffel Tower in background, oil painting", "res": "736", "grace": "static/videos/gallery/s_65_grace.mp4", "poster": "static/videos/gallery/s_65_grace.poster.jpg"},
     {"tag": "Styles", "prompt": "A boat sailing leisurely along the Seine River with the Eiffel Tower in background, surrealism style", "res": "736", "grace": "static/videos/gallery/s_66_grace.mp4", "poster": "static/videos/gallery/s_66_grace.poster.jpg"},
     {"tag": "Styles", "prompt": "A boat sailing leisurely along the Seine River with the Eiffel Tower in background, watercolor painting", "res": "736", "grace": "static/videos/gallery/s_67_grace.mp4", "poster": "static/videos/gallery/s_67_grace.poster.jpg"},
-    {"tag": "Styles", "prompt": "A cute happy Corgi playing in park, sunset, black and white", "res": "736", "grace": "static/videos/gallery/s_68_grace.mp4", "poster": "static/videos/gallery/s_68_grace.poster.jpg"},
-    {"tag": "Styles", "prompt": "A cute happy Corgi playing in park, sunset, watercolor painting", "res": "736", "grace": "static/videos/gallery/s_69_grace.mp4", "poster": "static/videos/gallery/s_69_grace.poster.jpg"},
+    
+    
     {"tag": "Styles", "prompt": "a shark is swimming in the ocean by Hokusai, in the style of Ukiyo", "res": "736", "grace": "static/videos/gallery/s_70_grace.mp4", "poster": "static/videos/gallery/s_70_grace.poster.jpg"},
     {"tag": "Styles", "prompt": "a shark is swimming in the ocean, black and white", "res": "736", "grace": "static/videos/gallery/s_71_grace.mp4", "poster": "static/videos/gallery/s_71_grace.poster.jpg"},
     {"tag": "Styles", "prompt": "a shark is swimming in the ocean, Van Gogh style", "res": "736", "grace": "static/videos/gallery/s_72_grace.mp4", "poster": "static/videos/gallery/s_72_grace.poster.jpg"},
