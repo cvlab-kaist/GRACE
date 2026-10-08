@@ -1,6 +1,6 @@
-# [Source: DiffSynth-Studio] diffsynth/models/wan_video_vae.py — WanVideoVAE 클래스
-# [modified] KinemaDAE의 WanVAE_ 통합 + 체크포인트 로딩 지원.
-# 모든 수정 사항은 [modified] 또는 [new]로 표시.
+# [Source: DiffSynth-Studio] diffsynth/models/wan_video_vae.py - the WanVideoVAE class
+# [modified] integrates GRACE's WanVAE_ and adds checkpoint loading.
+# Every change is marked [modified] or [new].
 import logging
 import os
 import sys
@@ -11,22 +11,22 @@ from einops import repeat, rearrange
 from tqdm import tqdm
 
 # ---------------------------------------------------------------------------
-# [new] KinemaDAE 모듈 import
+# [new] import the GRACE modules
 # ---------------------------------------------------------------------------
-_KINEMADAE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if _KINEMADAE_ROOT not in sys.path:
-    sys.path.insert(0, _KINEMADAE_ROOT)
+_GRACE_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _GRACE_ROOT not in sys.path:
+    sys.path.insert(0, _GRACE_ROOT)
 
-from kinemadae import WanVAE_  # noqa: E402
-from kinemadae_geoprior import _video_vae_geoprior  # noqa: E402
+from grace import WanVAE_  # noqa: E402
+from grace_geoprior import _video_vae_geoprior  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
-# [new] compression factor 계산
+# [new] compression factor computation
 # ---------------------------------------------------------------------------
 @staticmethod
 def _compute_temporal_factor(temperal_downsample, add_encoder_stages):
-    """Temporal compression factor (원본 Wan=4, +downsample3d 1개=8)"""
+    """Temporal compression factor (raw Wan=4, +1 downsample3d=8)"""
     tf = 1
     for td in temperal_downsample:
         if td:
@@ -40,7 +40,7 @@ def _compute_temporal_factor(temperal_downsample, add_encoder_stages):
 
 @staticmethod
 def _compute_spatial_factor(dim_mult, add_encoder_stages):
-    """Spatial compression factor (원본 Wan=8, +downsample3d 1개=16)"""
+    """Spatial compression factor (raw Wan=8, +1 downsample3d=16)"""
     sf = 2 ** (len(dim_mult) - 1)
     if add_encoder_stages:
         for stage_cfg in add_encoder_stages:
@@ -50,24 +50,24 @@ def _compute_spatial_factor(dim_mult, add_encoder_stages):
 
 
 # ---------------------------------------------------------------------------
-# [modified] KinemaDAEVideoVAE
-# 원본: DiffSynth-Studio의 WanVideoVAE (wan_video_vae.py:1058-1268)
-# 변경:
-#   - 클래스명: WanVideoVAE → KinemaDAEVideoVAE
-#   - 내부 모델: VideoVAE_ → KinemaDAE의 WanVAE_ (add_stages 지원)
-#   - upsampling_factor: 8 하드코딩 → 동적 계산
-#   - temporal_factor: 신규 속성 추가
-#   - single_encode: (mu, log_var) 반환 처리
-#   - tiled_encode/tiled_decode: temporal factor 하드코딩(4) → 동적
+# [modified] GRACEVideoVAE
+# Original: WanVideoVAE from DiffSynth-Studio (wan_video_vae.py:1058-1268)
+# Changes:
+#   - class name: WanVideoVAE -> GRACEVideoVAE
+#   - inner model: VideoVAE_ -> GRACE's WanVAE_ (supports add_stages)
+#   - upsampling_factor: hardcoded 8 -> computed
+#   - temporal_factor: new attribute
+#   - single_encode: handles the (mu, log_var) return
+#   - tiled_encode/tiled_decode: hardcoded temporal factor (4) -> computed
 # ---------------------------------------------------------------------------
-class KinemaDAEVideoVAE(nn.Module):
+class GRACEVideoVAE(nn.Module):
 
-    # [modified] 원본: def __init__(self, z_dim=16):
-    # 변경: add_encoder_stages, add_decoder_stages 인자 추가
+    # [modified] original: def __init__(self, z_dim=16):
+    # Change: added the add_encoder_stages / add_decoder_stages arguments
     def __init__(self, z_dim=16, add_encoder_stages=None, add_decoder_stages=None):
         super().__init__()
 
-        # [new] 기본값: downsample3d/upsample3d 1단계 추가
+        # [new] default: add one downsample3d/upsample3d stage
         if add_encoder_stages is None:
             add_encoder_stages = [{"mode": "downsample3d", "num_res_blocks": 2, "init": "pretrained_copy"}]
         if add_decoder_stages is None:
@@ -75,7 +75,7 @@ class KinemaDAEVideoVAE(nn.Module):
         self.add_encoder_stages = add_encoder_stages
         self.add_decoder_stages = add_decoder_stages
 
-        # --- 원본과 동일: latent normalisation ---
+        # --- same as the original: latent normalisation ---
         mean = [
             -0.7571, -0.7089, -0.9113, 0.1075, -0.1745, 0.9653, -0.1517, 1.5508,
             0.4134, -0.0715, 0.5517, -0.3632, -0.1922, -0.9497, 0.2503, -0.2921
@@ -84,14 +84,14 @@ class KinemaDAEVideoVAE(nn.Module):
             2.8184, 1.4541, 2.3275, 2.6558, 1.2196, 1.7708, 2.6052, 2.0743,
             3.2687, 2.1526, 2.8652, 1.5579, 1.6382, 1.1253, 2.8251, 1.9160
         ]
-        # [new] register_buffer으로 등록해야 .to(device) 시 자동 이동
+        # [new] registering as a buffer is what makes .to(device) move it
         self.register_buffer('mean', torch.tensor(mean))
         self.register_buffer('inv_std', torch.tensor([1.0 / s for s in std]))
-        # scale은 encode/decode 시 _get_scale(device)로 동적 조회
+        # scale is looked up at encode/decode time via _get_scale(device)
         self.scale = None  # deprecated; use _get_scale(device) instead
 
-        # [modified] 원본: self.model = VideoVAE_(z_dim=z_dim).eval().requires_grad_(False)
-        # 변경: KinemaDAE의 WanVAE_ 사용 (add_stages 지원)
+        # [modified] original: self.model = VideoVAE_(z_dim=z_dim).eval().requires_grad_(False)
+        # Change: use GRACE's WanVAE_ (supports add_stages)
         _temperal_downsample = [False, True, True]
         _dim_mult = [1, 2, 4, 4]
         self.model = WanVAE_(
@@ -106,18 +106,18 @@ class KinemaDAEVideoVAE(nn.Module):
             add_decoder_stages=add_decoder_stages,
         ).eval().requires_grad_(False)
 
-        # [modified] 원본: self.upsampling_factor = 8 (하드코딩)
-        # 변경: add_stages에 따라 동적 계산
+        # [modified] original: self.upsampling_factor = 8 (hardcoded)
+        # Change: computed from add_stages
         self.temporal_factor = _compute_temporal_factor(_temperal_downsample, add_encoder_stages)
         self.upsampling_factor = _compute_spatial_factor(_dim_mult, add_encoder_stages)
         self.z_dim = z_dim
-        self.latent_channels = z_dim  # DiT noise shape용
+        self.latent_channels = z_dim  # used for the DiT noise shape
 
     def _get_scale(self, device):
-        """[new] device에 맞는 scale [mean, inv_std] 반환."""
+        """[new] Return the scale [mean, inv_std] on the right device."""
         return [self.mean.to(device), self.inv_std.to(device)]
 
-    # --- 원본과 동일: build_1d_mask (wan_video_vae.py:1081-1087) ---
+    # --- same as the original: build_1d_mask (wan_video_vae.py:1081-1087) ---
     def build_1d_mask(self, length, left_bound, right_bound, border_width):
         x = torch.ones((length,))
         if not left_bound:
@@ -126,7 +126,7 @@ class KinemaDAEVideoVAE(nn.Module):
             x[-border_width:] = torch.flip((torch.arange(border_width) + 1) / border_width, dims=(0,))
         return x
 
-    # --- 원본과 동일: build_mask (wan_video_vae.py:1090-1100) ---
+    # --- same as the original: build_mask (wan_video_vae.py:1090-1100) ---
     def build_mask(self, data, is_bound, border_width):
         _, _, _, H, W = data.shape
         h = self.build_1d_mask(H, is_bound[0], is_bound[1], border_width[0])
@@ -137,7 +137,7 @@ class KinemaDAEVideoVAE(nn.Module):
         mask = rearrange(mask, "H W -> 1 1 1 H W")
         return mask
 
-    # --- 원본 기반 + 2줄 수정: tiled_decode (wan_video_vae.py:1103-1152) ---
+    # --- based on the original, 2 lines changed: tiled_decode (wan_video_vae.py:1103-1152) ---
     def tiled_decode(self, hidden_states, device, tile_size, tile_stride):
         _, _, T, H, W = hidden_states.shape
         size_h, size_w = tile_size
@@ -155,7 +155,7 @@ class KinemaDAEVideoVAE(nn.Module):
         data_device = "cpu"
         computation_device = device
 
-        # [modified] 원본: out_T = T * 4 - 3
+        # [modified] original: out_T = T * 4 - 3
         out_T = T * self.temporal_factor - (self.temporal_factor - 1)
         weight = torch.zeros((1, 1, out_T, H * self.upsampling_factor, W * self.upsampling_factor), dtype=hidden_states.dtype, device=data_device)
         values = torch.zeros((1, 3, out_T, H * self.upsampling_factor, W * self.upsampling_factor), dtype=hidden_states.dtype, device=data_device)
@@ -186,7 +186,7 @@ class KinemaDAEVideoVAE(nn.Module):
         values = values.clamp_(-1, 1)
         return values
 
-    # --- 원본 기반 + 2줄 수정: tiled_encode (wan_video_vae.py:1155-1203) ---
+    # --- based on the original, 2 lines changed: tiled_encode (wan_video_vae.py:1155-1203) ---
     def tiled_encode(self, video, device, tile_size, tile_stride):
         _, _, T, H, W = video.shape
         size_h, size_w = tile_size
@@ -204,15 +204,15 @@ class KinemaDAEVideoVAE(nn.Module):
         data_device = "cpu"
         computation_device = device
 
-        # [modified] 원본: out_T = (T + 3) // 4
+        # [modified] original: out_T = (T + 3) // 4
         out_T = (T + self.temporal_factor - 1) // self.temporal_factor
         weight = torch.zeros((1, 1, out_T, H // self.upsampling_factor, W // self.upsampling_factor), dtype=video.dtype, device=data_device)
         values = torch.zeros((1, self.z_dim, out_T, H // self.upsampling_factor, W // self.upsampling_factor), dtype=video.dtype, device=data_device)
 
         for h, h_, w, w_ in tqdm(tasks, desc="VAE encoding"):
             hidden_states_batch = video[:, :, :, h:h_, w:w_].to(computation_device)
-            # [modified] 원본: hidden_states_batch = self.model.encode(...).to(data_device)
-            # 변경: KinemaDAE WanVAE_.encode()는 (mu, log_var) 반환
+            # [modified] original: hidden_states_batch = self.model.encode(...).to(data_device)
+            # Change: GRACE's WanVAE_.encode() returns (mu, log_var)
             hidden_states_batch, _ = self.model.encode(hidden_states_batch, self._get_scale(computation_device))
             hidden_states_batch = hidden_states_batch.to(data_device)
 
@@ -241,21 +241,21 @@ class KinemaDAEVideoVAE(nn.Module):
     def _dtype(self):
         return next(self.model.parameters()).dtype
 
-    # --- 원본 기반 + 1줄 수정: single_encode (wan_video_vae.py:1206-1209) ---
+    # --- based on the original, 1 line changed: single_encode (wan_video_vae.py:1206-1209) ---
     def single_encode(self, video, device):
         video = video.to(device=device, dtype=self._dtype)
-        # [modified] 원본: x = self.model.encode(video, self.scale)
-        # 변경: KinemaDAE WanVAE_.encode()는 (mu, log_var) 반환
+        # [modified] original: x = self.model.encode(video, self.scale)
+        # Change: GRACE's WanVAE_.encode() returns (mu, log_var)
         mu, _log_var = self.model.encode(video, self._get_scale(device))
         return mu
 
-    # --- 원본과 동일: single_decode (wan_video_vae.py:1212-1215) ---
+    # --- same as the original: single_decode (wan_video_vae.py:1212-1215) ---
     def single_decode(self, hidden_state, device):
         hidden_state = hidden_state.to(device=device, dtype=self._dtype)
         video = self.model.decode(hidden_state, self._get_scale(device))
         return video.clamp_(-1, 1).float()
 
-    # --- 원본과 동일: encode (wan_video_vae.py:1218-1232) ---
+    # --- same as the original: encode (wan_video_vae.py:1218-1232) ---
     def encode(self, videos, device, tiled=False, tile_size=(34, 34), tile_stride=(18, 16)):
         videos = [video.to("cpu") for video in videos]
         hidden_states = []
@@ -272,7 +272,7 @@ class KinemaDAEVideoVAE(nn.Module):
         hidden_states = torch.stack(hidden_states)
         return hidden_states
 
-    # --- 원본과 동일: decode (wan_video_vae.py:1235-1247) ---
+    # --- same as the original: decode (wan_video_vae.py:1235-1247) ---
     def decode(self, hidden_states, device, tiled=False, tile_size=(34, 34), tile_stride=(18, 16)):
         hidden_states = [hidden_state.to("cpu") for hidden_state in hidden_states]
         videos = []
@@ -287,7 +287,7 @@ class KinemaDAEVideoVAE(nn.Module):
         videos = torch.stack(videos)
         return videos
 
-    # --- 원본과 동일: encode_framewise (wan_video_vae.py:1250-1255) ---
+    # --- same as the original: encode_framewise (wan_video_vae.py:1250-1255) ---
     def encode_framewise(self, videos, device):
         hidden_states = []
         for i in range(videos.shape[2]):
@@ -295,7 +295,7 @@ class KinemaDAEVideoVAE(nn.Module):
         hidden_states = torch.concat(hidden_states, dim=2)
         return hidden_states
 
-    # --- 원본과 동일: decode_framewise (wan_video_vae.py:1258-1263) ---
+    # --- same as the original: decode_framewise (wan_video_vae.py:1258-1263) ---
     def decode_framewise(self, hidden_states, device):
         video = []
         for i in range(hidden_states.shape[2]):
@@ -303,23 +303,23 @@ class KinemaDAEVideoVAE(nn.Module):
         video = torch.concat(video, dim=2)
         return video
 
-    # [modified] 원본: return WanVideoVAEStateDictConverter()
+    # [modified] original: return WanVideoVAEStateDictConverter()
     @staticmethod
     def state_dict_converter():
-        return KinemaDAEVideoVAEStateDictConverter()
+        return GRACEVideoVAEStateDictConverter()
 
 
 # ---------------------------------------------------------------------------
 # [modified] State dict converter
-# 원본: WanVideoVAEStateDictConverter (wan_video_vae.py:1271-1282)
-# 변경: 클래스명 변경 + from_kinemadae() 메서드 추가
+# Original: WanVideoVAEStateDictConverter (wan_video_vae.py:1271-1282)
+# Change: renamed the class and added a from_grace() method
 # ---------------------------------------------------------------------------
-class KinemaDAEVideoVAEStateDictConverter:
+class GRACEVideoVAEStateDictConverter:
 
     def __init__(self):
         pass
 
-    # --- 원본과 동일: from_civitai ---
+    # --- same as the original: from_civitai ---
     def from_civitai(self, state_dict):
         state_dict_ = {}
         if 'model_state' in state_dict:
@@ -328,9 +328,9 @@ class KinemaDAEVideoVAEStateDictConverter:
             state_dict_['model.' + name] = state_dict[name]
         return state_dict_
 
-    # [new] KinemaDAE 학습 체크포인트에서 로드
-    # 체크포인트 구조: {"state_dict": {"gen_model": {...}}, "ema_state_dict": {...}}
-    def from_kinemadae(self, state_dict):
+    # [new] load from a GRACE training checkpoint
+    # Checkpoint layout: {"state_dict": {"gen_model": {...}}, "ema_state_dict": {...}}
+    def from_grace(self, state_dict):
         if "state_dict" in state_dict and "gen_model" in state_dict["state_dict"]:
             raw = state_dict["state_dict"]["gen_model"]
         elif "gen_model" in state_dict:
@@ -344,9 +344,9 @@ class KinemaDAEVideoVAEStateDictConverter:
 
 
 # ---------------------------------------------------------------------------
-# [new] KinemaDAE VAE 체크포인트 로더
+# [new] GRACE VAE checkpoint loader
 # ---------------------------------------------------------------------------
-def load_kinemadae_vae(
+def load_grace_vae(
     checkpoint_path=None,
     pretrained_path=None,
     z_dim=16,
@@ -355,51 +355,51 @@ def load_kinemadae_vae(
     device="cpu",
     dtype=torch.float32,
 ):
-    """Load a KinemaDAEVideoVAE from a KinemaDAE training checkpoint.
+    """Load a GRACEVideoVAE from a GRACE training checkpoint.
 
     Parameters
     ----------
     checkpoint_path : str
-        Path to a KinemaDAE .ckpt file (e.g. checkpoint-17000.ckpt).
+        Path to a GRACE .ckpt file (e.g. checkpoint-17000.ckpt).
     pretrained_path : str, optional
         Path to original Wan2.1_VAE.pth to load base weights first.
     """
-    logging.info(f"[KinemaDAE] Building KinemaDAEVideoVAE (z_dim={z_dim})")
-    vae = KinemaDAEVideoVAE(
+    logging.info(f"[GRACE] Building GRACEVideoVAE (z_dim={z_dim})")
+    vae = GRACEVideoVAE(
         z_dim=z_dim,
         add_encoder_stages=add_encoder_stages,
         add_decoder_stages=add_decoder_stages,
     )
-    converter = KinemaDAEVideoVAEStateDictConverter()
+    converter = GRACEVideoVAEStateDictConverter()
 
-    # 1) pretrained base weights 로드 (add_stage 키는 missing 허용)
+    # 1) load the pretrained base weights (add_stage keys are allowed to be missing)
     if pretrained_path is not None:
-        logging.info(f"[KinemaDAE] Loading pretrained base weights from {pretrained_path}")
+        logging.info(f"[GRACE] Loading pretrained base weights from {pretrained_path}")
         base_sd = torch.load(pretrained_path, map_location="cpu", weights_only=False)
         base_sd = converter.from_civitai(base_sd)
         missing, unexpected = vae.load_state_dict(base_sd, strict=False)
-        logging.info(f"[KinemaDAE]   Base: {len(missing)} missing (expected for add_stages), "
+        logging.info(f"[GRACE]   Base: {len(missing)} missing (expected for add_stages), "
                      f"{len(unexpected)} unexpected")
 
-    # 2) KinemaDAE 체크포인트 로드 (add_stage 포함) — None이면 base VAE만 사용
+    # 2) load the GRACE checkpoint (add_stage included) - None means base VAE only
     if checkpoint_path is not None:
-        logging.info(f"[KinemaDAE] Loading KinemaDAE checkpoint from {checkpoint_path}")
+        logging.info(f"[GRACE] Loading GRACE checkpoint from {checkpoint_path}")
         ckpt = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
-        ckpt_sd = converter.from_kinemadae(ckpt)
+        ckpt_sd = converter.from_grace(ckpt)
 
-        # 3) EMA weights 있으면 병합 (EMA가 더 안정적)
+        # 3) merge the EMA weights when present (EMA is more stable)
         ema_sd = ckpt.get("ema_state_dict", {})
         if ema_sd:
-            logging.info(f"[KinemaDAE]   Found EMA weights — merging into checkpoint")
+            logging.info(f"[GRACE]   Found EMA weights — merging into checkpoint")
             for k, v in ema_sd.items():
                 ckpt_sd["model." + k] = v
 
         missing, unexpected = vae.load_state_dict(ckpt_sd, strict=False)
-        logging.info(f"[KinemaDAE]   KinemaDAE ckpt: {len(missing)} missing, {len(unexpected)} unexpected")
+        logging.info(f"[GRACE]   GRACE ckpt: {len(missing)} missing, {len(unexpected)} unexpected")
         if missing:
-            logging.warning(f"[KinemaDAE]   Missing keys: {missing[:10]}{'...' if len(missing) > 10 else ''}")
+            logging.warning(f"[GRACE]   Missing keys: {missing[:10]}{'...' if len(missing) > 10 else ''}")
     else:
-        logging.info(f"[KinemaDAE] checkpoint_path=None — base pretrained VAE only")
+        logging.info(f"[GRACE] checkpoint_path=None — base pretrained VAE only")
 
     vae = vae.to(device=device, dtype=dtype)
     vae.eval()
@@ -407,31 +407,31 @@ def load_kinemadae_vae(
 
 
 # ---------------------------------------------------------------------------
-# [new] KinemaDAEGeopriorVideoVAE
-# geoprior 모델 (dual_branch, prior_encoder 포함)을 WanVideoVAE 인터페이스로 래핑.
-# encode() → cat([z_main, z_prior]) 반환, decode()는 이 concatenated z를 입력받음.
-# scale=None 사용 (eval 목적, DiT normalization 불필요).
+# [new] GRACEGeopriorVideoVAE
+# Wraps a geoprior model (dual_branch + prior_encoder) in the WanVideoVAE interface.
+# encode() returns cat([z_main, z_prior]); decode() takes that concatenated z.
+# scale=None (eval only, no DiT normalization needed).
 # ---------------------------------------------------------------------------
-class KinemaDAEGeopriorVideoVAE(nn.Module):
+class GRACEGeopriorVideoVAE(nn.Module):
 
     def __init__(self, model, zmain_stats_path=None, zprior_norm=True, add_encoder_stages=None):
-        """model: _video_vae_geoprior()로 생성된 WanVAE_ (dual_branch=True or False)
-        zmain_stats_path: z_main 통계 json 파일. None이면 z_main normalize 안 함.
-        zprior_norm: z_prior를 pretrained 통계로 normalize.
-                     True: pretrained patchify copy init일 때 (nopatchify).
-                     False: alignment 학습된 patchify 로드할 때 (raw로 학습됨).
-        add_encoder_stages: [NEW 2026-09-04] 실제 스테이지 목록. 압축 인자 계산에 쓴다.
-                     None 이면 종전처럼 '파라미터가 있으면 downsample3d 1개'로 추정한다."""
+        """model: a WanVAE_ built by _video_vae_geoprior() (dual_branch=True or False)
+        zmain_stats_path: json with the z_main statistics. None means z_main is not normalized.
+        zprior_norm: normalize z_prior with the pretrained statistics.
+                     True: when patchify was copy-initialized from the pretrained weights (nopatchify).
+                     False: when loading a patchify trained with alignment (it was trained on raw).
+        add_encoder_stages: [NEW 2026-09-04] the real stage list, used to compute the compression factors.
+                     None keeps the old guess: 'one downsample3d if the parameter is present'."""
         super().__init__()
         self.model = model
         _temperal_downsample = [False, True, True]
         _dim_mult = [1, 2, 4, 4]
         add_enc = getattr(model, 'encoder', None)
         add_enc_stages = getattr(add_enc, 'add_downsamples', None)
-        # [FIX 2026-09-04] 종전에는 스테이지를 받지 않고 downsample3d 1개로 **하드코딩 추정**했다.
-        #   f16t8(downsample3d x1)만 맞고 f32t4/c64(downsample2d x2)는 32/4 대신 16/8 로 잘못 나온다
-        #   → 잠재 격자·mask 채널이 어긋나 조용히 다른 분포로 디코드된다.
-        #   실제 목록이 주어지면 그것을 쓰고, 없으면 종전 추정을 유지(기존 호출부 동작 불변).
+        # [FIX 2026-09-04] this used to take no stage list and hardcode a guess of one downsample3d.
+        #   That is right only for f16t8 (downsample3d x1); f32t4/c64 (downsample2d x2) came out 16/8
+        #   instead of 32/4, so the latent grid and mask channels disagree and it silently decodes a different distribution.
+        #   Use the real list when it is given, otherwise keep the old guess (existing callers unchanged).
         _stages = add_encoder_stages if add_encoder_stages else (
             [{"mode": "downsample3d"}]
             if (add_enc_stages and len(list(add_enc_stages.parameters())) > 0) else None)
@@ -439,9 +439,9 @@ class KinemaDAEGeopriorVideoVAE(nn.Module):
         self.upsampling_factor = _compute_spatial_factor(_dim_mult, _stages)
         self.z_dim = model.z_dim
         self.prior_z_dim = getattr(model, 'prior_z_dim', 16)
-        # dual_branch=False면 prior 없으므로 latent_channels = z_dim만
+        # with dual_branch=False there is no prior, so latent_channels = z_dim only
         if getattr(model, 'dual_branch', False):
-            self.latent_channels = model.z_dim + self.prior_z_dim  # DiT noise shape용: z_main + z_prior
+            self.latent_channels = model.z_dim + self.prior_z_dim  # for the DiT noise shape: z_main + z_prior
         else:
             self.latent_channels = model.z_dim
 
@@ -458,7 +458,7 @@ class KinemaDAEGeopriorVideoVAE(nn.Module):
         else:
             logging.info(f"[GeopriorVAE] z_prior normalization: OFF (raw)")
 
-        # [modified] z_main normalization: json에서 동적 로드 또는 비활성화
+        # [modified] z_main normalization: loaded from json, or disabled
         self._zmain_norm = False
         if zmain_stats_path is not None:
             import json as _json
@@ -476,9 +476,9 @@ class KinemaDAEGeopriorVideoVAE(nn.Module):
         return next(self.model.parameters()).dtype
 
     def _encode_prior_full(self, video):
-        """Prior encoder를 full resolution input에 대해 실행 (z_main과 동일 T'/H'/W').
-        _encode_prior()는 input을 2x downsample 후 encoding하므로 shape mismatch 발생.
-        eval inference에서는 prior encoder를 main encoder와 동일한 iteration 방식으로 직접 실행.
+        """Run the prior encoder on the full-resolution input (same T'/H'/W' as z_main).
+        _encode_prior() downsamples the input 2x before encoding, which causes a shape mismatch.
+        At eval time the prior encoder is run directly, iterating the same way as the main encoder.
         """
         model = self.model
         tf = 1
@@ -507,11 +507,11 @@ class KinemaDAEGeopriorVideoVAE(nn.Module):
     def single_encode(self, video, device):
         """encode → z_main (dual_branch=False) or cat([z_main, z_prior]) (dual_branch=True).
 
-        주의: _encode_prior()는 input을 2x avg_pool 후 prior encoder 실행.
-        add_encoder_stages에 downsample3d가 있어 tf_main=8일 때:
+        Note: _encode_prior() runs the prior encoder after a 2x avg_pool of the input.
+        With a downsample3d in add_encoder_stages, so tf_main=8:
           z_main T' = 1+(17-1)//8 = 3
-          _encode_prior: T_sub=9, tf_prior=4 → T'_prior = 1+(9-1)//4 = 3  ← 일치
-        add_encoder_stages 없이 tf_main=4일 때: T'=5 vs T'_prior=3 → mismatch.
+          _encode_prior: T_sub=9, tf_prior=4 -> T'_prior = 1+(9-1)//4 = 3  <- match
+        Without add_encoder_stages, tf_main=4: T'=5 vs T'_prior=3 -> mismatch.
         """
         video = video.to(device=device, dtype=self._dtype)
         with torch.no_grad():
@@ -528,11 +528,11 @@ class KinemaDAEGeopriorVideoVAE(nn.Module):
         return z_main                                                               # (1, z_dim, T', H', W')
 
     def _denorm_latent(self, hidden_state, device):
-        """[spatial-tile] single/spatial-tiled 공용: 정규화 latent → 모델 입력 공간.
-        single_decode 의 inverse-normalize 를 그대로 분리한 것 (동작 불변)."""
+        """[spatial-tile] shared by single and spatial-tiled decode: normalized latent -> model input space.
+        Just the inverse-normalize of single_decode, split out (behaviour unchanged)."""
         hidden_state = hidden_state.to(device=device, dtype=self._dtype)
         if not getattr(self.model, 'dual_branch', False):
-            return hidden_state[:, :self.model.z_dim]           # z_main만 사용
+            return hidden_state[:, :self.model.z_dim]           # use z_main only
         z_main  = hidden_state[:, :self.z_dim]
         z_prior = hidden_state[:, self.z_dim:]
         if self._zmain_norm:
@@ -549,8 +549,8 @@ class KinemaDAEGeopriorVideoVAE(nn.Module):
         video = self.model.decode(hidden_state, scale=None)
         return video.clamp_(-1, 1).float()
 
-    # [spatial-tile] crossfade mask 헬퍼 — raw Wan 클래스(line 121-140)와 동일 복사
-    #   (geoprior 래퍼는 raw 클래스를 상속하지 않아 별도 보유 필요).
+    # [spatial-tile] crossfade mask helpers - verbatim copies of the raw Wan class (lines 121-140)
+    #   (the geoprior wrapper does not inherit that class, so it needs its own).
     def build_1d_mask(self, length, left_bound, right_bound, border_width):
         x = torch.ones((length,))
         if not left_bound:
@@ -569,10 +569,10 @@ class KinemaDAEGeopriorVideoVAE(nn.Module):
         mask = rearrange(mask, "H W -> 1 1 1 H W")
         return mask
 
-    # [spatial-tile] geoprior 계열 최초의 spatial tiled decode.
-    #   주의: 기존 decode(tiled=True) 는 이 클래스에서 조용히 무시돼 왔음 (전부 single-pass 였음) —
-    #   기존 결과 재현성을 위해 opt-in 인자 spatial_tiled 로만 발동 (기본 False = 완전 무변경).
-    #   raw Wan tiled_decode(line 141) 의 crossfade blend 를 geoprior(denorm + scale=None)로 이식.
+    # [spatial-tile] the first spatial tiled decode in the geoprior family.
+    #   Note: decode(tiled=True) has always been silently ignored by this class (everything was single-pass),
+    #   so to keep old results reproducible it fires only through the opt-in spatial_tiled argument (default False = no change at all).
+    #   The crossfade blend of raw Wan tiled_decode (line 141), ported to geoprior (denorm + scale=None).
     def spatial_tiled_decode(self, hidden_state, device, tile_size=(20, 28), tile_stride=(10, 14)):
         hidden_state = self._denorm_latent(hidden_state, device)
         _, _, T, H, W = hidden_state.shape
@@ -600,14 +600,14 @@ class KinemaDAEGeopriorVideoVAE(nn.Module):
         return values.clamp_(-1, 1)
 
     def _decode_tile(self, tile, device, coords, full_hw):
-        """[spatial-tile] 타일 1개 decode — crossattn 서브클래스가 ff crop 을 위해 override."""
+        """[spatial-tile] decode one tile - the crossattn subclass overrides this to crop ff."""
         return self.model.decode(tile, scale=None)
 
-    # [new] temporal tiled decode (Open-Sora temporal_tiled_decode 방식).
-    #   causal geoprior decoder 는 긴 시퀀스(81f)서 drift 누적으로 뒤 프레임 붕괴(per-frame 28→14dB).
-    #   latent 을 시간축으로 겹침 window 로 쪼개 *독립 decode* → 각 window 가 짧아 "good regime"(앞 30f)
-    #   에만 머묾 → drift chain 차단 → ramp overlap-add blend 로 이음새 제거. retraining 없는 decode-time fix.
-    #   매핑: window[a:a+win] -> global frames [tf*a : tf*a + (1+(win-1)*tf)]  (tf=temporal_factor).
+    # [new] temporal tiled decode (the Open-Sora temporal_tiled_decode approach).
+    #   The causal geoprior decoder accumulates drift over long sequences (81f) and the later frames collapse (per-frame 28 -> 14dB).
+    #   Splitting the latent into overlapping windows along time and decoding each *independently* keeps every window short
+    #   enough to stay in the "good regime" (the first 30f), which breaks the drift chain; a ramp overlap-add blend removes the seams. A decode-time fix, no retraining.
+    #   Mapping: window[a:a+win] -> global frames [tf*a : tf*a + (1+(win-1)*tf)]  (tf=temporal_factor).
     def temporal_tiled_decode(self, hidden_state, device):
         win = int(getattr(self, 'temporal_tile_size', 5))      # latent window (frames = 1+(win-1)*tf)
         stride = int(getattr(self, 'temporal_tile_stride', 3))  # latent stride (win-stride = overlap)
@@ -618,7 +618,7 @@ class KinemaDAEGeopriorVideoVAE(nn.Module):
         starts = list(range(0, Tlat - win + 1, stride))
         if starts[-1] != Tlat - win:
             starts.append(Tlat - win)
-        # [PORT from Bfix 2026-06-30] 각 window를 single-pass decode (chunked frame-drop 회피, stage2 tiled_decode와 동일)
+        # [PORT from Bfix 2026-06-30] decode each window in a single pass (avoids the chunked frame drop; same as stage2 tiled_decode)
         _prev_fsp = getattr(self.model, 'force_single_pass', False)
         self.model.force_single_pass = True
         out = None; wsum = None
@@ -633,8 +633,8 @@ class KinemaDAEGeopriorVideoVAE(nn.Module):
             dec = dec[:, :ff].float().cpu()                          # (3, ff, H, W)
             bw = max(1, min(tf + 4, ff // 2))
             r = torch.ones(ff)
-            if k != 0:                 r[:bw]  = torch.linspace(1.0 / bw, 1.0, bw)   # 좌 ramp up
-            if k != len(starts) - 1:   r[-bw:] = torch.linspace(1.0, 1.0 / bw, bw)   # 우 ramp down
+            if k != 0:                 r[:bw]  = torch.linspace(1.0 / bw, 1.0, bw)   # ramp up on the left
+            if k != len(starts) - 1:   r[-bw:] = torch.linspace(1.0, 1.0 / bw, bw)   # ramp down on the right
             out[0, :, g0:g1] += dec * r.view(1, ff, 1, 1)
             wsum[g0:g1] += r
         out = out / wsum.clamp(min=1e-6).view(1, 1, -1, 1, 1)
@@ -652,8 +652,8 @@ class KinemaDAEGeopriorVideoVAE(nn.Module):
 
     def decode(self, hidden_states, device, tiled=False, tile_size=(34, 34), tile_stride=(18, 16),
                spatial_tiled=False, spatial_tile_size=(20, 28), spatial_tile_stride=(10, 14)):
-        # [spatial-tile] 기존 tiled 인자는 이 클래스에서 역사적으로 무시돼 왔음 (전부
-        #   single-pass). 재현성 보존을 위해 그대로 두고, spatial tiling 은 opt-in spatial_tiled 로만.
+        # [spatial-tile] the tiled argument has historically been ignored by this class (everything was
+        #   single-pass). It stays that way to preserve reproducibility; spatial tiling is opt-in through spatial_tiled only.
         hidden_states = [h.to("cpu") for h in hidden_states]
         videos = []
         for hidden_state in hidden_states:
@@ -670,7 +670,7 @@ class KinemaDAEGeopriorVideoVAE(nn.Module):
         return torch.stack(videos)
 
 
-def load_kinemadae_geoprior_vae(
+def load_grace_geoprior_vae(
     checkpoint_path,
     pretrained_path,
     z_dim=32,
@@ -685,7 +685,7 @@ def load_kinemadae_geoprior_vae(
     zmain_stats_path=None,
     zprior_norm=True,
 ):
-    """Load KinemaDAEGeopriorVideoVAE from a geoprior training checkpoint.
+    """Load GRACEGeopriorVideoVAE from a geoprior training checkpoint.
 
     Parameters match train_causalvae_geoprior.py script arguments.
     Uses EMA weights when available.
@@ -711,9 +711,9 @@ def load_kinemadae_geoprior_vae(
         logging.info(f"[GeopriorVAE] Loading checkpoint from {checkpoint_path}")
         ckpt = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
 
-        # EMA weights preferred. EMA 가 nested 구조 ({shadow: params, shadow_buffers: buffers})
-        # 인 경우 두 dict 를 합쳐서 사용 (REPA-E style). flat 인 경우 그대로 (legacy).
-        # [FIX] 기존엔 nested 그대로 load → top-key 'shadow' 가 module 이름 아니라 silent 전부 missing.
+        # EMA weights preferred. When the EMA is nested ({shadow: params, shadow_buffers: buffers})
+        # the two dicts are merged (REPA-E style); a flat one is used as is (legacy).
+        # [FIX] loading the nested dict as-is made the top key 'shadow' look like a module name, so everything was silently missing.
         ema_sd = ckpt.get('ema_state_dict', {})
         if ema_sd:
             if isinstance(ema_sd, dict) and 'shadow' in ema_sd:
@@ -742,6 +742,6 @@ def load_kinemadae_geoprior_vae(
         if unexpected:
             logging.warning(f"[GeopriorVAE] Unexpected: {unexpected[:5]}{'...' if len(unexpected) > 5 else ''}")
 
-    vae = KinemaDAEGeopriorVideoVAE(model, zmain_stats_path=zmain_stats_path, zprior_norm=zprior_norm)
+    vae = GRACEGeopriorVideoVAE(model, zmain_stats_path=zmain_stats_path, zprior_norm=zprior_norm)
     vae = vae.to(device=device, dtype=dtype).eval()
     return vae

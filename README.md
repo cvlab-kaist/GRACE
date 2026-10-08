@@ -5,13 +5,13 @@
   <img src="assets/grace_logo_light.svg" alt="GRACE" width="320">
 </picture>
 
-### Generation-Aware Latent Compression for Efficient Video Generation
+#### Generation-Aware Latent Compression for Efficient Video Generation
 
 **Fewer tokens. No less quality.**
 
 [![Project Page](https://img.shields.io/badge/Project%20Page-GRACE-1f6feb?style=for-the-badge)](https://cvlab-kaist.github.io/GRACE/)
 [![arXiv](https://img.shields.io/badge/arXiv-TBD-b31b1b?style=for-the-badge)](#)
-[![Paper](https://img.shields.io/badge/Paper-PDF-black?style=for-the-badge)](#)
+[![Paper](https://img.shields.io/badge/Paper-PDF-black?style=for-the-badge)](assets/GRACE_paper.pdf)
 [![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97%20Weights-GRACE-ffcc4d?style=for-the-badge)](https://huggingface.co/chimaharicox/GRACE)
 
 This is our official implementation of the paper **"Generation-Aware Latent Compression for Efficient Video Generation"** by
@@ -26,13 +26,22 @@ This is our official implementation of the paper **"Generation-Aware Latent Comp
 **GRACE** compresses a pretrained video autoencoder so that a pretrained DiT can generate from far fewer latent tokens —
 without retraining the DiT from scratch.
 
-The compressed latent is split in two. A frozen **base latent** keeps the representation in the space the DiT already
-knows, and a learned **residual latent** carries the detail that stronger compression would otherwise throw away. During
-training the compressed latent is aligned with the pretrained one **inside the frozen DiT's feature space**, so the
-autoencoder is optimized for generation rather than for reconstruction alone.
+GRACE compresses both axes at once — 16× spatially and 8× temporally — and reaches the generation quality of the
+pretrained pipeline with three pieces:
 
-The result: **8× fewer tokens, 11.1× faster, and VBench scores that match the uncompressed model.** More results are on
-the [project page](https://cvlab-kaist.github.io/GRACE/).
+- **Dual latent.** A frozen **base latent** keeps the representation in the space the DiT already knows; a learned
+  **residual latent** carries the detail that stronger compression would otherwise throw away. The DiT therefore starts
+  from a latent space it already models instead of learning one from scratch.
+- **Generation-aware alignment.** During training the compressed latent is matched to the pretrained one **inside the
+  frozen DiT's feature space**, so the autoencoder is optimized for generation rather than for reconstruction alone.
+  Better reconstruction does not mean better generation — the tables below show autoencoders that reconstruct 1–2 dB
+  higher yet score lower on VBench.
+- **Base-ahead denoising.** At inference the base is denoised slightly ahead of the residual (a fixed offset δ=0.15), so
+  the residual adds detail onto content that is already settled.
+
+The result: **8× fewer latent tokens and VBench scores that match the uncompressed model**, at **11.1× lower latency
+at 480×832×81** and **15.5× at 736×1280×81** — the speedup grows with resolution. More results are on the
+[project page](https://cvlab-kaist.github.io/GRACE/).
 
 
 <div align="center">
@@ -43,18 +52,13 @@ the [project page](https://cvlab-kaist.github.io/GRACE/).
 ## 🔥 TODO
 
 - ☑️ Inference code for T2V / I2V release
-- ⬜ Checkpoints for T2V / I2V release on HuggingFace 🤗
+- ☑️ Checkpoints for T2V / I2V release on HuggingFace 🤗
 - ⬜ HuggingFace 🤗 demo release
 - ⬜ Stage-1 / Stage-2 training code release
 
 ## 📊 Results
 
-<div align="center">
-<img src="assets/compare_dog.webp" width="100%" alt="Wan2.1-14B vs GRACE on the same prompt and seed">
-<sub>Same prompt, same seed. GRACE generates from 8× fewer latent tokens and still holds the lettering.</sub>
-</div>
-
-<br>
+### Before and after compression
 
 <div align="center">
 <img src="assets/compare_wan_grace.webp" width="88%" alt="Wan2.1-14B vs GRACE, same prompt and seed">
@@ -97,9 +101,9 @@ pip install -r requirements.txt
 ```
 
 > [!WARNING]
-> **Use the bundled DiffSynth-Studio.**
-> The official release silently ignores two settings our checkpoints rely on — it runs without error and
-> returns **different videos**. Our copy is in `third_party/DiffSynth-Studio` and is used by default.
+> **Use the DiffSynth-Studio copy in this repo, not a pip install.**
+> `third_party/DiffSynth-Studio` is a fork and is what every script loads by default. The upstream release silently
+> ignores two settings our checkpoints rely on — it runs without error and returns **different videos**.
 > Each run prints which copy it loaded:
 >
 > ```

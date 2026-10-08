@@ -13,7 +13,7 @@ against the training runs:
      5  DiT                     Wan2.1-I2V-14B-480P (7 shards)      Wan2.1-T2V-14B (6 shards)
      6  CLIP                    required                            not used
      7  input image             --image_dir / ff_inject / ff_window none
-     8  VAE loader              crossattn (first_frame_inject)      plain load_kinemadae_geoprior_vae
+     8  VAE loader              crossattn (first_frame_inject)      plain load_grace_geoprior_vae
 
 Item 4 is the dangerous one. Leaving k_img and v_img in place targets modules the t2v DiT does not
 have, PEFT injection goes wrong and strict=False swallows it silently - once seen as 160 dropped keys
@@ -38,9 +38,9 @@ if _THIS not in sys.path:
 # [release] The R2n autoencoder definition is bundled at src/train_crossattn/ - the exact copy the
 #   released checkpoints were trained with. An older revision of the same file loads far enough to
 #   look fine and then fails in stages_norm_before_head, so the path is pinned rather than searched.
-#   It must be set before kinemadae_video_vae_crossattn is imported; that module reads it at import.
+#   It must be set before grace_video_vae_crossattn is imported; that module reads it at import.
 os.environ.setdefault(
-    "KINEMADAE_CROSSATTN_REPO",
+    "GRACE_CROSSATTN_REPO",
     os.path.join(_THIS, "train_crossattn"),
 )
 # ** DIFFSYNTH_ROOT - if this is not pinned here you silently get the wrong videos (it happened once).
@@ -57,7 +57,7 @@ os.environ.setdefault(
 # Reused by the i2v module - its only import-time side effect is the sys.path insert, so this is safe.
 #   setup_davae_dit already has the `_has_image=False` branch (t2v, 32-channel patchify).
 from inference_i2v_geoprior_crossattn import (          # noqa: E402
-    setup_davae_dit, KinemaDAENoiseInitializer, _ROOT, fold_lora, _save,
+    setup_davae_dit, GRACENoiseInitializer, _ROOT, fold_lora, _save,
 )
 # [release] The only mp4 writer is _save() in the i2v module. The quality switches are globals there,
 #   so the module object is held here and assigned in main() rather than duplicating the writer.
@@ -80,11 +80,11 @@ from diffsynth.pipelines.wan_video import (              # noqa: E402
     WanVideoPipeline, ModelConfig,
     WanVideoUnit_NoiseInitializer, WanVideoUnit_ImageEmbedderVAE,
 )
-# * The plain `kinemadae_video_vae` in this repo does **not** support R2n (no stages_after_norm argument).
+# * The plain `grace_video_vae` in this repo does **not** support R2n (no stages_after_norm argument).
 #   Only the crossattn variant takes the R2n arguments. With first_frame_inject=False the ff path is off,
 #   which gives the same configuration as plain geoprior. (t2v has no first frame, so ff must stay off.)
-from kinemadae_video_vae_crossattn import (                  # noqa: E402
-    load_kinemadae_geoprior_vae_crossattn as load_geoprior_vae,
+from grace_video_vae_crossattn import (                  # noqa: E402
+    load_grace_geoprior_vae_crossattn as load_geoprior_vae,
 )
 
 
@@ -578,8 +578,8 @@ def main():
     # -- 4) pipeline units - 32-channel noise, image embedder removed --
     for i, unit in enumerate(list(pipe.units)):
         if isinstance(unit, WanVideoUnit_NoiseInitializer):
-            pipe.units[i] = KinemaDAENoiseInitializer()
-            print(f"  units[{i}] NoiseInitializer → KinemaDAE (latent_ch={_lat_ch})")
+            pipe.units[i] = GRACENoiseInitializer()
+            print(f"  units[{i}] NoiseInitializer → GRACE (latent_ch={_lat_ch})")
     _before = len(pipe.units)
     pipe.units = [u for u in pipe.units if not isinstance(u, WanVideoUnit_ImageEmbedderVAE)]
     if len(pipe.units) != _before:

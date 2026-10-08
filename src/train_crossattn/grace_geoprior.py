@@ -20,7 +20,7 @@ import os
 # [NEW 2026-07-20] VAE gc 확장 토글. ON 시 Resample(up/downsample conv) 도 gc(ResidualBlock 은 상시 gc).
 #   grad+single-pass(feat_cache None) 경로에서만 checkpoint → VAE activation floor 축소로 nf↑ 가능.
 #   dynamics 동일성 검증됨(verify_vae_gc_equiv.py: forward 비트동일, grad FP노이즈 수준). 기본 OFF.
-_EXTENDED_VAE_GC = os.environ.get("KINEMADAE_EXTENDED_VAE_GC", "0") == "1"
+_EXTENDED_VAE_GC = os.environ.get("GRACE_EXTENDED_VAE_GC", "0") == "1"
 
 __all__ = [
     'WanVAE',

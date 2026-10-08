@@ -37,10 +37,10 @@ os.environ.setdefault(
     os.path.join(_ROOT, "third_party", "DiffSynth-Studio"),
 )
 _DIFFSYNTH = os.environ["DIFFSYNTH_ROOT"]
-# KinemaDAE-style modules ship under modules/ in this repo, but a sibling
-# KinemaDAE checkout can be used via $KINEMADAE_ROOT for full module compatibility.
-_KINEMADAE_ROOT = os.environ.get("KINEMADAE_ROOT", os.path.join(_ROOT, "modules"))
-for p in [_ROOT, _THIS, _DIFFSYNTH, _KINEMADAE_ROOT]:
+# GRACE-style modules ship under modules/ in this repo, but a sibling
+# GRACE checkout can be used via $GRACE_ROOT for full module compatibility.
+_GRACE_ROOT = os.environ.get("GRACE_ROOT", os.path.join(_ROOT, "modules"))
+for p in [_ROOT, _THIS, _DIFFSYNTH, _GRACE_ROOT]:
     if p and p not in sys.path:
         sys.path.insert(0, p)
 
@@ -71,9 +71,9 @@ from diffsynth.pipelines.wan_video import (
 from diffsynth.diffusion.base_pipeline import PipelineUnit
 from diffsynth.models.wan_video_dit import Head as WanHead
 from diffsynth.utils.data import save_video
-from kinemadae_video_vae import load_kinemadae_geoprior_vae
+from grace_video_vae import load_grace_geoprior_vae
 # [crossattn] VAE loader compatible with first-frame cross-attention (used to swap only the decoder)
-from kinemadae_video_vae_crossattn import load_kinemadae_geoprior_vae_crossattn
+from grace_video_vae_crossattn import load_grace_geoprior_vae_crossattn
 
 # dual_schedule (per-branch timestep shift) - only active with the --dual_schedule flag.
 # When off, the symbols below are imported but never used, so behaviour is unchanged.
@@ -94,7 +94,7 @@ class DaVaeHead(torch.nn.Module):
         return torch.cat([self.head_main(x, mod), self.head_prior(x, mod)], dim=-1)
 
 
-class KinemaDAENoiseInitializer(PipelineUnit):
+class GRACENoiseInitializer(PipelineUnit):
     def __init__(self):
         super().__init__(
             input_params=("height", "width", "num_frames", "seed", "rand_device", "vace_reference_image"),
@@ -124,7 +124,7 @@ class KinemaDAENoiseInitializer(PipelineUnit):
         return {"noise": noise}
 
 
-class KinemaDAEImageEmbedderVAE(PipelineUnit):
+class GRACEImageEmbedderVAE(PipelineUnit):
     def __init__(self):
         super().__init__(
             input_params=("input_image", "end_image", "num_frames", "height", "width", "tiled", "tile_size", "tile_stride"),
@@ -191,11 +191,11 @@ def build_model_paths():
         os.path.join(ckpt_dir, "models_clip_open-clip-xlm-roberta-large-vit-huge-14.pth"),
     ]
 
-# KINEMADAE_LOG_INFO=1 enables INFO logging.
+# GRACE_LOG_INFO=1 enables INFO logging.
 #   The decoder-swap overlay key count, the ff_inject load state and other diagnostics all go through
 #   logging.info, so at the default root=WARNING they are invisible and nothing confirms they applied.
 import logging as _lg_early, os as _os_early   # this block can run before the module-level imports, so it imports what it needs
-if _os_early.environ.get("KINEMADAE_LOG_INFO"):
+if _os_early.environ.get("GRACE_LOG_INFO"):
     _lg_early.basicConfig(level=_lg_early.INFO, force=True)
 
 
@@ -421,12 +421,12 @@ def setup_davae_dit(pipe, dit_checkpoint_path, vae_z_dim=32, vae_prior_z_dim=16,
     # Replace NoiseInitializer and ImageEmbedderVAE
     for i, unit in enumerate(pipe.units):
         if isinstance(unit, WanVideoUnit_NoiseInitializer):
-            pipe.units[i] = KinemaDAENoiseInitializer()
+            pipe.units[i] = GRACENoiseInitializer()
             print(f"Replaced NoiseInitializer at units[{i}]")
             if False:
                 print(f"[init-noise] temporal-correlated alpha={pipe._init_noise_alpha}")
         elif isinstance(unit, WanVideoUnit_ImageEmbedderVAE):
-            pipe.units[i] = KinemaDAEImageEmbedderVAE()
+            pipe.units[i] = GRACEImageEmbedderVAE()
             print(f"Replaced ImageEmbedderVAE at units[{i}]")
 
 
@@ -799,7 +799,7 @@ def parse_args():
                    help="attach both residual and base encoders for cross-attention; overrides --ff_encoder_source")
     # R2n / ff architecture: turns on stages_after_norm, norm_before_head, expand_encoder_head,
     #   expand_conv2, no_decoder_mirror and b_adaptive together.
-    #   * KINEMADAE_CROSSATTN_REPO must point at a training repo that supports R2n, or the builder cannot read it.
+    #   * GRACE_CROSSATTN_REPO must point at a training repo that supports R2n, or the builder cannot read it.
     # The c32 (z16) architecture is R2n but turns expand_encoder_head and expand_conv2 **off**.
     #   c128 and c256 have both on (the --vae_r2n default). The c32 launcher passes --no_expand_conv2 and
     #   never passes expand_encoder_head, so leaving them on makes the encoder fail to load on a key mismatch.
@@ -970,7 +970,7 @@ def main():
 
     # [safety] When sharing a GPU with a training run, this guarantees who dies first: past the cap this
     # process hits OOM and training is protected. With the variable unset it does nothing.
-    _mem_frac = os.environ.get("KINEMADAE_GPU_MEM_FRACTION", "")
+    _mem_frac = os.environ.get("GRACE_GPU_MEM_FRACTION", "")
     if _mem_frac:
         _dev_idx = int(args.device.split(":")[1]) if ":" in args.device else 0
         torch.cuda.set_per_process_memory_fraction(float(_mem_frac), device=_dev_idx)
@@ -1069,7 +1069,7 @@ def main():
     # Replace the VAE with the first_frame_inject-compatible loader (only the decoder is swapped).
     #   base (encoder and prior) stays the same; only the decoder becomes crossattn (ff_inject), which
     print("\nLoading Geoprior VAE (crossattn / first_frame_inject)...")
-    pipe.vae = load_kinemadae_geoprior_vae_crossattn(
+    pipe.vae = load_grace_geoprior_vae_crossattn(
         checkpoint_path=args.vae_checkpoint,
         pretrained_path=args.vae_pretrained,
         z_dim=args.vae_z_dim, prior_z_dim=args.vae_prior_z_dim,
@@ -1442,7 +1442,7 @@ def main():
             #   Symptom: running pure (no delta) ran out of memory in the 480x832x81 decode even with SPATIAL_TILE=1,
             #         asking for another 23.14 GiB, and produced no videos at all.
             #   Cause: pipe() calls vae.decode(latents, tiled=True, tile_size=(30,52), tile_stride=...) in
-            #         DiffSynth's wan_video.py:353, but our wrapper (kinemadae_video_vae_crossattn.decode) does not
+            #         DiffSynth's wan_video.py:353, but our wrapper (grace_video_vae_crossattn.decode) does not
             #         consume those three kwargs - it only reads its own spatial_tiled - so it always took the
             #         single-pass path. Tiled decode, the DiT CPU offload and the first-frame injection all live
             #         inside dual_schedule_generate, which is why async runs were fine and only pure leaked here.

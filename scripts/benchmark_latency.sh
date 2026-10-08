@@ -19,7 +19,7 @@ OUT="${OUT:-$HERE/outputs/latency_$TASK}"
 RESULT="${RESULT:-$HERE/outputs/latency_$TASK.json}"
 
 GRACE_TASK="$TASK" . "$HERE/scripts/_resolve_paths.sh"
-export KINEMA_MERGE_LORA="${KINEMA_MERGE_LORA:-1}"
+export GRACE_MERGE_LORA="${GRACE_MERGE_LORA:-1}"
 export DIT_OFFLOAD_DECODE="${DIT_OFFLOAD_DECODE:-0}"
 mkdir -p "$(dirname "$RESULT")"; rm -rf "$OUT"
 

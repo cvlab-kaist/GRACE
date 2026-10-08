@@ -22,3 +22,11 @@ _demo_nametext/
 
 # NFS silly-rename placeholders (appear when an open file is deleted)
 .nfs*
+
+# editor/script backups — never publish these
+*.bak
+*.bak_*
+*.orig
+*~
+.*.swp
+.bak_*/

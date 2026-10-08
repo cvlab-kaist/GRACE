@@ -1,16 +1,16 @@
 # [crossattn-inference] VAE loader and decoder compatible with first-frame cross-attention.
 #
 # Purpose: take a VAE trained with first_frame_inject=True and swap in **only its decoder** for
-#       inference. kinemadae_video_vae.py is left untouched.
+#       inference. grace_video_vae.py is left untouched.
 #
 # Why a separate file:
-#   - The older modules/kinemadae_geoprior.py in the inference tree has no crossattn architecture
+#   - The older modules/grace_geoprior.py in the inference tree has no crossattn architecture
 #     (ff_inject, GatedCrossAttn, first_frame) at all, so loading a crossattn checkpoint would drop
 #     the weights silently under strict=False - the same trap as the swirl-artifact incident.
 #   - So the crossattn architecture is imported from the *training* repo, which has WanVAE_ and
 #     crossattn_ff.GatedCrossAttnBlock, making it bit-identical to training.
 #
-# The encode, normalize and temporal logic of the existing wrapper (KinemaDAEGeopriorVideoVAE) is
+# The encode, normalize and temporal logic of the existing wrapper (GRACEGeopriorVideoVAE) is
 # inherited unchanged; only the decode path is overridden to pass the first frame through
 
 import logging
@@ -20,13 +20,13 @@ import sys
 import torch
 
 # ---------------------------------------------------------------------------
-# The crossattn architecture lives in the training repo's kinemadae_geoprior (its own WanVAE_ plus
+# The crossattn architecture lives in the training repo's grace_geoprior (its own WanVAE_ plus
 # a crossattn_ff import), so that repo has to be on sys.path for that import to resolve.
 # ---------------------------------------------------------------------------
 # [release] The default is the copy bundled in this repo. The entry points setdefault the same value,
 #   but this module also points at it so that importing it directly works.
 _TRAIN_CROSSATTN_REPO = os.environ.get(
-    "KINEMADAE_CROSSATTN_REPO",
+    "GRACE_CROSSATTN_REPO",
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "train_crossattn"))
 if _TRAIN_CROSSATTN_REPO not in sys.path:
     sys.path.insert(0, _TRAIN_CROSSATTN_REPO)
@@ -37,20 +37,20 @@ if _TRAIN_CROSSATTN_REPO not in sys.path:
 import importlib.util as _ilu
 
 _spec = _ilu.spec_from_file_location(
-    "kinemadae_geoprior_crossattn_train",
-    os.path.join(_TRAIN_CROSSATTN_REPO, "kinemadae_geoprior.py"),
+    "grace_geoprior_crossattn_train",
+    os.path.join(_TRAIN_CROSSATTN_REPO, "grace_geoprior.py"),
 )
 _kg_train = _ilu.module_from_spec(_spec)
-sys.modules["kinemadae_geoprior_crossattn_train"] = _kg_train
+sys.modules["grace_geoprior_crossattn_train"] = _kg_train
 _spec.loader.exec_module(_kg_train)
 _video_vae_geoprior_crossattn = _kg_train._video_vae_geoprior
 
 # reuse the existing inference wrapper (encode, single_encode, temporal_tiled_decode, normalize)
-from kinemadae_video_vae import KinemaDAEGeopriorVideoVAE  # noqa: E402
+from grace_video_vae import GRACEGeopriorVideoVAE  # noqa: E402
 
 
-class KinemaDAEGeopriorVideoVAECrossAttn(KinemaDAEGeopriorVideoVAE):
-    """Same as the parent (KinemaDAEGeopriorVideoVAE) but passes the first frame's pixels into decode.
+class GRACEGeopriorVideoVAECrossAttn(GRACEGeopriorVideoVAE):
+    """Same as the parent (GRACEGeopriorVideoVAE) but passes the first frame's pixels into decode.
 
     single_decode: identical to the parent's inverse-normalize logic, with first_frame= added to the
                    final self.model.decode call. crossattn was only verified single-pass during
@@ -116,7 +116,7 @@ class KinemaDAEGeopriorVideoVAECrossAttn(KinemaDAEGeopriorVideoVAE):
         return torch.stack(videos)
 
 
-def load_kinemadae_geoprior_vae_crossattn(
+def load_grace_geoprior_vae_crossattn(
     checkpoint_path,
     pretrained_path,
     z_dim=16,
@@ -134,7 +134,7 @@ def load_kinemadae_geoprior_vae_crossattn(
     ff_inject_levels='all',
     ff_dual_source=False,   # [dual] for checkpoints carrying both the residual and base references
     # [R2n / ff] architecture arguments. The defaults leave every existing path unchanged.
-    #   KINEMADAE_CROSSATTN_REPO must point at a training repo that supports R2n for the builder to read them.
+    #   GRACE_CROSSATTN_REPO must point at a training repo that supports R2n for the builder to read them.
     stages_after_norm=False,
     stages_norm_before_head=False,
     expand_encoder_head=False,
@@ -150,7 +150,7 @@ def load_kinemadae_geoprior_vae_crossattn(
     zmain_stats_path=None,
     zprior_norm=True,
 ):
-    """Load a crossattn (first_frame_inject) VAE. Same flow as load_kinemadae_geoprior_vae, plus the
+    """Load a crossattn (first_frame_inject) VAE. Same flow as load_grace_geoprior_vae, plus the
     first_frame_inject and ff_* build arguments, the training repo's builder, and a forced single pass.
     """
     logging.info(f"[GeopriorVAE-crossattn] Building model (z_dim={z_dim}, prior_z_dim={prior_z_dim}, "
@@ -262,7 +262,7 @@ def load_kinemadae_geoprior_vae_crossattn(
 
     # Pass the actual encoder stage list. Without it the parent assumes a single downsample3d and gets
     #   the compression factor wrong for f32t4 (c64, downsample2d x2) - 16/8 instead of 32/4.
-    vae = KinemaDAEGeopriorVideoVAECrossAttn(model, zmain_stats_path=zmain_stats_path,
+    vae = GRACEGeopriorVideoVAECrossAttn(model, zmain_stats_path=zmain_stats_path,
                                              zprior_norm=zprior_norm,
                                              add_encoder_stages=add_encoder_stages)
     vae = vae.to(device=device, dtype=dtype).eval()

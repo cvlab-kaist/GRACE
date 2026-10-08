@@ -144,7 +144,7 @@ def main():
     import inference_i2v_geoprior_crossattn as MI
     M = MI if a.task == "i2v" else __import__("inference_t2v_geoprior")
     T = Timer(a.task, torch)
-    merge = os.environ.get("KINEMA_MERGE_LORA", "1") == "1"
+    merge = os.environ.get("GRACE_MERGE_LORA", "1") == "1"
     offload = os.environ.get("DIT_OFFLOAD_DECODE", "1") != "0"
     print(f"[e2e] task={a.task} merge_lora={merge} dit_offload_decode={offload} "
           f"gpu={torch.cuda.get_device_name(0)} torch={torch.__version__}", flush=True)
@@ -189,7 +189,7 @@ def main():
                     encode_s=med("encode_s"), denoise_s=med("denoise_s"), decode_s=med("decode_s"),
                     gap_s=med("gap_s"), max_allocated_gib=med("max_allocated_gib")),
         per_video=recs, release_args=rest, total_wall_incl_load_s=total,
-        env={k: os.environ.get(k) for k in ("KINEMA_MERGE_LORA", "DIT_OFFLOAD_DECODE", "CUDA_VISIBLE_DEVICES")},
+        env={k: os.environ.get(k) for k in ("GRACE_MERGE_LORA", "DIT_OFFLOAD_DECODE", "CUDA_VISIBLE_DEVICES")},
     )
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     json.dump(summary, open(a.out, "w"), indent=1, ensure_ascii=False)

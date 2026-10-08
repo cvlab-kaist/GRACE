@@ -7,7 +7,7 @@ touches. Dropping them is ~4x smaller with bit-identical output.
 What is kept, and why — these are not interchangeable:
 
   ema_state_dict   The weights inference prefers (nested {shadow, shadow_buffers}).
-                   kinemadae_video_vae*.py reads this first.
+                   grace_video_vae*.py reads this first.
   state_dict       Needed even though EMA wins. With --vae_decoder_checkpoint the loader
                    compares the base's state_dict['gen_model'] against the donor's **bitwise**
                    to find which keys were actually trained. Without it the comparison is
