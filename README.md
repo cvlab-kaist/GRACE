@@ -10,7 +10,7 @@
 **Fewer tokens. No less quality.**
 
 [![Project Page](https://img.shields.io/badge/Project%20Page-GRACE-1f6feb?style=for-the-badge)](https://cvlab-kaist.github.io/GRACE/)
-[![arXiv](https://img.shields.io/badge/arXiv-TBD-b31b1b?style=for-the-badge)](#)
+[![arXiv](https://img.shields.io/badge/arXiv-2610.10524-b31b1b?style=for-the-badge)](https://arxiv.org/abs/2610.10524)
 [![Paper](https://img.shields.io/badge/Paper-PDF-black?style=for-the-badge)](assets/GRACE_paper.pdf)
 [![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97%20Weights-GRACE-ffcc4d?style=for-the-badge)](https://huggingface.co/chimaharicox/GRACE)
 
@@ -58,11 +58,11 @@ at 480×832×81** and **15.5× at 736×1280×81** — the speedup grows with res
 
 ## 📊 Results
 
-### Before and after compression
+### Video generation comparison
 
 <div align="center">
-<img src="assets/compare_wan_grace.webp" width="88%" alt="Wan2.1-14B vs GRACE, same prompt and seed">
-<sub>Same prompt and seed, before and after compression — 8× fewer latent tokens (32.8k → 4.3k at 480×832×81, 77.3k → 10.1k at 736×1280×81).<br>Prompts shown are the VBench captions the videos are scored against.</sub>
+<img src="assets/compare_wan_grace.webp" width="88%" alt="Wan2.1-14B before compression vs GRACE">
+<sub>Before and after compression — 8× fewer latent tokens (32.8k → 4.3k at 480×832×81, 77.3k → 10.1k at 736×1280×81).<br>Prompts shown are the VBench captions the videos are scored against.</sub>
 </div>
 
 
@@ -71,14 +71,9 @@ at 480×832×81** and **15.5× at 736×1280×81** — the speedup grows with res
 **At 480×832×81.** GRACE matches uncompressed Wan2.1-14B on both tasks while using 8× fewer tokens and
 running 11.1× faster.
 
-<sub>Latency is end to end on a single A100 over 50 sampling steps. NFE counts DiT forward passes per video.</sub>
-
 <img src="assets/table_vbench_480.png" width="100%" alt="VBench at 480x832x81">
 
 **At 736×1280×81.** The gap widens with resolution — 15.5× faster.
-
-<sub>† measured with spatial tiling in the VAE, without which encoding the conditioning image runs out of
-memory at this resolution.</sub>
 
 <img src="assets/table_vbench_736.png" width="95%" alt="VBench at 736x1280x81">
 
@@ -86,9 +81,6 @@ memory at this resolution.</sub>
 
 Reconstruction at 256×256×81, and the VBench-I2V total after adapting the same pretrained Wan2.1-I2V-14B to
 every latent under an equal budget. **Better reconstruction does not mean better generation.**
-
-<sub>*Single-latent Baseline* is our baseline without the dual latent or the alignment loss. Bold marks the
-best among the last three rows (4.3k tokens). † initialized by inflating its own 2D image autoencoder.</sub>
 
 <img src="assets/table_autoencoder.png" width="76%" alt="Video autoencoder comparison">
 
@@ -252,12 +244,14 @@ follow their license.
 ## 📚 BibTeX
 
 ```bibtex
-@article{kim2026grace,
-  title   = {Generation-Aware Latent Compression for Efficient Video Generation},
-  author  = {Kim, Jiyoung and Cho, Paul Hyunbin and Nam, Jisu and Lee, Donghoon and
-             Go, Hyunsung and Lee, Yeonkyeong and Kim, Hansaem and Kim, Seungryong},
-  journal = {arXiv preprint arXiv:[id]},
-  year    = {2026}
+@misc{kim2026gracegenerationawarelatentcompression,
+      title={GRACE: Generation-aware latent compression for efficient video generation}, 
+      author={Jiyoung Kim and Paul Hyunbin Cho and Jisu Nam and Donghoon Lee and Hyunsung Go and Yeonkyeong Lee and Hansaem Kim and Seungryong Kim},
+      year={2026},
+      eprint={2610.10524},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2610.10524}, 
 }
 ```
 
