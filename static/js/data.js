@@ -277,6 +277,12 @@ window.GRACE = {
     {"tag": "I2V", "prompt": "fireworks in the night sky over a city, camera pans left", "res": "736", "input": "static/videos/gallery/vs_234_input.jpg", "wan": "static/videos/gallery/vs_234_wan.mp4", "grace": "static/videos/gallery/vs_234_grace.mp4", "poster": "static/videos/gallery/vs_234_grace.poster.jpg"},
     {"tag": "I2V", "prompt": "fireworks in the night sky over a city, camera zooms out", "res": "736", "input": "static/videos/gallery/vs_235_input.jpg", "wan": "static/videos/gallery/vs_235_wan.mp4", "grace": "static/videos/gallery/vs_235_grace.mp4", "poster": "static/videos/gallery/vs_235_grace.poster.jpg"},
     ],
+    ltx: [
+      { caption: "A person is bungee jumping", prompt: 'A person is bungee jumping', wan: 'static/videos/cmp/ltx_01_wan.mp4', ltx: 'static/videos/cmp/ltx_01_ltx.mp4', grace: 'static/videos/cmp/ltx_01_grace.mp4' },
+      { caption: "A person is playing piano", prompt: 'A person is playing piano', wan: 'static/videos/cmp/ltx_02_wan.mp4', ltx: 'static/videos/cmp/ltx_02_ltx.mp4', grace: 'static/videos/cmp/ltx_02_grace.mp4' },
+      { caption: "A person is tai chi", prompt: 'A person is tai chi', wan: 'static/videos/cmp/ltx_03_wan.mp4', ltx: 'static/videos/cmp/ltx_03_ltx.mp4', grace: 'static/videos/cmp/ltx_03_grace.mp4' },
+      { caption: "A person is marching", prompt: 'A person is marching', wan: 'static/videos/cmp/ltx_04_wan.mp4', ltx: 'static/videos/cmp/ltx_04_ltx.mp4', grace: 'static/videos/cmp/ltx_04_grace.mp4' },
+    ],
     moreBaselines: [
     {"tag": "T2V", "prompt": "a blue umbrella", "res": "480", "wan": "static/videos/gallery/mb_01_wan.mp4", "grace": "static/videos/gallery/mb_01_grace.mp4", "poster": "static/videos/gallery/mb_01_grace.poster.jpg", "dcgen": "static/videos/gallery/mb_01_dcgen.mp4"},
     {"tag": "T2V", "prompt": "a blue bowl", "res": "480", "wan": "static/videos/gallery/mb_02_wan.mp4", "grace": "static/videos/gallery/mb_02_grace.mp4", "poster": "static/videos/gallery/mb_02_grace.poster.jpg", "dcgen": "static/videos/gallery/mb_02_dcgen.mp4"},

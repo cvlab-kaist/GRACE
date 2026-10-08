@@ -2,9 +2,9 @@
   const D = window.GRACE;
 
   // 생성 시간(초) — 아래 Quantitative 표와 같은 값. '몇 배 빠름' 은 이 둘의 비율이라 두 숫자를 같이 보여준다.
-  const LAT = { '480': { T2V: { wan: 851.5, ours: 75.8, dc: 157.1 }, I2V: { wan: 863.2, ours: 77.7, dc: 165.0 } },
-                '736': { T2V: { wan: 3361.3, ours: 215.6, dc: 456.4 }, I2V: { wan: 3396.8, ours: 218.8, dc: 550.7 } } };
-  const TOK = { '480': { wan: '32.8k', ours: '4.3k', dc: '8.2k' }, '736': { wan: '77.3k', ours: '10.1k', dc: '19.3k' } };
+  const LAT = { '480': { T2V: { wan: 851.5, ours: 75.8, dc: 157.1, ltx: 99.6 }, I2V: { wan: 863.2, ours: 77.7, dc: 165.0, ltx: 104.1 } },
+                '736': { T2V: { wan: 3361.3, ours: 215.6, dc: 456.4, ltx: 264.2 }, I2V: { wan: 3396.8, ours: 218.8, dc: 550.7, ltx: 274.6 } } };
+  const TOK = { '480': { wan: '32.8k', ours: '4.3k', dc: '8.2k', ltx: '4.3k' }, '736': { wan: '77.3k', ours: '10.1k', dc: '19.3k', ltx: '10.1k' } };
   const secs = (v) => Math.round(v).toLocaleString() + ' s';
   // [10-08] 배수는 논문 abstract(I2V 기준 11.1x / 15.5x)와 같은 값으로 고정한다.
   //   나누면 t2v 가 11.2(851.5/75.8) · 15.6(3361.3/215.6) 으로 갈려 같은 페이지에 두 값이 보였다.
@@ -234,8 +234,10 @@
       const rs = hr ? '736' : '480', tk = tab === 'i2v' ? 'I2V' : 'T2V', L = LAT[rs][tk];
       const TN = { wan: parseFloat(TOK[rs].wan), ours: parseFloat(TOK[rs].ours), dc: parseFloat(TOK[rs].dc) };
       cells.push(cell({ name: 'Wan2.1-14B', inf: secs(L.wan), tok: TOK[rs].wan, secs: L.wan, peer: L.wan, tnum: TN.wan, tpeer: TN.wan }, item.wan, false, hr));
+      // [10-08] LTX 열은 항목에 ltx 가 있을 때만 — 기존 탭은 3열 그대로다.
+      if (item.ltx) cells.push(cell({ name: 'LTX-Video 0.9.7', inf: secs(L.ltx), tok: TOK[rs].ltx, secs: L.ltx, peer: L.wan, tnum: parseFloat(TOK[rs].ltx), tpeer: TN.wan }, item.ltx, false, hr));
       cells.push(cell({ name: 'GRACE (Ours)', inf: secs(L.ours), tok: TOK[rs].ours, fast: ratio(rs, tk), secs: L.ours, peer: L.wan, tnum: TN.ours, tpeer: TN.wan }, item.grace, true, hr));
-      cells.push(cell({ name: 'DC-Gen', inf: secs(L.dc), tok: TOK[rs].dc, secs: L.dc, peer: L.wan, tnum: TN.dc, tpeer: TN.wan }, item.dcgen, false, hr));
+      if (item.dcgen) cells.push(cell({ name: 'DC-Gen', inf: secs(L.dc), tok: TOK[rs].dc, secs: L.dc, peer: L.wan, tnum: TN.dc, tpeer: TN.wan }, item.dcgen, false, hr));
       grid.style.gridTemplateColumns = 'repeat(' + cells.length + ', minmax(0, 1fr))';
       cells.forEach((c) => grid.appendChild(c));
       stop = syncGroup(Array.from(grid.querySelectorAll('video')));
