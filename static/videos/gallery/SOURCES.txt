@@ -1,3 +1,6 @@
+# ⚠ STALE (2026-10-03 기준) — 10-07 에 영상이 교체됐는데 이 파일은 갱신되지 않았다.
+#   실제 기준: t2v = final_t2v{480,736} (folded + 확정 arm) · i2v = finalverify_i2v{480,736} (folded)
+#   아래 경로는 10-03 당시 출처다. 현재 출처 판정은 프레임 대조로 해야 한다.
 # gallery 슬롯 ← 원본 · crf24 · vs=Wan vs GRACE, mb=+DC-Gen, s=GRACE only
 static/videos/gallery/vs_01_wan.mp4	1.1MB	/data/ib-huawei-nas-vcga_981/paul.hcho/baselines/outputs/vbench-t2v/wan/fa81ff84f5e5/A person is rock climbing-0.mp4
 static/videos/gallery/vs_01_grace.mp4	1.0MB	/data/ib-huawei-nas-vcga_981/oliviaa.young/vbench_eval/staged/picked_t2v480_ha/A person is rock climbing-0.mp4

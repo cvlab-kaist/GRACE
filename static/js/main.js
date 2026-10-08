@@ -6,7 +6,11 @@
                 '736': { T2V: { wan: 3361.3, ours: 215.6, dc: 456.4 }, I2V: { wan: 3396.8, ours: 218.8, dc: 550.7 } } };
   const TOK = { '480': { wan: '32.8k', ours: '4.3k', dc: '8.2k' }, '736': { wan: '77.3k', ours: '10.1k', dc: '19.3k' } };
   const secs = (v) => Math.round(v).toLocaleString() + ' s';
-  const ratio = (r, k) => (LAT[r][k].wan / LAT[r][k].ours).toFixed(1) + '×';
+  // [10-08] 배수는 논문 abstract(I2V 기준 11.1x / 15.5x)와 같은 값으로 고정한다.
+  //   나누면 t2v 가 11.2(851.5/75.8) · 15.6(3361.3/215.6) 으로 갈려 같은 페이지에 두 값이 보였다.
+  //   gallery.js 의 FASTG 와 같은 상수다 — 한쪽만 고치면 또 갈린다.
+  const FASTG = { '480': '11.1\u00d7', '736': '15.5\u00d7' };
+  const ratio = (r, k) => FASTG[r];
 
 
   // 숫자 카운트업: 두 모델을 같은 '초/ms' 속도로 올려서 적은 쪽이 먼저 탁 멈추게 (우리가 빠른 느낌)
