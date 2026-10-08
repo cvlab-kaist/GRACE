@@ -42,7 +42,7 @@ window.GRACE = {
     ],
     i2v: [
       { caption: "a white car is swiftly driving on a dirt road near a bush, kicking up dust", prompt: 'a white car is swiftly driving on a dirt road near a bush, kicking up dust', input: 'static/videos/cmp/i2v_01_input.jpg', wan: 'static/videos/cmp/i2v_01_wan.mp4', grace: 'static/videos/cmp/i2v_01_grace.mp4', dcgen: 'static/videos/cmp/i2v_01_dcgen.mp4' },
-        { caption: "a space shuttle taking off into the sky", prompt: 'a space shuttle taking off into the sky', input: 'static/videos/cmp/i2v_02_input.jpg', wan: 'static/videos/cmp/i2v_02_wan.mp4', grace: 'static/videos/cmp/i2v_02_grace.mp4', dcgen: 'static/videos/cmp/i2v_02_dcgen.mp4' },
+        { caption: "a person riding a motorcycle down a road", prompt: 'a person riding a motorcycle down a road', input: 'static/videos/cmp/i2v_02_input.jpg', wan: 'static/videos/cmp/i2v_02_wan.mp4', grace: 'static/videos/cmp/i2v_02_grace.mp4', dcgen: 'static/videos/cmp/i2v_02_dcgen.mp4' },
       { caption: "a penguin walking on a beach near the water", prompt: 'a penguin walking on a beach near the water', input: 'static/videos/cmp/i2v_03_input.jpg', wan: 'static/videos/cmp/i2v_03_wan.mp4', grace: 'static/videos/cmp/i2v_03_grace.mp4', dcgen: 'static/videos/cmp/i2v_03_dcgen.mp4' },
         { caption: "a sea turtle swimming in the ocean under the water", prompt: 'a sea turtle swimming in the ocean under the water', input: 'static/videos/cmp/i2v_04_input.jpg', wan: 'static/videos/cmp/i2v_04_wan.mp4', grace: 'static/videos/cmp/i2v_04_grace.mp4', dcgen: 'static/videos/cmp/i2v_04_dcgen.mp4' },
     ],
