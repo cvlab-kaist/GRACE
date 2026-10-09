@@ -230,8 +230,11 @@
       const list = D.comparisons[tab], item = list[idx], hr = tab === 'hr';
       grid.innerHTML = '';
       const cells = [];
-      if (tab === 'i2v') cells.push(cell('Input frame', item.input, false, hr, true));
-      const rs = hr ? '736' : '480', tk = tab === 'i2v' ? 'I2V' : 'T2V', L = LAT[rs][tk];
+      // [10-09] the item decides whether it is i2v, not the tab name. The 736 tab now carries i2v
+      //   comparisons too, and keying off the tab would drop the input cell and label them with
+      //   T2V latency. Existing items are unaffected: only the i2v ones carry an input.
+      if (item.input) cells.push(cell('Input frame', item.input, false, hr, true));
+      const rs = hr ? '736' : '480', tk = item.input ? 'I2V' : 'T2V', L = LAT[rs][tk];
       const TN = { wan: parseFloat(TOK[rs].wan), ours: parseFloat(TOK[rs].ours), dc: parseFloat(TOK[rs].dc) };
       cells.push(cell({ name: 'Wan2.1-14B', inf: secs(L.wan), tok: TOK[rs].wan, secs: L.wan, peer: L.wan, tnum: TN.wan, tpeer: TN.wan }, item.wan, false, hr));
       // [10-08] LTX 열은 항목에 ltx 가 있을 때만 — 기존 탭은 3열 그대로다.
