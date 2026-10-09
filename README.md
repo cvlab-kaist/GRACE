@@ -116,7 +116,8 @@ Three things that catch people out:
   that host. The PyPI wheel above is a cu124 build and needs no extra index.
 - **FlashAttention buys almost nothing here, and it changes the output.** PyTorch's SDPA already
   dispatches to a flash kernel (measured on an A100: 0.140 ms, same as forcing the flash backend, against
-  2.503 ms for the math one), and at 1001 tokens self-attention is 0.57 s of a 75.6 s video — under 1%.
+  2.503 ms for the math one), and at 1001 tokens self-attention adds up to well under 1% of the time
+  it takes to generate one video.
   Installing it swaps one flash kernel for another, so videos stop matching ours for no real speedup.
 - **A byte match only holds within one environment.** The same command on the same machine rewrites a
   byte-identical mp4. A clean clone elsewhere gives the *same sample* but not the same bytes — ours came
