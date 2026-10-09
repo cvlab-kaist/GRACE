@@ -247,17 +247,10 @@ to `HEIGHT`×`WIDTH` for you.
 
 ### What it costs
 
-One video per prompt, timed on an H200 while producing the tables:
-
-| | videos | per video | total |
-|---|---|---|---|
-| T2V 480×832 | 1362 | 75.6 s | ~29 GPU-hours |
-| T2V 736×1280 | 1362 | 128.9 s | ~49 GPU-hours |
-| I2V 480×832 | 1118 | 78.8 s | ~25 GPU-hours |
-| I2V 736×1280 | 1118 | 134.7 s | ~42 GPU-hours |
-
-Shard it: T2V takes `--only_idx`, I2V takes `--indices`, and neither changes the prompt plan, so N
-workers over disjoint index sets give the same videos as one serial run.
+A full table is 1362 videos for T2V and 1118 for I2V, one per prompt. Producing them took us roughly
+25-30 GPU-hours per setting at 480×832 and 40-50 at 736×1280, so plan on sharding rather than one
+long serial run. T2V takes `--only_idx` and I2V takes `--indices`; neither changes the prompt plan,
+so N workers over disjoint index sets produce the same videos as one run.
 
 ### Scoring
 
