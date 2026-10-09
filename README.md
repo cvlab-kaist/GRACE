@@ -135,9 +135,6 @@ checkpoints/                                                               23 GB
        dit_736.safetensors  zmain_stats_736.json                           6 GB
 ```
 
-The scripts load whatever the resolution you ask for needs, so there is nothing to pick. Generating
-at 480 only? `python tools/download_weights.py --task i2v --no_736` leaves out 6GB you will not use.
-
 **Wan2.1 base.** Download once, then point GRACE at them:
 
 Budget the disk: 54 GB for the T2V release, 77 GB for the I2V one, plus the 23 GB above.
