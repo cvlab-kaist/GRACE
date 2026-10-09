@@ -135,9 +135,8 @@ checkpoints/                                                               23 GB
        dit_736.safetensors  zmain_stats_736.json                           6 GB
 ```
 
-I2V ships a separate DiT and `zmain_stats` for 736×1280; `generate_i2v.sh` loads whichever pair
-matches `HEIGHT`, so there is nothing to choose. Only need 480? Skip the extra 6GB with
-`python tools/download_weights.py --task i2v --no_736`.
+The scripts load whatever the resolution you ask for needs, so there is nothing to pick. Generating
+at 480 only? `python tools/download_weights.py --task i2v --no_736` leaves out 6GB you will not use.
 
 **Wan2.1 base.** Download once, then point GRACE at them:
 
