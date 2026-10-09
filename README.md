@@ -97,25 +97,13 @@ pip install torch==2.5.1 torchvision
 pip install -r requirements.txt
 ```
 
-`requirements.txt` only asks for `torch>=2.4`, so installing it on its own pulls whatever is newest.
-Pin 2.5.1 as above to get the environment the tables were produced in. A newer PyTorch runs fine,
-but the videos will not be bit-identical to ours.
+The pinned 2.5.1 is the version the tables were produced with; a newer PyTorch runs fine but will
+not give bit-identical videos. Three things to know:
 
-### Environment
-
-| | |
-|---|---|
-| **Python** | 3.11 or 3.12 |
-| **PyTorch** | 2.5.1+cu124 — the plain PyPI wheel |
-| **GPU** | one NVIDIA A100 80GB |
-| **FlashAttention** | not installed; attention runs on PyTorch SDPA |
-
-Three things that catch people out:
-
-- **Skip the PyTorch `--index-url`.** Some proxies block that host, and the PyPI wheel above is a
-  cu124 build anyway.
-- **Do not install FlashAttention while checking reproduction.** SDPA is already a flash kernel here
-  and attention is under 1% of the runtime, so it changes the output and buys nothing.
+- **Skip the PyTorch `--index-url`.** Some proxies block that host, and the wheel above is a cu124
+  build anyway.
+- **Do not install FlashAttention while checking reproduction.** SDPA is already a flash kernel here,
+  so it changes the output and buys nothing.
 - **Expect the same sample, not the same bytes.** A byte match only holds within one environment, so
   judge a reproduction by its scores.
 
@@ -147,13 +135,10 @@ checkpoints/                                                               23 GB
        dit_736.safetensors  zmain_stats_736.json                           6 GB
 ```
 
-> [!IMPORTANT]
-> **I2V has one DiT per resolution; T2V does not.** `i2v/dit.safetensors` is the 480×832 model and
-> `i2v/dit_736.safetensors` the 736×1280 one, each with its own `zmain_stats`. `generate_i2v.sh` picks
-> the pair from `HEIGHT`, so `HEIGHT=736 WIDTH=1280` switches by itself and stops if those files are
-> missing. The 480 weights do run at 736×1280 without complaining — they just report numbers that are
-> not ours. T2V needs no equivalent: one checkpoint covers both resolutions.
-> Skip the 736 download with `python tools/download_weights.py --task i2v --no_736`.
+**I2V has one DiT per resolution**, each with its own `zmain_stats`; T2V has one checkpoint for both.
+`generate_i2v.sh` picks the pair from `HEIGHT` and stops if it is missing, so this only bites if you
+wire the paths by hand — the 480 weights run at 736×1280 without complaining. Skip the 6GB you do not
+need with `python tools/download_weights.py --task i2v --no_736`.
 
 **Wan2.1 base.** Download once, then point GRACE at them:
 
@@ -224,10 +209,9 @@ one ladder for both latents instead of the paper's asymmetric denoising — whic
 plausible video that is not what the tables report. For 736×1280, swap in
 `prompts_per_dimension_FINAL736` and `--height 736 --width 1280`.
 
-Prompts are drawn per dimension with `Random(f"{seed}:{dim}")`, so the plan is reproducible and
-`--only_idx 3,7` regenerates exactly those cells without shifting the rest. The index is **per
-dimension**, not global — it is the number each output filename starts with, and `--only_idx 0` means
-index 0 of every dimension you asked for.
+The prompt plan is deterministic, so `--only_idx` regenerates individual cells without shifting the
+rest, and N workers over disjoint index sets give the same videos as one serial run (I2V takes
+`--indices`).
 
 For I2V, point `PROMPTS_JSON=` at one of the two JSON files above and pass the VBench-I2V input
 images as the folder argument; `scripts/generate_i2v.sh` already carries the paper's flags.
@@ -242,23 +226,13 @@ The input images are not redistributed here. Take them from
 355 images, the same folder for both resolutions. `--crop_input` is already on, so each image is fitted
 to `HEIGHT`×`WIDTH` for you.
 
-### What it costs
-
-A full table is 1362 videos for T2V and 1118 for I2V, one per prompt. Producing them took us roughly
-25-30 GPU-hours per setting at 480×832 and 40-50 at 736×1280, so plan on sharding rather than one
-long serial run. T2V takes `--only_idx` and I2V takes `--indices`; neither changes the prompt plan,
-so N workers over disjoint index sets produce the same videos as one run.
-
 ### Scoring
 
 Scoring is not part of this repo — run the videos through official
-[VBench](https://github.com/Vchitect/VBench) and VBench-I2V. Two things to expect there:
-
-- **I2V `Total` leaves out `temporal_flickering`** and weights `dynamic_degree` by 0.5 and
-  `camera_motion` by 0.1, per VBench-I2V's own formula. Averaging all ten dimensions gives a different
-  number than the tables.
-- **`camera_motion` is not deterministic.** Re-scoring the same files moves its mean by around 0.4
-  points, so a small gap on that dimension alone is not a result.
+[VBench](https://github.com/Vchitect/VBench) and VBench-I2V. One thing to expect there: **I2V
+`Total` leaves out `temporal_flickering`** and weights `dynamic_degree` by 0.5 and `camera_motion` by
+0.1, per VBench-I2V's own formula, so averaging all ten dimensions gives a different number than the
+tables.
 
 ### Latency
 
@@ -266,10 +240,8 @@ Scoring is not part of this repo — run the videos through official
 bash scripts/benchmark_latency.sh t2v     # writes outputs/latency_t2v.json
 ```
 
-`tools/benchmark_latency.py` times the same window every model in the table was timed over — for t2v,
-the first DiT forward to the end of the final VAE decode; for i2v, the first VAE encode to that same
-point. Loading, text encoding and mp4 writing are outside it. The first video is a warm-up and dropped;
-the median of the rest is reported with the encode / denoise / decode split and peak memory.
+It times the same window every model in the table was timed over, drops the first video as a warm-up
+and reports the median with the encode / denoise / decode split and peak memory.
 
 ## 🚀 Inference
 
@@ -317,10 +289,9 @@ HEIGHT=736 WIDTH=1280 bash scripts/generate_t2v.sh "a shark is swimming in the o
 The defaults are the paper's: `HEIGHT`/`WIDTH` 480/832, `FRAMES` 81, `STEPS` 50, `CFG` 5.0, `SEED` 0, and
 `GRACE_DELTA` 0.15 for the asymmetric denoising offset δ.
 
-**LoRA is folded into the base weights at load time**, which is what the latency in the tables assumes
-and what every video we report was made with. `NO_MERGE_LORA=1` keeps the adapters separate instead;
-it is slower, and because folding rounds in bf16 the two are not bit-identical (about 42 dB apart), so
-leave it alone unless you specifically want the unfolded path.
+**LoRA is folded into the base weights at load time**, which is what the tables and every video we
+report were made with. `NO_MERGE_LORA=1` keeps the adapters separate: slower, and not bit-identical,
+so leave it alone unless you want the unfolded path on purpose.
 
 These commands are for trying the model out. Reproducing the numbers in the tables needs the prompt sets
 this repo ships — see [Evaluation](#-evaluation) above.
