@@ -89,8 +89,47 @@ every latent under an equal budget. **Better reconstruction does not mean better
 ```bash
 git clone https://github.com/cvlab-kaist/GRACE.git
 cd GRACE
+
+python3 -m venv .venv && source .venv/bin/activate   # 3.11 or 3.12
+
+# PyTorch first, so pip resolves everything else against it.
+pip install torch==2.5.1 torchvision
 pip install -r requirements.txt
 ```
+
+`requirements.txt` only asks for `torch>=2.4`, so installing it on its own pulls whatever is newest.
+Pin 2.5.1 as above to get the environment the tables were produced in. A newer PyTorch runs fine,
+but the videos will not be bit-identical to ours.
+
+<details>
+<summary>The environment we ran, and two things that bite</summary>
+
+Our runs, and the clean-clone check of this README, used:
+
+| | |
+|---|---|
+| Python | 3.11 and 3.12, both fine |
+| PyTorch | 2.5.1+cu124 (the plain PyPI wheel) |
+| GPU | one NVIDIA A100 80GB |
+| FlashAttention | not installed — the model falls back FA4 → FA3 → FA2 → PyTorch SDPA |
+
+**The PyTorch index may be blocked.** `pip install torch --index-url https://download.pytorch.org/whl/cu124`
+is the usual advice, but that host is unreachable behind some proxies. The plain PyPI wheel shown above is a
+cu124 build and needs no extra index.
+
+**FlashAttention changes the numerics.** It is optional and the model runs without it, just slower — but
+installing it makes attention take a different kernel, so videos stop being bit-identical to ours. Leave it
+out if you are checking reproduction.
+
+**What bit-exactness to expect.** Generation is deterministic: the same command in the same environment
+writes a byte-identical mp4, which we checked by running one benchmark cell twice. Across environments it
+is not — a clean-clone run of the same cell, same seed and a character-identical prompt, came out as the
+same sample as ours but not the same bytes (24.5 dB PSNR; about half the pixels within ±2, diverging
+slowly from frame 0 to frame 80). Folding, the mp4 encoder settings and prompt-plan order were each ruled
+out as the cause, and the weights were byte-compared against the ones our runs used. So treat a byte
+match as a within-environment property, and judge a reproduction by its scores, not by its hashes.
+
+</details>
 
 > [!WARNING]
 > **Use the DiffSynth-Studio copy in this repo, not a pip install.**
@@ -114,12 +153,23 @@ pip install -r requirements.txt
 **Ours.** Downloaded on the first run into `./checkpoints`:
 
 ```
-checkpoints/
-├── t2v/  dit.safetensors  vae.ckpt  decoder.ckpt  zmain_stats.json
-└── i2v/  dit.safetensors  vae.ckpt  decoder.ckpt  zmain_stats.json
+checkpoints/                                                               23 GB total
+├── t2v/  dit.safetensors  vae.ckpt  decoder.ckpt  zmain_stats.json         8 GB
+└── i2v/  dit.safetensors  vae.ckpt  decoder.ckpt  zmain_stats.json         9 GB
+       dit_736.safetensors  zmain_stats_736.json                           6 GB
 ```
 
+> [!IMPORTANT]
+> **I2V has one DiT per resolution; T2V does not.** `i2v/dit.safetensors` is the 480×832 model and
+> `i2v/dit_736.safetensors` the 736×1280 one, each with its own `zmain_stats`. `generate_i2v.sh` picks
+> the pair from `HEIGHT`, so `HEIGHT=736 WIDTH=1280` switches by itself and stops if those files are
+> missing. The 480 weights do run at 736×1280 without complaining — they just report numbers that are
+> not ours. T2V needs no equivalent: one checkpoint covers both resolutions.
+> Skip the 736 download with `python tools/download_weights.py --task i2v --no_736`.
+
 **Wan2.1 base.** Download once, then point GRACE at them:
+
+Budget the disk: 54 GB for the T2V release, 77 GB for the I2V one, plus the 23 GB above.
 
 ```bash
 pip install "huggingface_hub[cli]"
@@ -164,16 +214,70 @@ assets/vbench/prompts/
 
 ### Running the benchmark
 
-Call the entry point directly. It walks the VBench dimensions and writes one video per prompt:
+Call the entry point directly. It walks the VBench dimensions and writes one video per prompt.
+`scripts/_resolve_paths.sh` fills in the checkpoint paths, so the command only names what differs
+from a single sample:
 
 ```bash
+GRACE_TASK=t2v . scripts/_resolve_paths.sh
+
 python src/inference_t2v_geoprior.py --out_dir outputs/vbench480 \
+  --dit_checkpoint "$GRACE_DIT_T2V" --vae_checkpoint "$GRACE_VAE_CKPT" \
+  --vae_decoder_checkpoint "$GRACE_DECODER_CKPT" --zmain_stats_path "$GRACE_ZMAIN_STATS" \
+  --dit_dir "$GRACE_WAN_T2V_DIR" --shared_dir "$GRACE_WAN_SHARED" \
   --vbench_json assets/vbench/VBench_full_info.json \
   --augmented_prompts --aug_prompt_dir assets/vbench/prompts/prompts_per_dimension_FINAL480 \
-  --per_dim 999 --dit_checkpoint ... --vae_checkpoint ... --zmain_stats_path ...
+  --per_dim 999 --height 480 --width 832 \
+  --async_delta 0.15 --seed 0
 ```
 
-For I2V, point `PROMPTS_JSON=` at one of the two JSON files above.
+`--async_delta 0.15` is not optional. Leave it out and the run takes the single-timestep path —
+one ladder for both latents instead of the paper's asymmetric denoising — which produces a
+plausible video that is not what the tables report. For 736×1280, swap in
+`prompts_per_dimension_FINAL736` and `--height 736 --width 1280`.
+
+Prompts are drawn per dimension with `Random(f"{seed}:{dim}")`, so the plan is reproducible and
+`--only_idx 3,7` regenerates exactly those cells without shifting the rest. The index is **per
+dimension**, not global — it is the number each output filename starts with, and `--only_idx 0` means
+index 0 of every dimension you asked for.
+
+For I2V, point `PROMPTS_JSON=` at one of the two JSON files above and pass the VBench-I2V input
+images as the folder argument; `scripts/generate_i2v.sh` already carries the paper's flags.
+
+```bash
+PROMPTS_JSON=assets/vbench/prompts/i2v_FINAL_base.json \
+  bash scripts/generate_i2v.sh /path/to/vbench_i2v_images outputs/vbench_i2v480
+```
+
+The input images are not redistributed here. Take them from
+[VBench-I2V](https://github.com/Vchitect/VBench/tree/master/vbench2_beta_i2v) — the `crop/16-9` set,
+355 images, the same folder for both resolutions. `--crop_input` is already on, so each image is fitted
+to `HEIGHT`×`WIDTH` for you.
+
+### What it costs
+
+One video per prompt, timed on an H200 while producing the tables:
+
+| | videos | per video | total |
+|---|---|---|---|
+| T2V 480×832 | 1362 | 75.6 s | ~29 GPU-hours |
+| T2V 736×1280 | 1362 | 128.9 s | ~49 GPU-hours |
+| I2V 480×832 | 1118 | 78.8 s | ~25 GPU-hours |
+| I2V 736×1280 | 1118 | 134.7 s | ~42 GPU-hours |
+
+Shard it: T2V takes `--only_idx`, I2V takes `--indices`, and neither changes the prompt plan, so N
+workers over disjoint index sets give the same videos as one serial run.
+
+### Scoring
+
+Scoring is not part of this repo — run the videos through official
+[VBench](https://github.com/Vchitect/VBench) and VBench-I2V. Two things to expect there:
+
+- **I2V `Total` leaves out `temporal_flickering`** and weights `dynamic_degree` by 0.5 and
+  `camera_motion` by 0.1, per VBench-I2V's own formula. Averaging all ten dimensions gives a different
+  number than the tables.
+- **`camera_motion` is not deterministic.** Re-scoring the same files moves its mean by around 0.4
+  points, so a small gap on that dimension alone is not a result.
 
 ### Latency
 
@@ -231,6 +335,11 @@ HEIGHT=736 WIDTH=1280 bash scripts/generate_t2v.sh "a shark is swimming in the o
 
 The defaults are the paper's: `HEIGHT`/`WIDTH` 480/832, `FRAMES` 81, `STEPS` 50, `CFG` 5.0, `SEED` 0, and
 `GRACE_DELTA` 0.15 for the asymmetric denoising offset δ.
+
+**LoRA is folded into the base weights at load time**, which is what the latency in the tables assumes
+and what every video we report was made with. `NO_MERGE_LORA=1` keeps the adapters separate instead;
+it is slower, and because folding rounds in bf16 the two are not bit-identical (about 42 dB apart), so
+leave it alone unless you specifically want the unfolded path.
 
 These commands are for trying the model out. Reproducing the numbers in the tables needs the prompt sets
 this repo ships — see [Evaluation](#-evaluation) above.

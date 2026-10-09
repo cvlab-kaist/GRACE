@@ -1,4 +1,4 @@
-# DiffSynth-Studio — Patched (KinemaDAE async / dual-branch)
+# DiffSynth-Studio — Patched (GRACE async / dual-branch)
 
 > **This is a patched fork** of DiffSynth-Studio, bundled with the GRACE inference code.
 > The inference scripts find it automatically; `export DIFFSYNTH_ROOT=/path/to/this/dir`

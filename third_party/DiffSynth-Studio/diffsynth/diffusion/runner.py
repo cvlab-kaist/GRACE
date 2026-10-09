@@ -29,7 +29,7 @@ def launch_training_task(
     dataloader = torch.utils.data.DataLoader(dataset, shuffle=True, collate_fn=lambda x: x[0], num_workers=num_workers)
     # [Modified] T5/CLIP을 CPU에 남겨두고 나머지만 GPU로 이동
     # 14B DiT + T5 + CLIP이 한 번에 GPU에 올라가면 80GB를 초과하므로
-    # T5/CLIP은 forward 시 필요할 때만 GPU에 올림 (KinemaDAEWanTrainingModule.forward)
+    # T5/CLIP은 forward 시 필요할 때만 GPU에 올림 (GRACEWanTrainingModule.forward)
     _pipe = getattr(model, 'pipe', None)
     _t5_hold = _clip_hold = None
     if _pipe is not None:

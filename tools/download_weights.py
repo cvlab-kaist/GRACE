@@ -19,13 +19,19 @@ REPO = os.environ.get("GRACE_HF_REPO", "chimaharicox/GRACE")
 # What each task needs. Keep in sync with scripts/_resolve_paths.sh.
 FILES = {
     "t2v": ["t2v/dit.safetensors", "t2v/vae.ckpt", "t2v/decoder.ckpt", "t2v/zmain_stats.json"],
-    "i2v": ["i2v/dit.safetensors", "i2v/vae.ckpt", "i2v/decoder.ckpt", "i2v/zmain_stats.json"],
+    # The I2V DiT and latent statistics are resolution-specific: dit.safetensors is the 480x832
+    # model, dit_736.safetensors the 736x1280 one. Both come down by default, because running 736
+    # against the 480 weights raises no error - it just reports numbers that are not ours.
+    "i2v": ["i2v/dit.safetensors", "i2v/vae.ckpt", "i2v/decoder.ckpt", "i2v/zmain_stats.json",
+            "i2v/dit_736.safetensors", "i2v/zmain_stats_736.json"],
 }
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--task", choices=("t2v", "i2v", "both"), default="both")
+    ap.add_argument("--no_736", action="store_true",
+                    help="skip the 736x1280 I2V weights (saves 6GB; 736 I2V then cannot run)")
     ap.add_argument("--dest", default=os.environ.get("GRACE_CKPT_DIR", "./checkpoints"))
     ap.add_argument("--repo", default=REPO)
     ap.add_argument("--revision", default=None, help="pin a commit/tag for reproducibility")
@@ -38,6 +44,8 @@ def main():
 
     tasks = ["t2v", "i2v"] if a.task == "both" else [a.task]
     want = [f for t in tasks for f in FILES[t]]
+    if a.no_736:
+        want = [f for f in want if "_736" not in f]
     dest = os.path.abspath(a.dest)
     print(f"[grace] {a.repo} -> {dest}")
     print(f"[grace] {len(want)} files for {', '.join(tasks)}. The DiT is tens of GB; this takes a while.")

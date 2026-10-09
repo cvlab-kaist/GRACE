@@ -21,6 +21,19 @@ GRACE_TASK=i2v . "$HERE/scripts/_resolve_paths.sh"   # fetch only the weights th
 : "${GRACE_WAN_I2V_DIR:?set GRACE_WAN_I2V_DIR to your Wan2.1-I2V-14B-480P folder (7 diffusion shards + google/umt5-xxl)}"
 export GRACE_WAN_I2V_DIR
 
+# I2V has one DiT per resolution and one set of latent statistics per resolution. Picking them by
+# HEIGHT is the whole point: the 480 weights run happily at 736x1280 and quietly produce numbers
+# that are not the paper's, so we switch rather than let that happen, and stop if they are missing.
+if [ "${HEIGHT:-480}" -ge 736 ]; then
+  for f in "$GRACE_DIT_I2V_736" "$GRACE_ZMAIN_STATS_I2V_736"; do
+    [ -f "$f" ] || { echo "[grace] 736 needs $f - fetch it with: python tools/download_weights.py --task i2v"; exit 1; }
+  done
+  GRACE_DIT_I2V="$GRACE_DIT_I2V_736"
+  GRACE_ZMAIN_STATS_I2V="$GRACE_ZMAIN_STATS_I2V_736"
+  export GRACE_DIT_I2V GRACE_ZMAIN_STATS_I2V
+  echo "[grace] HEIGHT=${HEIGHT} -> using the 736x1280 I2V DiT and latent statistics"
+fi
+
 python "$HERE/src/inference_i2v_geoprior_crossattn.py" \
   --dit_checkpoint "${GRACE_DIT_I2V:?set GRACE_DIT_I2V (paper: step-3600.safetensors)}" \
   --lora_target_modules "${GRACE_LORA_TARGETS:-q,k,v,o,k_img,v_img,ffn.0,ffn.2}" \

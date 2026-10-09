@@ -1,17 +1,35 @@
 # Install PyTorch first, matched to your CUDA build: https://pytorch.org/get-started/locally/
 #   e.g.  pip install torch --index-url https://download.pytorch.org/whl/cu121
+# If that index is unreachable (some proxies block it), plain `pip install torch` from PyPI
+# gives a CUDA build that works here too.
+# The tables were produced with 2.5.1+cu124; a newer torch runs but is not bit-identical.
 torch>=2.4
 numpy
 einops
 safetensors
-peft>=0.11
+# Pinned as a pair, and not optional. peft reaches into transformers' lazy module system, and the
+# newest combination of the two fails at `import peft`. That takes down BOTH entry points, not
+# just i2v: inference_t2v_geoprior.py imports setup_davae_dit/fold_lora/_save from the i2v
+# module, which imports peft at module level. These are the versions the results come from.
+peft==0.18.1
 imageio
 imageio-ffmpeg
 Pillow
 tqdm
 # pulled in by the bundled DiffSynth-Studio
-transformers
+transformers==5.3.0
 torchvision
+# These five are not optional, and not obviously needed either: importing diffsynth pulls in
+# core/data/operators.py and the model loader, which import them at module level, so any one of
+# them missing stops BOTH entry points before a model is touched. Verified by importing the
+# entry modules in a clean venv - lpips, cv2, pywt, deepspeed, xformers, flash_attn, insightface,
+# facexlib, controlnet_aux and torchcodec are reached lazily or guarded, so they stay out.
+# Keep torchaudio's version in step with torch.
+torchaudio
+pandas
+modelscope
+av
+librosa
 sentencepiece
 ftfy
 accelerate

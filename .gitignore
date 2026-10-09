@@ -19,6 +19,8 @@ _eqtest*/
 _foldcheck/
 _demo_nametext/
 *.pdf
+# except the paper itself, which we do publish
+!assets/GRACE_paper.pdf
 
 # NFS silly-rename placeholders (appear when an open file is deleted)
 .nfs*
