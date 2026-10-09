@@ -108,20 +108,16 @@ but the videos will not be bit-identical to ours.
 | **Python** | 3.11 or 3.12 |
 | **PyTorch** | 2.5.1+cu124 — the plain PyPI wheel |
 | **GPU** | one NVIDIA A100 80GB |
-| **FlashAttention** | not installed — the dispatcher tries FA4 → FA3 → FA2 and lands on PyTorch SDPA, which is itself a flash kernel |
+| **FlashAttention** | not installed; attention runs on PyTorch SDPA |
 
 Three things that catch people out:
 
-- **The usual `--index-url https://download.pytorch.org/whl/cu124` may not resolve.** Some proxies block
-  that host. The PyPI wheel above is a cu124 build and needs no extra index.
-- **FlashAttention buys almost nothing here, and it changes the output.** PyTorch's SDPA already
-  dispatches to a flash kernel (measured on an A100: 0.140 ms, same as forcing the flash backend, against
-  2.503 ms for the math one), and at 1001 tokens self-attention adds up to well under 1% of the time
-  it takes to generate one video.
-  Installing it swaps one flash kernel for another, so videos stop matching ours for no real speedup.
-- **A byte match only holds within one environment.** The same command on the same machine rewrites a
-  byte-identical mp4. A clean clone elsewhere gives the *same sample* but not the same bytes — ours came
-  out at 24.5 dB PSNR, with half the pixels within ±2. Judge a reproduction by its scores, not its hashes.
+- **Skip the PyTorch `--index-url`.** Some proxies block that host, and the PyPI wheel above is a
+  cu124 build anyway.
+- **Do not install FlashAttention while checking reproduction.** SDPA is already a flash kernel here
+  and attention is under 1% of the runtime, so it changes the output and buys nothing.
+- **Expect the same sample, not the same bytes.** A byte match only holds within one environment, so
+  judge a reproduction by its scores.
 
 > [!WARNING]
 > **Use the DiffSynth-Studio copy in this repo, not a pip install.**
