@@ -135,10 +135,9 @@ checkpoints/                                                               23 GB
        dit_736.safetensors  zmain_stats_736.json                           6 GB
 ```
 
-**I2V ships a separate DiT and `zmain_stats` for 736×1280.** `generate_i2v.sh` reads `HEIGHT` and
-loads the matching pair, so you do not have to choose; set `GRACE_DIT_I2V` yourself and the 480
-weights will run at 736×1280 without any error and report numbers that are not ours. Only need 480?
-Skip the extra 6GB with `python tools/download_weights.py --task i2v --no_736`.
+I2V ships a separate DiT and `zmain_stats` for 736×1280; `generate_i2v.sh` loads whichever pair
+matches `HEIGHT`, so there is nothing to choose. Only need 480? Skip the extra 6GB with
+`python tools/download_weights.py --task i2v --no_736`.
 
 **Wan2.1 base.** Download once, then point GRACE at them:
 
