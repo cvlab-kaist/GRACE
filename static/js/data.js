@@ -35,16 +35,16 @@ window.GRACE = {
   // Qualitative comparison carousel on the main page.
   comparisons: {
     t2v: [
-      { caption: "A person is rock climbing", prompt: 'A person is rock climbing', wan: 'static/videos/cmp/t2v_01_wan.mp4', grace: 'static/videos/cmp/t2v_01_grace.mp4', dcgen: 'static/videos/cmp/t2v_01_dcgen.mp4' },
-      { caption: "A person is crying", prompt: 'A person is crying', wan: 'static/videos/cmp/t2v_02_wan.mp4', grace: 'static/videos/cmp/t2v_02_grace.mp4', dcgen: 'static/videos/cmp/t2v_02_dcgen.mp4' },
+      { caption: "A person is rock climbing", prompt: 'A person is rock climbing', wan: 'static/videos/cmp/t2v_01_wan.mp4', ltx: 'static/videos/cmp/t2v_01_ltx.mp4', grace: 'static/videos/cmp/t2v_01_grace.mp4', dcgen: 'static/videos/cmp/t2v_01_dcgen.mp4' },
+      { caption: "A person is crying", prompt: 'A person is crying', wan: 'static/videos/cmp/t2v_02_wan.mp4', ltx: 'static/videos/cmp/t2v_02_ltx.mp4', grace: 'static/videos/cmp/t2v_02_grace.mp4', dcgen: 'static/videos/cmp/t2v_02_dcgen.mp4' },
       { caption: "lighthouse", prompt: 'lighthouse', wan: 'static/videos/cmp/t2v_03_wan.mp4', grace: 'static/videos/cmp/t2v_03_grace.mp4', dcgen: 'static/videos/cmp/t2v_03_dcgen.mp4' },
-      { caption: "A person is playing flute", prompt: 'A person is playing flute', wan: 'static/videos/cmp/t2v_04_wan.mp4', grace: 'static/videos/cmp/t2v_04_grace.mp4', dcgen: 'static/videos/cmp/t2v_04_dcgen.mp4' }
+      { caption: "A person is playing flute", prompt: 'A person is playing flute', wan: 'static/videos/cmp/t2v_04_wan.mp4', ltx: 'static/videos/cmp/t2v_04_ltx.mp4', grace: 'static/videos/cmp/t2v_04_grace.mp4', dcgen: 'static/videos/cmp/t2v_04_dcgen.mp4' }
     ],
     i2v: [
-      { caption: "a white car is swiftly driving on a dirt road near a bush, kicking up dust", prompt: 'a white car is swiftly driving on a dirt road near a bush, kicking up dust', input: 'static/videos/cmp/i2v_01_input.jpg', wan: 'static/videos/cmp/i2v_01_wan.mp4', grace: 'static/videos/cmp/i2v_01_grace.mp4', dcgen: 'static/videos/cmp/i2v_01_dcgen.mp4' },
-        { caption: "a person riding a motorcycle down a road", prompt: 'a person riding a motorcycle down a road', input: 'static/videos/cmp/i2v_02_input.jpg', wan: 'static/videos/cmp/i2v_02_wan.mp4', grace: 'static/videos/cmp/i2v_02_grace.mp4', dcgen: 'static/videos/cmp/i2v_02_dcgen.mp4' },
-      { caption: "a penguin walking on a beach near the water", prompt: 'a penguin walking on a beach near the water', input: 'static/videos/cmp/i2v_03_input.jpg', wan: 'static/videos/cmp/i2v_03_wan.mp4', grace: 'static/videos/cmp/i2v_03_grace.mp4', dcgen: 'static/videos/cmp/i2v_03_dcgen.mp4' },
-        { caption: "a close-up of a hippopotamus eating grass in a field", prompt: 'a close-up of a hippopotamus eating grass in a field', input: 'static/videos/cmp/i2v_04_input.jpg', wan: 'static/videos/cmp/i2v_04_wan.mp4', grace: 'static/videos/cmp/i2v_04_grace.mp4', dcgen: 'static/videos/cmp/i2v_04_dcgen.mp4' },
+      { caption: "a white car is swiftly driving on a dirt road near a bush, kicking up dust", prompt: 'a white car is swiftly driving on a dirt road near a bush, kicking up dust', input: 'static/videos/cmp/i2v_01_input.jpg', wan: 'static/videos/cmp/i2v_01_wan.mp4', ltx: 'static/videos/cmp/i2v_01_ltx.mp4', grace: 'static/videos/cmp/i2v_01_grace.mp4', dcgen: 'static/videos/cmp/i2v_01_dcgen.mp4' },
+        { caption: "a person riding a motorcycle down a road", prompt: 'a person riding a motorcycle down a road', input: 'static/videos/cmp/i2v_02_input.jpg', wan: 'static/videos/cmp/i2v_02_wan.mp4', ltx: 'static/videos/cmp/i2v_02_ltx.mp4', grace: 'static/videos/cmp/i2v_02_grace.mp4', dcgen: 'static/videos/cmp/i2v_02_dcgen.mp4' },
+      { caption: "a penguin walking on a beach near the water", prompt: 'a penguin walking on a beach near the water', input: 'static/videos/cmp/i2v_03_input.jpg', wan: 'static/videos/cmp/i2v_03_wan.mp4', ltx: 'static/videos/cmp/i2v_03_ltx.mp4', grace: 'static/videos/cmp/i2v_03_grace.mp4', dcgen: 'static/videos/cmp/i2v_03_dcgen.mp4' },
+        { caption: "a close-up of a hippopotamus eating grass in a field", prompt: 'a close-up of a hippopotamus eating grass in a field', input: 'static/videos/cmp/i2v_04_input.jpg', wan: 'static/videos/cmp/i2v_04_wan.mp4', ltx: 'static/videos/cmp/i2v_04_ltx.mp4', grace: 'static/videos/cmp/i2v_04_grace.mp4', dcgen: 'static/videos/cmp/i2v_04_dcgen.mp4' },
     ],
     hr: [
       { caption: "a dog drinking water", prompt: 'a dog drinking water', wan: 'static/videos/cmp/hr_01_wan.mp4', grace: 'static/videos/cmp/hr_01_grace.mp4', dcgen: 'static/videos/cmp/hr_01_dcgen.mp4' },
@@ -279,12 +279,6 @@ window.GRACE = {
     {"tag": "736×1280", "prompt": "A boat sailing leisurely along the Seine River with the Eiffel Tower in background, pixel art", "res": "736", "wan": "static/videos/gallery/vs_254_wan.mp4", "grace": "static/videos/gallery/vs_254_grace.mp4", "poster": "static/videos/gallery/vs_254_grace.poster.jpg"},
     {"tag": "I2V", "prompt": "a clown fish hiding in a purple anemone", "res": "480", "input": "static/videos/gallery/vs_255_input.jpg", "wan": "static/videos/gallery/vs_255_wan.mp4", "grace": "static/videos/gallery/vs_255_grace.mp4", "poster": "static/videos/gallery/vs_255_grace.poster.jpg"},
     {"tag": "T2V", "prompt": "A panda drinking coffee in a cafe in Paris", "res": "480", "wan": "static/videos/gallery/vs_256_wan.mp4", "grace": "static/videos/gallery/vs_256_grace.mp4", "poster": "static/videos/gallery/vs_256_grace.poster.jpg"},
-    ],
-    ltx: [
-      { caption: "A person is bungee jumping", prompt: 'A person is bungee jumping', wan: 'static/videos/cmp/ltx_01_wan.mp4', ltx: 'static/videos/cmp/ltx_01_ltx.mp4', grace: 'static/videos/cmp/ltx_01_grace.mp4' },
-      { caption: "A person is playing piano", prompt: 'A person is playing piano', wan: 'static/videos/cmp/ltx_02_wan.mp4', ltx: 'static/videos/cmp/ltx_02_ltx.mp4', grace: 'static/videos/cmp/ltx_02_grace.mp4' },
-      { caption: "A person is tai chi", prompt: 'A person is tai chi', wan: 'static/videos/cmp/ltx_03_wan.mp4', ltx: 'static/videos/cmp/ltx_03_ltx.mp4', grace: 'static/videos/cmp/ltx_03_grace.mp4' },
-      { caption: "A person is marching", prompt: 'A person is marching', wan: 'static/videos/cmp/ltx_04_wan.mp4', ltx: 'static/videos/cmp/ltx_04_ltx.mp4', grace: 'static/videos/cmp/ltx_04_grace.mp4' },
     ],
     moreBaselines: [
     {"tag": "T2V", "prompt": "a blue umbrella", "res": "480", "wan": "static/videos/gallery/mb_01_wan.mp4", "grace": "static/videos/gallery/mb_01_grace.mp4", "poster": "static/videos/gallery/mb_01_grace.poster.jpg", "dcgen": "static/videos/gallery/mb_01_dcgen.mp4"},
