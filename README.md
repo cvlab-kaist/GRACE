@@ -101,35 +101,24 @@ pip install -r requirements.txt
 Pin 2.5.1 as above to get the environment the tables were produced in. A newer PyTorch runs fine,
 but the videos will not be bit-identical to ours.
 
-<details>
-<summary>The environment we ran, and two things that bite</summary>
-
-Our runs, and the clean-clone check of this README, used:
+### Environment
 
 | | |
 |---|---|
-| Python | 3.11 and 3.12, both fine |
-| PyTorch | 2.5.1+cu124 (the plain PyPI wheel) |
-| GPU | one NVIDIA A100 80GB |
-| FlashAttention | not installed — the model falls back FA4 → FA3 → FA2 → PyTorch SDPA |
+| **Python** | 3.11 or 3.12 |
+| **PyTorch** | 2.5.1+cu124 — the plain PyPI wheel |
+| **GPU** | one NVIDIA A100 80GB |
+| **FlashAttention** | not installed; attention falls back FA4 → FA3 → FA2 → PyTorch SDPA |
 
-**The PyTorch index may be blocked.** `pip install torch --index-url https://download.pytorch.org/whl/cu124`
-is the usual advice, but that host is unreachable behind some proxies. The plain PyPI wheel shown above is a
-cu124 build and needs no extra index.
+Three things that catch people out:
 
-**FlashAttention changes the numerics.** It is optional and the model runs without it, just slower — but
-installing it makes attention take a different kernel, so videos stop being bit-identical to ours. Leave it
-out if you are checking reproduction.
-
-**What bit-exactness to expect.** Generation is deterministic: the same command in the same environment
-writes a byte-identical mp4, which we checked by running one benchmark cell twice. Across environments it
-is not — a clean-clone run of the same cell, same seed and a character-identical prompt, came out as the
-same sample as ours but not the same bytes (24.5 dB PSNR; about half the pixels within ±2, diverging
-slowly from frame 0 to frame 80). Folding, the mp4 encoder settings and prompt-plan order were each ruled
-out as the cause, and the weights were byte-compared against the ones our runs used. So treat a byte
-match as a within-environment property, and judge a reproduction by its scores, not by its hashes.
-
-</details>
+- **The usual `--index-url https://download.pytorch.org/whl/cu124` may not resolve.** Some proxies block
+  that host. The PyPI wheel above is a cu124 build and needs no extra index.
+- **Leave FlashAttention out while you are checking reproduction.** It is optional and only makes things
+  faster, but it switches the attention kernel, and the videos stop matching ours.
+- **A byte match only holds within one environment.** The same command on the same machine rewrites a
+  byte-identical mp4. A clean clone elsewhere gives the *same sample* but not the same bytes — ours came
+  out at 24.5 dB PSNR, with half the pixels within ±2. Judge a reproduction by its scores, not its hashes.
 
 > [!WARNING]
 > **Use the DiffSynth-Studio copy in this repo, not a pip install.**
