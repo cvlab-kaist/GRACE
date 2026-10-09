@@ -1274,9 +1274,12 @@ def wantodance_get_single_freqs(freqs, frame_num, fps):
 
 
 def _rope_axis_scaled(table, n, s):
-    """[NEW 2026-07-31 rope-scale] subsample-aware RoPE 축 슬라이스.
-    s가 None/1이면 기존과 비트 동일(opt-in). 정수 s면 위치 0,s,2s,... 테이블 슬라이스.
-    분수 s는 base freq를 position-1 행 위상에서 복원해 직접 계산(연속 사인파라 유효)."""
+    """Subsample-aware slice of one RoPE axis.
+
+    s of None or 1 is bit-identical to upstream, which keeps this opt-in. An integer s slices
+    the table at positions 0, s, 2s, ... A fractional s is computed directly, recovering the
+    base frequency from the phase of row 1 - valid because the table is a continuous sinusoid.
+    """
     if not s or s == 1:
         return table[:n]
     fs = float(s)
@@ -1284,7 +1287,7 @@ def _rope_axis_scaled(table, n, s):
         si = int(fs)
         return table[: n * si : si]
     import torch as _t
-    base = _t.angle(table[1]).to(_t.float64)          # 최대 base freq 1.0rad < 2pi → 위상 복원 정확
+    base = _t.angle(table[1]).to(_t.float64)          # the largest base freq is 1.0 rad < 2pi, so the phase recovers exactly
     pos = _t.arange(n, dtype=_t.float64, device=table.device) * fs
     ang = _t.outer(pos, base)
     return _t.polar(_t.ones_like(ang), ang).to(table.dtype)
@@ -1405,9 +1408,10 @@ def model_fn_wan_video(
         t = dit.time_embedding(sinusoidal_embedding_1d(dit.freq_dim, timestep))
         t_mod = dit.time_projection(t).unflatten(1, (6, dit.dim))
 
-    # [NEW - async] 두 번째 timestep(t_prior) opt-in 주입 — 학습(batch 복사본)과 동일 블록.
-    #   발동 조건 2중: (1) 호출측이 timestep2 kwarg 를 보낼 때만 (= --async_delta 켠 우리 경로뿐),
-    #   (2) dit 에 t2_projection 이 있을 때만 (= async setup 을 거친 모델뿐). 그 외 전 경로 무동작.
+    # [NEW - async] opt-in injection of the second timestep (t_prior), the same block training uses.
+    #   Two conditions must both hold: the caller passes the timestep2 kwarg (only our
+    #   --async_delta path does), and the dit has a t2_projection (only a model that went
+    #   through the async setup does). Every other path is untouched.
     _timestep2 = kwargs.get("timestep2", None)
     if _timestep2 is not None and hasattr(dit, "t2_projection"):
         _t2 = dit.time_embedding(sinusoidal_embedding_1d(dit.freq_dim, _timestep2))
@@ -1445,9 +1449,10 @@ def model_fn_wan_video(
         x, motion_vec = animate_adapter.after_patch_embedding(x, pose_latents, face_pixel_values)
     
     # Patchify
-    # [NEW 2026-07-31] patchify(2x2) 비정합 latent 경고 — Conv3d stride2 는 홀수 H/W 의 마지막 행/열을 조용히 절사
+    # [NEW 2026-07-31] warn on a latent that patchify(2x2) does not divide: a stride-2 Conv3d
+    # silently drops the last row or column of an odd H or W.
     if (x.shape[1] % 2 or x.shape[2] % 2) and not getattr(dit, "_odd_latent_warned", False):
-        print(f"[patchify-warn] latent HxW={tuple(x.shape[2:])} 가 2 배수 아님 — 마지막 행/열 절사됨 (해상도를 VAE stride x2 배수로 권장)")
+        print(f"[patchify-warn] latent HxW={tuple(x.shape[2:])} is not a multiple of 2 - the last row and column are dropped. Pick a resolution that is a multiple of the VAE stride x2.")
         dit._odd_latent_warned = True
     f, h, w = x.shape[2:]
     x = rearrange(x, 'b c f h w -> b (f h w) c').contiguous()
@@ -1460,7 +1465,7 @@ def model_fn_wan_video(
         x = torch.concat([reference_latents, x], dim=1)
         f += 1
     
-    _rs = getattr(dit, "rope_pos_scale", None)   # [NEW rope-scale] (s_f,s_h,s_w) — 미설정=기존 경로
+    _rs = getattr(dit, "rope_pos_scale", None)   # [NEW rope-scale] (s_f,s_h,s_w); unset keeps the upstream path
     _sf, _sh, _sw = _rs if _rs else (1, 1, 1)
     freqs = torch.cat([
         _rope_axis_scaled(dit.freqs[0], f, _sf).view(f, 1, 1, -1).expand(f, h, w, -1),

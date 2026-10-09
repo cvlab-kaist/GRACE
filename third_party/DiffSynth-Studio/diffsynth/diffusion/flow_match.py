@@ -219,8 +219,8 @@ class FlowMatchScheduler():
         return model_output
     
     def add_noise(self, original_samples, noise, timestep):
-        # [batch patch - stage2 동일] per-sample timestep (B,) → sigma (B,) → broadcast.
-        # scalar/(1,) timestep 도 backward-compatible (reshape(-1) 로 통일).
+        # [batch patch, as in stage 2] per-sample timestep (B,) -> sigma (B,) -> broadcast.
+        # A scalar or (1,) timestep still works: reshape(-1) normalises both.
         timestep = torch.as_tensor(timestep).reshape(-1).to(self.timesteps.device)  # (B,) or (1,)
         timestep_id = torch.argmin(
             (self.timesteps[None, :] - timestep[:, None]).abs(), dim=1
@@ -236,7 +236,7 @@ class FlowMatchScheduler():
         return target
 
     def training_weight(self, timestep):
-        # [batch patch - stage2 동일] timestep (B,) → weights (B,). scalar 도 backward-compatible.
+        # [batch patch, as in stage 2] timestep (B,) -> weights (B,). A scalar still works.
         timestep = torch.as_tensor(timestep).reshape(-1).to(self.timesteps.device)
         timestep_id = torch.argmin(
             (self.timesteps[None, :] - timestep[:, None]).abs(), dim=1

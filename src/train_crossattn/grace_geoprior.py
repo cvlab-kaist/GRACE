@@ -1,12 +1,12 @@
 # [Source: Wan VAE] wan/modules/vae.py
-# [Modified - oliviaa] Added extra encoder/decoder stages for higher compression.
-# [NEW - oliviaa/skip] Skip connections on add_stages via channel averaging (DC-AE style).
-# [NEW - oliviaa/geoprior] Dual-branch: upper (trainable) + lower (frozen prior encoder on 2x subsampled input).
+# [Modified] Added extra encoder/decoder stages for higher compression.
+# [NEW/skip] Skip connections on add_stages via channel averaging (DC-AE style).
+# [NEW/geoprior] Dual-branch: upper (trainable) + lower (frozen prior encoder on 2x subsampled input).
 #   Lower branch z is channel-concatenated with upper branch z before decoder.
 #   decoder.conv1 expanded to accept (z_dim + prior_z_dim) input (pretrained in first prior_z_dim ch, zero rest).
 #   Supports asymmetric z_dim: e.g. main z_dim=32, prior_z_dim=16 (Wan fixed) → decoder input 48ch.
 #   subsample_mode: 'avg_pool' (default) | 'stride' | 'bilinear' — ablation-friendly.
-# All modifications are marked with [NEW - oliviaa] or [Modified - oliviaa].
+# All modifications are marked with [NEW] or [Modified].
 # Copyright 2024-2025 The Alibaba Wan Team Authors. All rights reserved.
 import logging
 
@@ -17,9 +17,11 @@ import torch.nn.functional as F
 from einops import rearrange
 from torch.utils.checkpoint import checkpoint
 import os
-# [NEW 2026-07-20] VAE gc 확장 토글. ON 시 Resample(up/downsample conv) 도 gc(ResidualBlock 은 상시 gc).
-#   grad+single-pass(feat_cache None) 경로에서만 checkpoint → VAE activation floor 축소로 nf↑ 가능.
-#   dynamics 동일성 검증됨(verify_vae_gc_equiv.py: forward 비트동일, grad FP노이즈 수준). 기본 OFF.
+# [NEW 2026-07-20] Extends VAE gradient checkpointing. When on, Resample (the up/downsample
+#   convs) is checkpointed too; ResidualBlock always is. It only checkpoints on the
+#   grad + single-pass path (feat_cache None), which lowers the VAE activation floor and lets
+#   num_frames go up. Equivalence was verified in verify_vae_gc_equiv.py: the forward is
+#   bit-identical and gradients differ only at floating-point noise level. Off by default.
 _EXTENDED_VAE_GC = os.environ.get("GRACE_EXTENDED_VAE_GC", "0") == "1"
 
 __all__ = [
@@ -29,7 +31,7 @@ __all__ = [
 CACHE_T = 2
 
 
-# [NEW - oliviaa/skip] 3D pixel shuffle/unshuffle — from Open-Sora dc_ae/models/nn/vo_ops.py
+# [NEW/skip] 3D pixel shuffle/unshuffle — from Open-Sora dc_ae/models/nn/vo_ops.py
 def pixel_shuffle_3d(x, upscale_factor):
     B, C, T, H, W = x.shape
     r = upscale_factor
@@ -117,7 +119,7 @@ class Resample(nn.Module):
         assert mode in ('none', 'upsample2d', 'upsample3d', 'downsample2d',
                         'downsample3d',
                         'downsample_temporal', 'upsample_temporal',
-                        'upsample2d_keepdim')  # [NEW - R2/M1] 폭 유지 공간 업샘플 (기존 upsample2d는 dim→dim//2)
+                        'upsample2d_keepdim')  # [NEW - R2/M1] spatial upsample that keeps the width (upsample2d goes dim -> dim//2)
         super().__init__()
         self.dim = dim
         self.mode = mode
@@ -127,7 +129,8 @@ class Resample(nn.Module):
             self.resample = nn.Sequential(
                 Upsample(scale_factor=(2., 2.), mode='nearest-exact'),
                 nn.Conv2d(dim, dim // 2, 3, padding=1))
-        # [NEW - R2/M1] 디코더 미러용: 채널 폭 유지 (384→384) — zero-init 시 skip(채널보존 nearest)만 남음
+        # [NEW - R2/M1] for the decoder mirror: keeps the width (384->384). Zero-init leaves only
+        # the skip, a channel-preserving nearest upsample.
         elif mode == 'upsample2d_keepdim':
             self.resample = nn.Sequential(
                 Upsample(scale_factor=(2., 2.), mode='nearest-exact'),
@@ -138,7 +141,7 @@ class Resample(nn.Module):
                 nn.Conv2d(dim, dim // 2, 3, padding=1))
             self.time_conv = CausalConv3d(
                 dim, dim * 2, (3, 1, 1), padding=(1, 0, 0))
-        # [NEW - oliviaa] temporal만 upsample — spatial 유지, 채널 유지
+        # [NEW] upsample time only - spatial size and channel count stay
         elif mode == 'upsample_temporal':
             self.resample = nn.Identity()
             self.time_conv = CausalConv3d(
@@ -154,7 +157,7 @@ class Resample(nn.Module):
                 nn.Conv2d(dim, dim, 3, stride=(2, 2)))
             self.time_conv = CausalConv3d(
                 dim, dim, (3, 1, 1), stride=(2, 1, 1), padding=(0, 0, 0))
-        # [NEW - oliviaa] temporal만 downsample — spatial 유지, 채널 유지
+        # [NEW] downsample time only - spatial size and channel count stay
         elif mode == 'downsample_temporal':
             self.resample = nn.Identity()
             self.time_conv = CausalConv3d(
@@ -164,15 +167,16 @@ class Resample(nn.Module):
             self.resample = nn.Identity()
 
     def forward(self, x, feat_cache=None, feat_idx=[0]):
-        # [NEW 2026-07-20] gc 확장: grad + single-pass(feat_cache None) 에서만 checkpoint.
-        #   feat_idx 는 feat_cache!=None 브랜치에서만 뮤테이트되므로 no-cache recompute 는 안전.
+        # [NEW 2026-07-20] extended checkpointing: only on the grad + single-pass path
+        #   (feat_cache None). feat_idx is mutated only in the feat_cache branch, so a
+        #   no-cache recompute is safe.
         if _EXTENDED_VAE_GC and feat_cache is None and torch.is_grad_enabled():
             return checkpoint(self._forward_impl, x, feat_cache, feat_idx, use_reentrant=False)
         return self._forward_impl(x, feat_cache, feat_idx)
 
     def _forward_impl(self, x, feat_cache=None, feat_idx=[0]):
         b, c, t, h, w = x.size()
-        # [Modified - oliviaa] upsample_temporal은 upsample3d와 temporal 로직 동일
+        # [Modified] upsample_temporal shares upsample3d's temporal logic
         if self.mode in ('upsample3d', 'upsample_temporal'):
             if feat_cache is not None:
                 idx = feat_idx[0]
@@ -228,7 +232,7 @@ class Resample(nn.Module):
         x = self.resample(x)  # upsample_temporal/downsample_temporal: nn.Identity()
         x = rearrange(x, '(b t) c h w -> b c t h w', t=t)
 
-        # [Modified - oliviaa] downsample_temporal은 downsample3d와 temporal 로직 동일
+        # [Modified] downsample_temporal shares downsample3d's temporal logic
         if self.mode in ('downsample3d', 'downsample_temporal'):
             if feat_cache is not None:
                 idx = feat_idx[0]
@@ -371,45 +375,49 @@ class Encoder3d(nn.Module):
                  attn_scales=[],
                  temperal_downsample=[True, True, False],
                  dropout=0.0,
-                 add_stages=None,  # [NEW - oliviaa] list of {'mode': str, 'num_res_blocks': int}
-                 da_adapter=False,        # [NEW - da_adapter] DA-VAE식 압축기: 스테이지 대신 채널압축(→z_dim/r²) + pixel_unshuffle(r)
-                 da_spatial_fold=4,       # [NEW - da_adapter] 공간 접기 배율 r (f32t4=4, f16t4=2)
-                 stages_after_norm=False,  # [NEW - R2] add_downsamples를 middle→RMS_norm→SiLU 뒤에서 실행 (mid 원해상 복귀)
-                 stages_norm_before_head=False,  # [NEW - R2n] R2 스택 출력→head conv 사이 RMSnorm 재정규화 (스파이크 완화 1번)
-                 stages_after_head=False,  # [NEW - R3] add_downsamples를 head conv **뒤**에서 실행 (폭 z_dim, head 도 원해상)
-                 stages_after_conv1=False,  # [NEW - R3a] 스테이지를 여기서 **빌드만** 하고 실행은 GeopriorVAE.encode 가 conv1 뒤에서 함
-                 use_b_adaptive=False,  # [NEW - oliviaa/B-fix] encoder.head[-1] 을 AdaptiveWeightedCausalConv3d 으로 교체 (= single backward path 의 weight gradient ratio mechanism)
+                 add_stages=None,  # [NEW] list of {'mode': str, 'num_res_blocks': int}
+                 da_adapter=False,        # [NEW - da_adapter] DA-VAE-style compressor: channel compression (to z_dim/r^2) plus pixel_unshuffle(r), in place of stages
+                 da_spatial_fold=4,       # [NEW - da_adapter] spatial fold factor r (4 for f32t4, 2 for f16t4)
+                 stages_after_norm=False,  # [NEW - R2] run add_downsamples after middle -> RMS_norm -> SiLU, which puts mid back at full resolution
+                 stages_norm_before_head=False,  # [NEW - R2n] re-normalise with RMSnorm between the R2 stack output and the head conv (spike mitigation 1)
+                 stages_after_head=False,  # [NEW - R3] run add_downsamples *after* the head conv, at width z_dim, so the head is at full resolution too
+                 stages_after_conv1=False,  # [NEW - R3a] only *build* the stages here; GeopriorVAE.encode runs them after conv1
+                 use_b_adaptive=False,  # [NEW/B-fix] replace encoder.head[-1] with AdaptiveWeightedCausalConv3d, the single-backward-path weight gradient ratio mechanism
                  b_adaptive_eps=1e-6,
                  b_adaptive_max=1e7,
                  b_adaptive_disc_weight=1.0):
         super().__init__()
-        # [NEW - oliviaa/B-fix] flag 저장 — forward 에서 head 의 마지막 layer 의 두 output 처리 결정
+        # [NEW/B-fix] keep the flag: forward uses it to decide how to handle the head's two outputs
         self.use_b_adaptive = use_b_adaptive
         # [NEW - da_adapter]
         self.da_adapter = da_adapter
         self.da_fold = da_spatial_fold
         # [NEW - R2]
         self.stages_after_norm = stages_after_norm
-        assert not (da_adapter and stages_after_norm), "[R2/da] 구조 모드 동시 지정 불가"
-        # [NEW - R2n] 스파이크 완화 1번: R2 는 34.5M 자유 스택이 norm·SiLU 뒤에 끼어 head conv 입력의
-        #   정규화 앵커가 사라진다(7차 발산의 진앙 — grad_W 만 16배). 스택 출력을 RMSnorm 으로 재정규화해
-        #   그 고리를 끊는다. norm 은 스케일만 묶고 채널 배열(align 자유도)은 보존. 기본 off = 비트 동일.
+        assert not (da_adapter and stages_after_norm), "[R2/da] these structural modes are mutually exclusive"
+        # [NEW - R2n] spike mitigation 1. In R2 a free 34.5M stack sits after norm and SiLU, which
+        #   removes the normalisation anchor on the head conv's input - the epicentre of the 7th
+        #   divergence, where grad_W alone grew 16x. Re-normalising the stack output with RMSnorm
+        #   breaks that loop. The norm only ties the scale and leaves the channel arrangement,
+        #   and so the alignment freedom, intact. Off by default, which is bit-identical.
         self.stages_norm_before_head = stages_norm_before_head
         if stages_norm_before_head:
-            assert stages_after_norm, "[R2n] stages_norm_before_head 는 R2(stages_after_norm) 전용"
-        # [NEW - R3] 스테이지 위치는 셋 중 하나뿐이다(기본=middle 앞 / after_norm / after_head).
-        #   둘 이상 켜지면 forward 의 분기 순서상 조용히 하나만 먹으므로 여기서 죽인다.
+            assert stages_after_norm, "[R2n] stages_norm_before_head only applies to R2 (stages_after_norm)"
+        # [NEW - R3] the stages go in exactly one of three places: before middle (the default),
+        #   after_norm, or after_head. With two of them on, the branch order in forward would
+        #   silently take just one, so stop here instead.
         self.stages_after_head = stages_after_head
-        assert not (da_adapter and stages_after_head), "[R3/da] 구조 모드 동시 지정 불가"
+        assert not (da_adapter and stages_after_head), "[R3/da] these structural modes are mutually exclusive"
         assert not (stages_after_norm and stages_after_head), \
-            "[R3] stages_after_norm 과 stages_after_head 동시 지정 불가 (위치는 하나만)"
-        # [NEW - R3a] 네 번째 위치. 스테이지는 conv1(96→96, 1x1) 출력과 폭이 같아야 하는데
-        #   expand_encoder_head=True 면 enc_out_dim == z_dim*2 == conv1 출력이라 R3 와 같은 폭으로 빌드된다.
-        #   (그 전제는 GeopriorVAE 쪽 assert 가 지킨다.) 실행은 여기서 하지 않는다 — encode() 가 한다.
+            "[R3] stages_after_norm and stages_after_head are mutually exclusive - pick one position"
+        # [NEW - R3a] a fourth position. The stages have to match the width of conv1's output
+        #   (96->96, 1x1). With expand_encoder_head=True, enc_out_dim == z_dim*2 == that output,
+        #   so they build at the same width as R3; an assert in GeopriorVAE holds that premise.
+        #   They are not run here - encode() runs them.
         self.stages_after_conv1 = stages_after_conv1
         assert sum(bool(f) for f in (stages_after_norm, stages_after_head, stages_after_conv1)) <= 1, \
-            "[R3a] 스테이지 위치 플래그는 하나만"
-        assert not (da_adapter and stages_after_conv1), "[R3a/da] 구조 모드 동시 지정 불가"
+            "[R3a] only one stage-position flag may be set"
+        assert not (da_adapter and stages_after_conv1), "[R3a/da] these structural modes are mutually exclusive"
         self.dim = dim
         self.z_dim = z_dim
         self.dim_mult = dim_mult
@@ -442,14 +450,15 @@ class Encoder3d(nn.Module):
                 scale /= 2.0
         self.downsamples = nn.Sequential(*downsamples)
 
-        # [NEW - oliviaa] Added downsample stages between downsamples and middle.
-        # [NEW - R3] 스테이지 폭. head conv 뒤에 놓이면 입력이 384(out_dim)가 아니라
-        #   head 출력 폭 = z_dim(호출부가 넣는 enc_out_dim, 예: 48*2=96)이다.
-        #   ※ pretrained_copy 는 384 짜리 사전학습 블록을 복사하므로 폭이 다르면 성립하지 않는다.
+        # [NEW] Added downsample stages between downsamples and middle.
+        # [NEW - R3] stage width. Placed after the head conv, the input is not 384 (out_dim) but
+        #   the head's output width, z_dim - the enc_out_dim the caller passes, e.g. 48*2 = 96.
+        #   Note that pretrained_copy copies a 384-wide pretrained block, so it cannot work at a
+        #   different width.
         _stage_dim = z_dim if (stages_after_head or stages_after_conv1) else out_dim
         assert not ((stages_after_head or stages_after_conv1) and any(
             (s.get('init') == 'pretrained_copy') for s in (add_stages or []))), \
-            "[R3/R3a] 이 위치에서는 init='pretrained_copy' 불가 (사전학습 블록 폭 384 ≠ 스테이지 폭)"
+            "[R3/R3a] init='pretrained_copy' does not work in this position: the pretrained block is 384 wide, the stage is not"
         self.add_downsamples = nn.ModuleList()
         if add_stages:
             for stage_cfg in add_stages:
@@ -480,17 +489,19 @@ class Encoder3d(nn.Module):
             ResidualBlock(out_dim, out_dim, dropout))
 
         # output blocks
-        # [NEW - da_adapter] head conv = 채널 압축기 (384 → z_dim/r², 원해상). 공간 접기는 forward의
-        #   pixel_unshuffle(r)이 담당 → 최종 z_dim 채널 @ /r 그리드 (latent shape 불변, mid는 원해상 유지).
-        #   b_adaptive 는 이 conv에 그대로 장착 (head[-1] 자리 유지 → 트레이너 head 참조 무사)
+        # [NEW - da_adapter] the head conv is the channel compressor: 384 -> z_dim/r^2, at full
+        #   resolution. The spatial fold is pixel_unshuffle(r) in forward, giving z_dim channels
+        #   on a grid divided by r, so the latent shape is unchanged and mid stays at full
+        #   resolution. b_adaptive attaches to this conv as usual, keeping the head[-1] slot so
+        #   the trainer's reference to head still resolves.
         _head_out = z_dim
         if da_adapter:
-            assert not add_stages, "[da_adapter] add_encoder_stages와 동시 사용 불가 (스테이지를 대체함)"
+            assert not add_stages, "[da_adapter] cannot be combined with add_encoder_stages - it replaces the stages"
             assert z_dim % (da_spatial_fold ** 2) == 0, f"z_dim {z_dim} % r²={da_spatial_fold**2} != 0"
             _head_out = z_dim // (da_spatial_fold ** 2)
-        # [NEW - oliviaa/B-fix] use_b_adaptive=True 시 마지막 conv = AdaptiveWeightedCausalConv3d (= (B) 식 의 weight gradient ratio mechanism)
+        # [NEW/B-fix] with use_b_adaptive=True the last conv becomes AdaptiveWeightedCausalConv3d, the (B) weight gradient ratio mechanism
         if use_b_adaptive:
-            # local import — circular import 방지
+            # local import, to avoid a circular import
             from adaptive_weighted_causal_conv_3d import AdaptiveWeightedCausalConv3d
             _last_conv = AdaptiveWeightedCausalConv3d(
                 out_dim, _head_out, 3, padding=1,
@@ -503,19 +514,20 @@ class Encoder3d(nn.Module):
         self.head = nn.Sequential(
             RMS_norm(out_dim, images=False), nn.SiLU(),
             _last_conv)
-        # [NEW - R2n] 재정규화 모듈 — off 면 미생성이라 state_dict 불변
+        # [NEW - R2n] the re-normalisation module. Off means it is never built, so the state_dict is unchanged.
         if self.stages_norm_before_head:
             self.stages_renorm = RMS_norm(out_dim, images=False)
 
     def _run_add_stages(self, x, feat_cache=None, feat_idx=[0], return_skip=False, ff_skips=None):
-        # [NEW - R2] add_downsamples 블록 추출 — 호출 위치를 stages_after_norm 으로 선택.
-        #   캐시-인지 코드/Option-B 청크동등 skip 그대로 (head 루프의 isinstance 분기에 태우면 캐시 누락됨)
-        ## [NEW - oliviaa/skip] added downsample stages with skip connection
+        # [NEW - R2] pull the add_downsamples blocks out, so stages_after_norm can choose where they run.
+        #   the cache-aware code and the Option-B chunk-equivalence skip stay as they are; routing
+        #   this through the isinstance branch in the head loop would lose the cache
+        ## [NEW/skip] added downsample stages with skip connection
         for stage in self.add_downsamples:
             x_in = x
             B, C, T_in, H, W = x_in.shape
             for layer in stage:
-                # [crossattn] add_downsamples Resample(downsample) 직전 feature = skip@32
+                # [crossattn] the feature just before add_downsamples' Resample(downsample) is skip@32
                 if return_skip and isinstance(layer, Resample) and 'downsample' in layer.mode:
                     ff_skips.append(x)
                 if feat_cache is not None:
@@ -568,9 +580,10 @@ class Encoder3d(nn.Module):
         return x
 
     def forward(self, x, feat_cache=None, feat_idx=[0], return_skip=False):
-        # [crossattn] return_skip=True 시 각 다운샘플 "전" feature 를 수집해
-        #   (기존반환, [skip@256, skip@128, skip@64, skip@32]) 반환. False 면 기존과 100% 동일.
-        #   skip 은 각 Resample(downsample) 직전의 x (해당 해상도 최고품질 feature).
+        # [crossattn] with return_skip=True, collect the feature from *before* each downsample and
+        #   return (the usual output, [skip@256, skip@128, skip@64, skip@32]). With False the
+        #   behaviour is identical to before. Each skip is x just ahead of a Resample(downsample),
+        #   the highest-quality feature at that resolution.
         ff_skips = [] if return_skip else None
         if feat_cache is not None:
             idx = feat_idx[0]
@@ -586,7 +599,7 @@ class Encoder3d(nn.Module):
             feat_cache[idx] = cache_x
             feat_idx[0] += 1
         else:
-            # [NEW 2026-07-21 gc-v2] full-res 첫 conv activation 도 checkpoint (Resample/Residual gc 와 동일 조건)
+            # [NEW 2026-07-21 gc-v2] checkpoint the first full-resolution conv activation too, under the same condition as Resample and Residual
             if _EXTENDED_VAE_GC and torch.is_grad_enabled():
                 x = checkpoint(self.conv1, x, use_reentrant=False)
             else:
@@ -594,7 +607,7 @@ class Encoder3d(nn.Module):
 
         ## downsamples
         for layer in self.downsamples:
-            # [crossattn] downsample Resample 직전 feature = 해당 해상도 skip
+            # [crossattn] the feature just before a downsample Resample is that resolution's skip
             if return_skip and isinstance(layer, Resample) and 'downsample' in layer.mode:
                 ff_skips.append(x)
             if feat_cache is not None:
@@ -602,13 +615,13 @@ class Encoder3d(nn.Module):
             else:
                 x = layer(x)
 
-        ## [NEW - oliviaa/skip] added downsample stages with skip connection
-        # [NEW - R2] stages_after_norm=True 면 여기서 건너뛰고 middle→norm→SiLU 뒤에서 실행
-        # [NEW - R3] stages_after_head=True 도 마찬가지로 건너뛴다. 이 가드를 빠뜨리면
-        #   R3 에서 스테이지가 **여기서도 한 번 더** 돌아 384 입력이 96 폭 블록에 들어가 죽는다
-        #   (실측: RuntimeError "size of tensor a (384) must match b (96)").
-        # [NEW - R3a] stages_after_conv1 도 건너뛴다 — R3a 의 스테이지 실행 주체는 encode() 다.
-        #   (R3 때 이 가드를 빠뜨려 스테이지가 두 번 돌아 384 vs 96 shape 에러가 났던 그 자리.)
+        ## [NEW/skip] added downsample stages with skip connection
+        # [NEW - R2] with stages_after_norm=True, skip here and run after middle -> norm -> SiLU.
+        # [NEW - R3] stages_after_head=True skips here as well. Without this guard the stages run
+        #   *a second time* here under R3, feeding a 384-wide input into a 96-wide block and
+        #   failing with RuntimeError "size of tensor a (384) must match b (96)".
+        # [NEW - R3a] stages_after_conv1 skips too - under R3a it is encode() that runs the stages.
+        #   This is the exact spot where a missing guard made them run twice under R3.
         if not self.stages_after_norm and not self.stages_after_head and not self.stages_after_conv1:
             x = self._run_add_stages(x, feat_cache, feat_idx, return_skip, ff_skips)
 
@@ -620,22 +633,23 @@ class Encoder3d(nn.Module):
                 x = layer(x)
 
         ## head
-        # [NEW - oliviaa/B-fix] use_b_adaptive=True 시 마지막 layer = AdaptiveWeightedCausalConv3d
-        #                       → forward 시 (y_main, y_adv) tuple 반환 가능
-        #                       → 호출 측 (= GeopriorVAE.encode) 에서 처리
-        # [NEW - R2] stages_after_norm: norm·SiLU(사전학습 native 특징)를 지난 뒤 스테이지 실행, head conv만 남김
+        # [NEW/B-fix] with use_b_adaptive=True the last layer is AdaptiveWeightedCausalConv3d, whose
+        #   forward can return a (y_main, y_adv) tuple. The caller, GeopriorVAE.encode, handles it.
+        # [NEW - R2] stages_after_norm runs the stages after norm and SiLU, where the features are
+        #   native to the pretrained model, leaving only the head conv behind them
         if self.stages_after_norm:
             x = self.head[0](x)
             x = self.head[1](x)
             x = self._run_add_stages(x, feat_cache, feat_idx, return_skip, ff_skips)
             if self.stages_norm_before_head:
-                x = self.stages_renorm(x)   # [NEW - R2n] 스택 출력 재정규화 → head conv 입력 앵커 복원
+                x = self.stages_renorm(x)   # [NEW - R2n] re-normalise the stack output, restoring the head conv's input anchor
             _head_layers = [self.head[2]]
         else:
             _head_layers = self.head
         _da_pre = None
         for layer in _head_layers:
-            # [NEW - da_adapter] 압축 conv 직전 feature 캡처 — 지름길은 conv와 같은 입력을 봄 (DA-VAE DADownBlock)
+            # [NEW - da_adapter] capture the feature just before the compressing conv; the shortcut
+            #   sees the same input the conv does, as in DA-VAE's DADownBlock
             if self.da_adapter and layer is self.head[-1]:
                 _da_pre = x
             if isinstance(layer, CausalConv3d) and feat_cache is not None:
@@ -653,24 +667,28 @@ class Encoder3d(nn.Module):
                 feat_idx[0] += 1
             else:
                 x = layer(x)
-        # [NEW - oliviaa/B-fix] inference (= feat_cache is not None) 시 = backward 없음 → main only
-        # training (= feat_cache is None) + use_b_adaptive=True 시 = tuple 그대로 → 호출 측 처리
+        # [NEW/B-fix] at inference (feat_cache is not None) there is no backward, so take main only.
+        # In training (feat_cache is None) with use_b_adaptive=True, pass the tuple on to the caller.
         if isinstance(x, tuple) and feat_cache is not None:
             x = x[0]
-        # [NEW - R3] stages_after_head: head conv 를 **다 지난 뒤** 스테이지 실행.
-        #   목적 — head conv 입력이 SiLU(RMS_norm(·)) 로 되돌아가 묶인다(R2 는 스테이지 출력을 그대로
-        #   받아 정규화가 없었고, 2026-08-13 발산에서 grad_W/grad_y 가 15배 튄 지점이 여기다).
-        #   부수효과로 head conv 가 사전학습 해상도(16²)에서 돌고, 스테이지 폭이 384→z_dim 으로 준다.
-        #   ※ b_adaptive training 시 x 는 (y_main, y_adv) tuple 이다. 두 갈래 모두 같은 스테이지를
-        #     통과시켜야 한다 — da_adapter 가 바로 아래에서 쓰는 처리와 같은 이유.
-        #     이때 스테이지 가중치는 두 경로의 기울기를 함께 받는다(R2 에서는 분기 이전이라 한 번만 받았다).
+        # [NEW - R3] stages_after_head runs the stages only *after* the head conv.
+        #   The point is that the head conv's input goes back to being SiLU(RMS_norm(.)) and so is
+        #   anchored again. R2 fed it the stage output directly, with no normalisation, and that is
+        #   where grad_W and grad_y jumped 15x in the 2026-08-13 divergence.
+        #   Two side effects: the head conv now runs at the pretrained resolution (16^2), and the
+        #   stage width drops from 384 to z_dim.
+        #   Note that under b_adaptive training x is a (y_main, y_adv) tuple, and both branches have
+        #   to go through the same stages - the same reason da_adapter does this just below. The
+        #   stage weights then receive gradients from both paths; under R2 this sat before the
+        #   split and received them once.
         if self.stages_after_head:
             if isinstance(x, tuple):
                 x = tuple(self._run_add_stages(_x, feat_cache, feat_idx, False, None) for _x in x)
             else:
                 x = self._run_add_stages(x, feat_cache, feat_idx, return_skip, ff_skips)
-        # [NEW - da_adapter] 공간 접기 + 무가중치 지름길: unshuffle(384→384r²) 후 z_dim개 그룹평균.
-        #   b_adaptive training 시 (y_main, y_adv) tuple — 두 출력 모두 동일 접기 (지름길 공유)
+        # [NEW - da_adapter] spatial fold plus a weight-free shortcut: unshuffle (384 -> 384r^2),
+        #   then average into z_dim groups. Under b_adaptive training this is a (y_main, y_adv)
+        #   tuple, and both outputs take the same fold, sharing the shortcut.
         if self.da_adapter:
             _r = self.da_fold
             _skip = _spatial_unshuffle3d(_da_pre, _r)
@@ -680,7 +698,7 @@ class Encoder3d(nn.Module):
                 x = tuple(_spatial_unshuffle3d(_x, _r) + _skip for _x in x)
             else:
                 x = _spatial_unshuffle3d(x, _r) + _skip
-        # [crossattn] return_skip=True 면 skip 리스트 함께 반환 (기존 x 는 그대로)
+        # [crossattn] with return_skip=True, return the skip list alongside the usual x
         if return_skip:
             return x, ff_skips
         return x
@@ -697,22 +715,22 @@ class Decoder3d(nn.Module):
                  temperal_upsample=[False, True, True],
                  dropout=0.0,
                  add_stages=None,
-                 add_tail_stages=None,  # [NEW - oliviaa/geoprior] stages after head (3ch RGB space)
-                 add_before_head_stages=None,  # [NEW - oliviaa/geoprior] upsample stages just before head (feature space)
-                 da_adapter=False,      # [NEW - da_adapter] DA-VAE da_up식 진입 (conv→pixel_shuffle + repeat 지름길, mid 원해상)
-                 da_base_split=False,   # [NEW - da_adapter] base(z_prior) 몫 분리: 사전학습 conv1(16→384) 유지 + nearest×r 합류
-                 da_spatial_fold=4,     # [NEW - da_adapter] 공간 확대 배율 r
-                 upsample_stages_before_middle=False,  # [NEW - R2/M1] add_upsamples를 middle 앞에서 실행 (미러)
-                 upsample_stages_before_conv1=False,   # [NEW - R3a미러] add_upsamples를 **conv1 앞 z(64ch) 공간**에서 실행 — 사전학습 conv1 이 원해상에서 돎
-                 dual_branch=False,   # [NEW - oliviaa/geoprior]
-                 prior_z_dim=None,    # [NEW - oliviaa/geoprior] None → same as z_dim (symmetric)
-                 expand_conv2=True,   # [NEW - oliviaa/geoprior] True: conv2 z_dim→z_dim → decoder input z_dim+prior_z_dim
-                 first_frame_inject=False,  # [crossattn] 첫프레임 keyframe cross-attn 주입
-                 ff_inject_levels="all",    # 주입할 upsample 레벨 ("all" 또는 "2,3" 등)
+                 add_tail_stages=None,  # [NEW/geoprior] stages after head (3ch RGB space)
+                 add_before_head_stages=None,  # [NEW/geoprior] upsample stages just before head (feature space)
+                 da_adapter=False,      # [NEW - da_adapter] DA-VAE da_up-style entry: conv -> pixel_shuffle plus a repeat shortcut, with mid at full resolution
+                 da_base_split=False,   # [NEW - da_adapter] split off the base (z_prior) share: keep the pretrained conv1 (16->384) and join with a nearest x r upsample
+                 da_spatial_fold=4,     # [NEW - da_adapter] spatial expansion factor r
+                 upsample_stages_before_middle=False,  # [NEW - R2/M1] run add_upsamples before middle (the mirror of R2)
+                 upsample_stages_before_conv1=False,   # [NEW - R3a mirror] run add_upsamples in the z space (64ch) *before* conv1, so the pretrained conv1 runs at full resolution
+                 dual_branch=False,   # [NEW/geoprior]
+                 prior_z_dim=None,    # [NEW/geoprior] None → same as z_dim (symmetric)
+                 expand_conv2=True,   # [NEW/geoprior] True: conv2 z_dim→z_dim → decoder input z_dim+prior_z_dim
+                 first_frame_inject=False,  # [crossattn] inject the first frame as a keyframe through cross-attention
+                 ff_inject_levels="all",    # which upsample levels to inject into ("all", or e.g. "2,3")
                  ff_window=32,              # windowed cross-attn window size
-                 ff_encoder_source='residual',  # [crossattn base] cross-attn feature encoder: residual(self.encoder,4레벨) | base(prior_encoder,3레벨 @32없음)
-                 ff_single_level=0,         # [crossattn single-level ablation] 0=레벨별 대칭(기본). 256/128/64/32 지정 시 그 한 encoder skip 을 전 디코더 레벨에 주입
-                 ff_dual_source=False):     # [dual 2026-07-14] residual 4레벨 + base(prior_encoder) 3레벨(L1~L3) 동시 장착 (분리형 gated block 2세트)
+                 ff_encoder_source='residual',  # [crossattn base] which encoder supplies the cross-attn features: residual (self.encoder, 4 levels) or base (prior_encoder, 3 levels, no @32)
+                 ff_single_level=0,         # [crossattn single-level ablation] 0 keeps the per-level symmetry (the default); 256/128/64/32 injects that one encoder skip into every decoder level
+                 ff_dual_source=False):     # [dual 2026-07-14] mount both sources at once: residual at 4 levels and base (prior_encoder) at 3 (L1-L3), as two separate sets of gated blocks
         super().__init__()
         self.dim = dim
         self.z_dim = z_dim
@@ -725,7 +743,7 @@ class Decoder3d(nn.Module):
         dims = [dim * u for u in [dim_mult[-1]] + dim_mult[::-1]]
         scale = 1.0 / 2**(len(dim_mult) - 2)
 
-        # [NEW - oliviaa/geoprior] dual_branch decoder input channels:
+        # [NEW/geoprior] dual_branch decoder input channels:
         #   expand_conv2=True:  conv2(z_dim→z_dim) + conv2_prior(prior_z_dim→prior_z_dim) → z_dim+prior_z_dim
         #   expand_conv2=False: conv2(z_dim→prior_z_dim) + conv2_prior(prior_z_dim→prior_z_dim) → prior_z_dim*2
         if dual_branch:
@@ -734,23 +752,24 @@ class Decoder3d(nn.Module):
         else:
             _prior_z = None
             in_z = z_dim
-        # [NEW - da_adapter] DA-VAE da_up식 진입: conv1(in_z→384)@/r 를 conv(→384r²)+pixel_shuffle 로 대체.
-        #   da_base_split=True 면 base(z_prior) 몫은 사전학습과 같은 shape 의 conv1(16→384)로 분리 유지
-        #   (state_dict 로드가 사전학습 dec.conv1 을 자동 이식) + nearest×r 로 32²에서 합류.
+        # [NEW - da_adapter] DA-VAE da_up-style entry: replace conv1 (in_z -> 384) at /r with a conv to 384r^2 followed by pixel_shuffle.
+        #   With da_base_split=True the base (z_prior) share keeps its own conv1 (16->384), the same
+        #   shape as the pretrained one, so loading the state_dict transplants the pretrained
+        #   dec.conv1 automatically; the two then join at 32^2 through a nearest x r upsample.
         self.da_adapter = da_adapter
         self.da_base_split = da_base_split and dual_branch
         self.da_fold = da_spatial_fold
         # [NEW - R2/M1]
         self.upsample_stages_before_middle = upsample_stages_before_middle
-        assert not (da_adapter and upsample_stages_before_middle), "[R2/da] 구조 모드 동시 지정 불가"
+        assert not (da_adapter and upsample_stages_before_middle), "[R2/da] these structural modes are mutually exclusive"
         assert not (upsample_stages_before_middle and add_before_head_stages), \
-            "[R2/M1] 미러는 before_head 스테이지와 동시 사용 불가 (제거하고 미러가 대체)"
+            "[R2/M1] the mirror cannot be combined with before_head stages - drop them, the mirror replaces them"
         if da_adapter:
             assert not add_stages and not add_before_head_stages, \
-                "[da_adapter] add_decoder(_before_head)_stages와 동시 사용 불가 (진입/mid 배치를 대체함)"
+                "[da_adapter] cannot be combined with add_decoder(_before_head)_stages - it replaces the entry and mid placement"
             _da_in = (in_z - _prior_z) if self.da_base_split else in_z
             _da_out = dims[0] * da_spatial_fold ** 2
-            assert _da_out % _da_in == 0, f"repeat 지름길 불가: {_da_out} % {_da_in} != 0"
+            assert _da_out % _da_in == 0, f"the repeat shortcut needs a whole multiple: {_da_out} % {_da_in} != 0"
             self.da_up = CausalConv3d(_da_in, _da_out, 3, padding=1)
             self._da_in = _da_in
             self._da_repeats = _da_out // _da_in
@@ -766,19 +785,21 @@ class Decoder3d(nn.Module):
             ResidualBlock(dims[0], dims[0], dropout), AttentionBlock(dims[0]),
             ResidualBlock(dims[0], dims[0], dropout))
 
-        # [NEW - oliviaa] Added upsample stages between middle and upsamples.
-        # [NEW - R3a미러] conv1 앞 배치면 폭 = conv1 입력(in_z=64, z_main48+z_prior16).
-        #   인코더 R3/R3a(사전학습 conv 뒤·z폭 스테이지 = +1.1~1.4dB 실측)의 디코더 판.
-        #   위치 플래그는 하나만, da/pretrained_copy 불가, keepdim 모드만(확장형은 채널 2배라 conv1 과 어긋남).
+        # [NEW] Added upsample stages between middle and upsamples.
+        # [NEW - R3a mirror] placed before conv1, the width is conv1's input (in_z = 64, z_main 48
+        #   plus z_prior 16). This is the decoder counterpart of the encoder's R3/R3a, where putting
+        #   z-width stages after the pretrained conv measured +1.1 to +1.4 dB.
+        #   Only one position flag, no da_adapter or pretrained_copy, and keepdim mode only: the
+        #   widening variant doubles the channels and no longer matches conv1.
         self.upsample_stages_before_conv1 = upsample_stages_before_conv1
         if upsample_stages_before_conv1:
-            assert not upsample_stages_before_middle, "[R3a미러] 디코더 스테이지 위치는 하나만"
-            assert not da_adapter, "[R3a미러/da] 동시 지정 불가"
-            assert add_stages, "[R3a미러] add_decoder_stages 없이 켤 수 없음 (스테이지가 곧 업샘플러)"
+            assert not upsample_stages_before_middle, "[R3a mirror] only one decoder stage position may be set"
+            assert not da_adapter, "[R3a mirror/da] these are mutually exclusive"
+            assert add_stages, "[R3a mirror] needs add_decoder_stages - the stages are the upsampler"
             assert all(s.get('mode') == 'upsample2d_keepdim' for s in add_stages), \
-                "[R3a미러] upsample2d_keepdim 모드만 지원 (확장형은 conv1 입력 폭과 어긋남)"
+                "[R3a mirror] only upsample2d_keepdim is supported - the widening variant does not match conv1's input width"
             assert not any(s.get('init') == 'pretrained_copy' for s in add_stages), \
-                "[R3a미러] pretrained_copy 불가 (사전학습 블록 폭 384 ≠ 64)"
+                "[R3a mirror] pretrained_copy does not work here: the pretrained block is 384 wide, this is 64"
         inner_dim = in_z if upsample_stages_before_conv1 else dims[0]
         self.add_upsamples = nn.ModuleList()
         if add_stages:
@@ -790,7 +811,8 @@ class Decoder3d(nn.Module):
                     for _ in range(n_blocks):
                         layers.append(ResidualBlock(inner_dim, inner_dim, dropout))
                     resample = Resample(inner_dim, mode=mode)
-                # [NEW - R2/M1] 폭 유지 미러: ResBlock/Resample 모두 dim→dim (아래 else는 채널 2배 확장형)
+                # [NEW - R2/M1] width-preserving mirror: both ResBlock and Resample stay dim -> dim
+                # (the else branch below is the variant that doubles the channels)
                 elif mode == 'upsample2d_keepdim':
                     for _ in range(n_blocks):
                         layers.append(ResidualBlock(inner_dim, inner_dim, dropout))
@@ -831,31 +853,37 @@ class Decoder3d(nn.Module):
                 scale *= 2.0
         self.upsamples = nn.Sequential(*upsamples)
 
-        # [crossattn 2026-07] 첫프레임 keyframe cross-attn 주입 모듈.
-        #   [변경] context 소스 = frozen VAE encoder return_skip 중간 feature (자작 pyramid 폐기).
-        #   각 upsample 해상도 레벨의 "마지막 ResidualBlock 뒤" 1곳씩 주입 → 4-레벨 symmetric.
-        #   주입점(coarse→fine): 각 level 의 마지막 resblock (다음 Resample 직전). Resample 로 level 경계 판단.
-        #   query_dim = 그 지점 decoder feature ch (= dims[level+1]) — 실측: [384@32, 384@64, 192@128, 96@256].
-        #   context_dim = encoder skip ch (해상도 1:1 대칭) — 실측: [384@32, 384@64, 192@128, 96@256].
-        #   encoder skip 은 fine→coarse 순서 [skip@256(96), skip@128(192), skip@64(384), skip@32(384)] 로 수집됨
+        # [crossattn 2026-07] first-frame keyframe cross-attention injection.
+        #   The context now comes from the frozen VAE encoder's return_skip intermediates; the
+        #   hand-written pyramid was dropped.
+        #   One injection point per upsample resolution level, after that level's last
+        #   ResidualBlock, giving a symmetric four-level arrangement. Level boundaries are found
+        #   by looking for Resample, so each point sits just before the next one.
+        #   query_dim is the decoder feature width there, dims[level+1], measured as
+        #   [384@32, 384@64, 192@128, 96@256]; context_dim is the encoder skip width at the
+        #   matching resolution, the same [384@32, 384@64, 192@128, 96@256].
+        #   The encoder skips are collected fine to coarse:
+        #   [skip@256 (96), skip@128 (192), skip@64 (384), skip@32 (384)].
         #   → decoder level 0(coarse,@32) = skip idx 3, level 1(@64)=idx 2, level 2(@128)=idx 1, level 3(@256)=idx 0.
         self.first_frame_inject = first_frame_inject
         self.ff_encoder_source = ff_encoder_source  # [NEW base] residual | base
-        self.ff_single_level = int(ff_single_level)  # [NEW single-level] 0=off, 256/128/64/32=단일 skip 전 레벨 주입
-        # [NEW single-level ablation] encoder skip 은 fine→coarse 수집: idx0=@256(96ch), idx1=@128(192ch),
-        #   idx2=@64(384ch), idx3=@32(384ch). res → (skip_idx, channels) 매핑.
+        self.ff_single_level = int(ff_single_level)  # [NEW single-level] 0 is off; 256/128/64/32 injects that one skip into every level
+        # [NEW single-level ablation] the encoder skips are collected fine to coarse: idx0 = @256
+        #   (96ch), idx1 = @128 (192ch), idx2 = @64 (384ch), idx3 = @32 (384ch). This maps a
+        #   resolution to (skip_idx, channels).
         _single_map = {256: (0, 96), 128: (1, 192), 64: (2, 384), 32: (3, 384)}
         self.ff_level_channels = dims[1:]         # [384,384,192,96] — decoder level(coarse→fine) out_ch
         self.ff_inject = nn.ModuleDict()          # key=str(upsamples flat idx), val=GatedCrossAttnBlock
-        self.ff_inject_skip = {}                  # flat idx -> encoder skip 리스트 index (fine→coarse 순서 기준)
+        self.ff_inject_skip = {}                  # flat idx -> index into the encoder skip list (fine to coarse)
         if first_frame_inject:
             from crossattn_ff import GatedCrossAttnBlock
-            _nlv = len(dim_mult)                  # 4 레벨
+            _nlv = len(dim_mult)                  # four levels
             if str(ff_inject_levels).lower() == "all":
                 _lv = set(range(_nlv))
             else:
                 _lv = set(int(s) for s in str(ff_inject_levels).split(",") if s.strip() != "")
-            # 각 upsample 레벨의 "마지막 ResidualBlock" flat idx 계산 (다음 Resample 직전 / 마지막 레벨은 끝).
+            # find the flat index of each upsample level's last ResidualBlock: just before the next
+            # Resample, or the very end for the last level.
             _last_resblock_of_level = {}          # level -> flat idx of its last ResidualBlock
             _flat, _level = 0, 0
             for _m in self.upsamples:
@@ -867,31 +895,39 @@ class Decoder3d(nn.Module):
             for _level in range(_nlv):
                 if _level not in _lv or _level not in _last_resblock_of_level:
                     continue
-                # [NEW base] base encoder(prior_encoder)는 add_downsample 없어 최심 @32 skip 없음
-                #   → decoder coarse level 0(@32) 주입 생략(3레벨만). skip_idx 매핑(level 1,2,3→2,1,0)은
-                #   base skip 리스트 [256,128,64](idx0,1,2)에 그대로 맞음(@64→2,@128→1,@256→0).
+                # [NEW base] the base encoder (prior_encoder) has no add_downsample, so it has no
+                #   deepest @32 skip. Injection into decoder coarse level 0 (@32) is therefore
+                #   skipped, leaving three levels. The skip_idx mapping (levels 1,2,3 -> 2,1,0)
+                #   lines up with the base skip list [256,128,64] at idx 0,1,2: @64->2, @128->1,
+                #   @256->0.
                 if ff_encoder_source == 'base' and _level == 0:
                     continue
                 _flat = _last_resblock_of_level[_level]
-                _out = dims[_level + 1]           # query dim = decoder feature ch @ this level (레벨별 유지)
+                _out = dims[_level + 1]           # query dim = the decoder feature width at this level, kept per level
                 if self.ff_single_level and self.ff_single_level in _single_map:
-                    # [NEW single-level ablation] 지정한 단일 encoder skip 을 모든 디코더 레벨에 주입.
-                    #   query dim(_out)은 레벨별 그대로, context 만 단일 skip(고정 idx/ch)으로 통일.
-                    #   resolution mismatch(디코더 레벨 ≠ skip 해상도)는 CrossAttention 의 window 스케일링이 흡수.
+                    # [NEW single-level ablation] inject one chosen encoder skip into every decoder
+                    #   level. The query dim (_out) stays per level; only the context is unified to
+                    #   that single skip, at a fixed index and width. CrossAttention's window
+                    #   scaling absorbs the resolution mismatch.
                     _skip_idx, _ctx = _single_map[self.ff_single_level]
                 else:
-                    # 기본: 레벨별 대칭. encoder skip index: fine→coarse 수집이라 coarse level 0 = skip idx (nlv-1)
+                    # the default is symmetric per level. Since skips are collected fine to coarse,
+                    # coarse level 0 maps to skip index nlv-1.
                     _skip_idx = _nlv - 1 - _level
-                    # context dim = encoder skip ch @ matched resolution (실측: L0=384,L1=384,L2=192,L3=96).
+                    # context dim = the encoder skip width at the matching resolution; measured
+                    # L0=384, L1=384, L2=192, L3=96.
                     _ctx = dims[_level + 1]
                 self.ff_inject[str(_flat)] = GatedCrossAttnBlock(
                     dim=_out, context_dim=_ctx, window_size=(ff_window, ff_window))
                 self.ff_inject_skip[_flat] = _skip_idx
 
-        # [dual 2026-07-14] dual-source: residual(위) + base(prior_encoder) 블록 동시 장착.
-        #   base 인코더는 add_downsample 이 없어 skip 3개(fine→coarse [@256,@128,@64]) → L0 제외 L1~L3만.
-        #   매핑/채널은 기존 ff_encoder_source='base' 경로와 동일 (level→skip idx = nlv-1-level, ctx=dims[level+1]).
-        #   γ=0 init 이라 장착 시점 출력 불변. forward 는 residual 주입 뒤 순차 합산.
+        # [dual 2026-07-14] dual-source: mount the residual blocks above and the base
+        #   (prior_encoder) blocks at the same time. The base encoder has no add_downsample, so it
+        #   has three skips (fine to coarse [@256, @128, @64]) and covers L1-L3, not L0.
+        #   The mapping and widths match the existing ff_encoder_source='base' path:
+        #   level -> skip idx = nlv-1-level, context = dims[level+1].
+        #   gamma starts at 0, so mounting them does not change the output. In forward they are
+        #   summed in sequence, after the residual injection.
         self.ff_dual_source = bool(ff_dual_source)
         self.ff_inject_base = nn.ModuleDict()
         self.ff_inject_base_skip = {}
@@ -906,7 +942,7 @@ class Decoder3d(nn.Module):
                 elif isinstance(_m, Resample):
                     _level += 1
                 _flat += 1
-            for _level in range(1, _nlv):            # base 는 @32 skip 없음 → L0 제외
+            for _level in range(1, _nlv):            # base has no @32 skip, so L0 is excluded
                 if _level not in _last_rb:
                     continue
                 _flat = _last_rb[_level]
@@ -915,7 +951,7 @@ class Decoder3d(nn.Module):
                     dim=_out, context_dim=dims[_level + 1], window_size=(ff_window, ff_window))
                 self.ff_inject_base_skip[_flat] = _nlv - 1 - _level
 
-        # [NEW - oliviaa/geoprior] add_before_head: DC-AE style upsample just before head (out_dim feature space)
+        # [NEW/geoprior] add_before_head: DC-AE style upsample just before head (out_dim feature space)
         # out_dim here = last upsamples output dim (e.g. 96 for Wan VAE with dim=96)
         # Default init='zero' → step 0 stage output=0, x = pixel_shuffle skip (identity 2× upsample)
         before_head_dim = out_dim
@@ -946,7 +982,7 @@ class Decoder3d(nn.Module):
                 layers.append(resample)
                 self.add_before_head.append(nn.Sequential(*layers))
 
-        # [NEW - oliviaa] Deferred pretrained_copy init for add_upsamples
+        # [NEW] Deferred pretrained_copy init for add_upsamples
         src_resamples = [m for m in self.upsamples if isinstance(m, Resample) and 'upsample' in m.mode]
         for stage in self.add_upsamples:
             for layer in stage:
@@ -964,7 +1000,7 @@ class Decoder3d(nn.Module):
             RMS_norm(out_dim, images=False), nn.SiLU(),
             CausalConv3d(out_dim, 3, 3, padding=1))
 
-        # [NEW - oliviaa/geoprior] add_tail: stages after head in 3ch RGB space
+        # [NEW/geoprior] add_tail: stages after head in 3ch RGB space
         # DC-AE style: zero-init 1x1 proj at end → step 0 output = 0 → x = 0 + x_in = x_in (identity)
         self.add_tail = nn.ModuleList()
         if add_tail_stages:
@@ -979,8 +1015,8 @@ class Decoder3d(nn.Module):
                 self.add_tail.append(nn.Sequential(*layers))
 
     def _run_add_upsamples(self, x, feat_cache=None, feat_idx=[0]):
-        # [NEW - R2/M1] add_upsamples 블록 추출 — 호출 위치를 upsample_stages_before_middle 로 선택
-        ## [NEW - oliviaa/skip] added upsample stages with skip connection
+        # [NEW - R2/M1] pull the add_upsamples blocks out, so upsample_stages_before_middle can choose where they run
+        ## [NEW/skip] added upsample stages with skip connection
         for stage in self.add_upsamples:
             x_in = x
             B, C, T_in, H, W = x_in.shape
@@ -1034,7 +1070,7 @@ class Decoder3d(nn.Module):
         return x
 
     def _cached_conv(self, conv, x, feat_cache, feat_idx):
-        # [NEW - da_adapter] CausalConv3d 캐시 적용 공통화 — 기존 conv1 블록과 동일 로직
+        # [NEW - da_adapter] shared helper for applying the CausalConv3d cache - the same logic the conv1 block uses
         if feat_cache is not None:
             idx = feat_idx[0]
             cache_x = x[:, :, -CACHE_T:, :, :].clone()
@@ -1052,20 +1088,20 @@ class Decoder3d(nn.Module):
         return conv(x)
 
     def forward(self, x, feat_cache=None, feat_idx=[0], ff_skips=None, ff_skips_base=None):
-        ## conv1  ([NEW - da_adapter] da_up 진입 분기)
+        ## conv1  ([NEW - da_adapter] the da_up entry branch)
         if self.da_adapter:
-            # cat 순서 = [z_main(0:z_dim), z_prior(z_dim:)] (WanVAE_.decode)
+            # concatenation order is [z_main(0:z_dim), z_prior(z_dim:)], as in WanVAE_.decode
             if self.da_base_split:
                 xm, xb = x[:, :self._da_in], x[:, self._da_in:]
             else:
                 xm, xb = x, None
             h = self._cached_conv(self.da_up, xm, feat_cache, feat_idx)
             h = _spatial_shuffle3d(h, self.da_fold)
-            # 무가중치 지름길 (DA-VAE DAUpBlock): 채널 반복 → shuffle
+            # weight-free shortcut (DA-VAE's DAUpBlock): repeat the channels, then shuffle
             _sc = xm.repeat_interleave(self._da_repeats, dim=1)
             h = h + _spatial_shuffle3d(_sc, self.da_fold)
             if xb is not None:
-                # base 경로: 사전학습 conv1(16→384)@/r → nearest×r 로 원해상 합류
+                # base path: the pretrained conv1 (16->384) at /r, then a nearest x r upsample to join at full resolution
                 b = self._cached_conv(self.conv1, xb, feat_cache, feat_idx)
                 _B = b.shape[0]
                 b = rearrange(b, 'b c t h w -> (b t) c h w')
@@ -1074,13 +1110,14 @@ class Decoder3d(nn.Module):
                 h = h + b
             x = h
         else:
-            # [NEW - R3a미러] 스테이지를 conv1 **앞** z(64ch) 공간에서 실행 → conv1 이 원해상에서 돎.
-            #   zero-init 시 스텝 0 = repeat+pixel_shuffle skip(무가중치 nearest류 업샘플) 만 남음.
+            # [NEW - R3a mirror] run the stages in the z space (64ch) *before* conv1, so conv1 runs
+            #   at full resolution. With zero-init, step 0 leaves only the repeat + pixel_shuffle
+            #   skip, a weight-free nearest-style upsample.
             if self.upsample_stages_before_conv1:
                 x = self._run_add_upsamples(x, feat_cache, feat_idx)
             x = self._cached_conv(self.conv1, x, feat_cache, feat_idx)
 
-        # [NEW - R2/M1] 미러: 업샘플 스테이지를 middle 앞에 실행 → mid가 원해상(32²)에서 돎
+        # [NEW - R2/M1] the mirror: run the upsample stages before middle, so mid runs at full resolution (32^2)
         if self.upsample_stages_before_middle:
             x = self._run_add_upsamples(x, feat_cache, feat_idx)
 
@@ -1091,28 +1128,32 @@ class Decoder3d(nn.Module):
             else:
                 x = layer(x)
 
-        ## [NEW - oliviaa/skip] added upsample stages with skip connection
-        # [NEW - R3a미러] before_conv1 이면 이미 돌았으므로 여기(legacy after-middle)서도 건너뛴다
-        #   — 인코더 R3 때 이 가드를 빠뜨려 이중실행 shape 에러가 났던 것과 같은 자리.
+        ## [NEW/skip] added upsample stages with skip connection
+        # [NEW - R3a mirror] with before_conv1 the stages have already run, so skip them here too
+        #   (the legacy after-middle position). This is the same spot where a missing guard caused
+        #   the double-run shape error in the encoder's R3.
         if not self.upsample_stages_before_middle and not self.upsample_stages_before_conv1:
             x = self._run_add_upsamples(x, feat_cache, feat_idx)
 
-        ## upsamples  (+ [crossattn] 각 ResidualBlock 뒤 keyframe cross-attn 주입)
+        ## upsamples  (+ [crossattn] keyframe cross-attention injected after each ResidualBlock)
         for _u, layer in enumerate(self.upsamples):
             if feat_cache is not None:
                 x = layer(x, feat_cache, feat_idx)
             else:
                 x = layer(x)
-            # gate(gamma)=0 시작이라 ff_skips 있어도 첫 forward 는 bit-identical. feat_cache 미사용(AttentionBlock 패턴).
-            #   ff_skips[i] = encoder skip (2D, B,C,H',W'), 해상도 1:1 대칭 → cross-attn context.
+            # the gate (gamma) starts at 0, so the first forward is bit-identical even with
+            # ff_skips present. No feat_cache here, following the AttentionBlock pattern.
+            #   ff_skips[i] is an encoder skip (2D, B,C,H',W') at the matching resolution, used as
+            #   the cross-attention context.
             if self.first_frame_inject and ff_skips is not None and str(_u) in self.ff_inject:
                 x = self.ff_inject[str(_u)](x, ff_skips[self.ff_inject_skip[_u]])
-            # [dual] base(prior_encoder) 소스 블록 — residual 주입 뒤 순차 합산.
-            #   x = x + γ_res·attn_res(...) 다음에 x = x + γ_base·attn_base(...). γ=0 init → 장착 무영향.
+            # [dual] the base (prior_encoder) source blocks, summed in sequence after the residual
+            #   injection: x = x + gamma_res * attn_res(...), then x = x + gamma_base * attn_base(...).
+            #   Both gammas start at 0, so mounting them has no effect.
             if self.first_frame_inject and ff_skips_base is not None and str(_u) in self.ff_inject_base:
                 x = self.ff_inject_base[str(_u)](x, ff_skips_base[self.ff_inject_base_skip[_u]])
 
-        ## [NEW - oliviaa/geoprior] add_before_head: DC-AE style upsample in feature space (before head)
+        ## [NEW/geoprior] add_before_head: DC-AE style upsample in feature space (before head)
         for stage in self.add_before_head:
             x_in = x
             B, C, T_in, H, W = x_in.shape
@@ -1124,19 +1165,20 @@ class Decoder3d(nn.Module):
             resample_mode = next((l.mode for l in stage if isinstance(l, Resample)), 'none')
             if resample_mode == 'upsample3d':
                 if feat_cache is not None:
-                    # [FIX 2026-06-27 frame-drop root cause] chunked decode: main Resample은
-                    #   chunk당 full 2x temporal(2t) 생산. 기존엔 이 chunk 분기가 없어
-                    #   single-pass 로직(1+(t-1)*2 = 2t-1)을 chunked 에도 적용 → main(2t)과
-                    #   1프레임 어긋나 x+skip 에서 손실(17->15, 81->71). add_upsamples skip
-                    #   (line 744-752)과 동일하게 chunk 분기 추가해 길이 일치.
+                    # [FIX 2026-06-27, the root cause of the dropped frames] in a chunked decode the
+                    #   main Resample produces a full 2x temporal (2t) per chunk. Without this chunk
+                    #   branch the single-pass formula, 1 + (t-1)*2 = 2t-1, was applied to chunked
+                    #   decoding too, leaving the skip one frame short of main's 2t and losing frames
+                    #   at x + skip (17 -> 15, 81 -> 71). Adding the chunk branch, as the
+                    #   add_upsamples skip at lines 744-752 already does, makes the lengths agree.
                     if T_in == 1:
-                        # first chunk: Resample 'Rep'(temporal 유지) — 공간만 2x
+                        # first chunk: Resample 'Rep' keeps the time axis, so only space doubles
                         skip = rearrange(x_in, 'b c t h w -> (b t) c h w')
                         skip = skip.repeat_interleave(4, dim=1)
                         skip = F.pixel_shuffle(skip, 2)
                         skip = rearrange(skip, '(b t) c h w -> b c t h w', b=B)
                     else:
-                        # subsequent chunk: full 2x temporal(2t) — main 과 길이 일치
+                        # later chunks: a full 2x on time (2t), matching main's length
                         skip = x_in.repeat_interleave(8, dim=1)
                         skip = pixel_shuffle_3d(skip, 2)
                 else:
@@ -1159,7 +1201,7 @@ class Decoder3d(nn.Module):
                 skip = rearrange(skip, '(b t) c h w -> b c t h w', b=B)
             elif resample_mode == 'upsample_temporal':
                 if feat_cache is not None:
-                    # [FIX] chunked: main 과 동일하게 full 2x temporal
+                    # [FIX] chunked: a full 2x on time, the same as main
                     if T_in == 1:
                         skip = x_in
                     else:
@@ -1176,8 +1218,9 @@ class Decoder3d(nn.Module):
             x = x + skip
 
         ## head
-        # [NEW 2026-07-21 gc-v2] full-res head 도 checkpoint (feat_cache None + grad 시).
-        #   early-return 금지 — head 뒤 add_tail 단계 보존 (gc 시 아래 루프는 빈 순회).
+        # [NEW 2026-07-21 gc-v2] checkpoint the full-resolution head as well, when feat_cache is
+        #   None and gradients are needed. Do not early-return here: the add_tail step after the
+        #   head has to stay reachable, and with checkpointing the loop below simply runs empty.
         _head_gc = _EXTENDED_VAE_GC and feat_cache is None and torch.is_grad_enabled()
         if _head_gc:
             def _head_fn(_x):
@@ -1202,7 +1245,7 @@ class Decoder3d(nn.Module):
             else:
                 x = layer(x)
 
-        ## [NEW - oliviaa/geoprior] add_tail: DC-AE style refinement in 3ch RGB space
+        ## [NEW/geoprior] add_tail: DC-AE style refinement in 3ch RGB space
         for stage in self.add_tail:
             x_in = x
             for layer in stage:
@@ -1224,7 +1267,8 @@ class Decoder3d(nn.Module):
         return x
 
 
-# [NEW - da_adapter] 공간 전용 shuffle/unshuffle (temporal 불변, 채널-major: out_ch = c*r² + phase)
+# [NEW - da_adapter] spatial-only shuffle and unshuffle: the time axis is untouched, and the
+# channel layout is channel-major, out_ch = c*r^2 + phase.
 def _spatial_unshuffle3d(x, r):
     b = x.shape[0]
     y = rearrange(x, 'b c t h w -> (b t) c h w')
@@ -1259,32 +1303,32 @@ class WanVAE_(nn.Module):
                  dropout=0.0,
                  add_encoder_stages=None,
                  add_decoder_stages=None,
-                 add_decoder_tail_stages=None,          # [NEW - oliviaa/geoprior] stages after head (3ch RGB space)
-                 add_decoder_before_head_stages=None,   # [NEW - oliviaa/geoprior] upsample stages just before head
-                 dual_branch=False,           # [NEW - oliviaa/geoprior]
-                 subsample_mode='avg_pool',   # [NEW - oliviaa/geoprior] 'avg_pool' | 'stride' | 'bilinear'
-                 prior_z_dim=None,            # [NEW - oliviaa/geoprior] None → same as z_dim; int for asymmetric (e.g. 16 for frozen Wan)
-                 expand_conv2=True,           # [NEW - oliviaa/geoprior] True: conv2 z_dim→z_dim; False: conv2 z_dim→prior_z_dim (old)
-                 expand_encoder_head=False,   # [NEW - oliviaa/geoprior] True: encoder.head outputs z_dim*2 (instead of prior_z_dim*2)
-                 use_b_adaptive=False,        # [NEW - oliviaa/B-fix] encoder.head[-1] = AdaptiveWeightedCausalConv3d (= single backward weight ratio)
+                 add_decoder_tail_stages=None,          # [NEW/geoprior] stages after head (3ch RGB space)
+                 add_decoder_before_head_stages=None,   # [NEW/geoprior] upsample stages just before head
+                 dual_branch=False,           # [NEW/geoprior]
+                 subsample_mode='avg_pool',   # [NEW/geoprior] 'avg_pool' | 'stride' | 'bilinear'
+                 prior_z_dim=None,            # [NEW/geoprior] None → same as z_dim; int for asymmetric (e.g. 16 for frozen Wan)
+                 expand_conv2=True,           # [NEW/geoprior] True: conv2 z_dim→z_dim; False: conv2 z_dim→prior_z_dim (old)
+                 expand_encoder_head=False,   # [NEW/geoprior] True: encoder.head outputs z_dim*2 (instead of prior_z_dim*2)
+                 use_b_adaptive=False,        # [NEW/B-fix] encoder.head[-1] = AdaptiveWeightedCausalConv3d (= single backward weight ratio)
                  b_adaptive_eps=1e-6,
                  b_adaptive_max=1e7,
                  b_adaptive_disc_weight=1.0,
-                 da_adapter=False,            # [NEW - da_adapter] DA-VAE식 경계 어댑터 (인코더 채널압축+unshuffle / 디코더 da_up)
-                 da_base_split=False,         # [NEW - da_adapter] 디코더 base 몫 분리 보존 (b′)
-                 da_spatial_fold=4,           # [NEW - da_adapter] 공간 접기/확대 배율 r
-                 stages_after_norm=False,     # [NEW - R2] 인코더 스테이지 norm·SiLU 뒤 + 디코더 M1 미러 (한 플래그 패키지)
+                 da_adapter=False,            # [NEW - da_adapter] DA-VAE-style boundary adapter: channel compression plus unshuffle in the encoder, da_up in the decoder
+                 da_base_split=False,         # [NEW - da_adapter] keep the decoder's base share separate (variant b')
+                 da_spatial_fold=4,           # [NEW - da_adapter] the spatial fold and expansion factor r
+                 stages_after_norm=False,     # [NEW - R2] encoder stages after norm and SiLU, plus the decoder M1 mirror - one flag for the pair
                  stages_norm_before_head=False,  # [NEW - R2n]
-                 stages_after_head=False,     # [NEW - R3] 인코더 스테이지 head conv 뒤. 디코더는 R2 와 동일 배치 유지
-                 stages_after_conv1=False,    # [NEW - R3a] 스테이지를 vae.conv1 뒤(chunk 직전). 사전학습 head→conv1 이 원조합·원해상으로 붙음
-                 dec_stages_before_conv1=False,  # [NEW - R3a미러] 디코더 스테이지를 conv1 앞 z(64ch)로 — 사전학습 dec.conv1 이 원해상에서 돎
-                 decoder_mirror=True,         # [NEW - R2 통제] False = 인코더만 이동
-                 first_frame_inject=False,    # [crossattn] 첫프레임 keyframe cross-attn 주입
-                 ff_inject_levels="all",      # 주입할 upsample 레벨
+                 stages_after_head=False,     # [NEW - R3] encoder stages after the head conv; the decoder keeps R2's placement
+                 stages_after_conv1=False,    # [NEW - R3a] stages after vae.conv1, just before chunking, so the pretrained head -> conv1 pair stays together at full resolution
+                 dec_stages_before_conv1=False,  # [NEW - R3a mirror] decoder stages in the z space (64ch) before conv1, so the pretrained dec.conv1 runs at full resolution
+                 decoder_mirror=True,         # [NEW - R2 control] False moves the encoder only
+                 first_frame_inject=False,    # [crossattn] inject the first frame as a keyframe through cross-attention
+                 ff_inject_levels="all",      # which upsample levels to inject into
                  ff_window=32,                # windowed cross-attn window size
                  ff_encoder_source='residual',  # [crossattn base] residual(self.encoder) | base(prior_encoder full-res)
-                 ff_single_level=0,           # [crossattn single-level ablation] 0=off, 256/128/64/32=단일 skip 전 레벨 주입
-                 ff_dual_source=False):       # [dual 2026-07-14] residual+base 참조 동시 장착
+                 ff_single_level=0,           # [crossattn single-level ablation] 0 is off; 256/128/64/32 injects that one skip into every level
+                 ff_dual_source=False):       # [dual 2026-07-14] mount the residual and base references at once
         super().__init__()
         self.first_frame_inject = first_frame_inject
         self.ff_encoder_source = ff_encoder_source  # [NEW base]
@@ -1298,28 +1342,29 @@ class WanVAE_(nn.Module):
         self.temperal_upsample = temperal_downsample[::-1]
         self.dual_branch = dual_branch
         self.subsample_mode = subsample_mode
-        # [NEW - oliviaa/geoprior] prior branch z_dim (Wan fixed = 16); None → symmetric
+        # [NEW/geoprior] prior branch z_dim (Wan fixed = 16); None → symmetric
         self.prior_z_dim = prior_z_dim if prior_z_dim is not None else z_dim
 
         self.expand_encoder_head = expand_encoder_head
         # modules
-        # [NEW - oliviaa/geoprior] dual_branch: encoder head fixed at prior_z_dim*2 (same as pretrained Wan)
+        # [NEW/geoprior] dual_branch: encoder head fixed at prior_z_dim*2 (same as pretrained Wan)
         # → encoder.head[-1] keeps shape (384→prior_z_dim*2), no weight mismatch
         # expand_encoder_head=True: encoder.head outputs z_dim*2 (true channel expansion through head)
         enc_out_dim = (self.prior_z_dim * 2) if (dual_branch and not expand_encoder_head) else (z_dim * 2)
-        # [NEW - da_adapter] 플래그 저장 + main encoder/decoder 에만 전달 (prior_encoder 는 순정 유지)
+        # [NEW - da_adapter] keep the flags and pass them to the main encoder and decoder only; prior_encoder stays stock
         self.da_adapter = da_adapter
         self.da_base_split = da_base_split
         self.da_spatial_fold = da_spatial_fold
         self.stages_after_norm = stages_after_norm  # [NEW - R2]
         self.stages_after_head = stages_after_head  # [NEW - R3]
         self.stages_after_conv1 = stages_after_conv1  # [NEW - R3a]
-        # [NEW - R3a] 스테이지 폭은 Encoder3d 가 자기 z_dim(=enc_out_dim)으로 짓는다. conv1 출력은
-        #   z_dim*2 이므로, 둘이 같으려면 expand_encoder_head 가 필수다(그때 enc_out_dim == z_dim*2).
-        #   아니면 conv1 출력(96)과 스테이지 폭(32)이 어긋나 첫 forward 에서 죽는다 — 여기서 미리 죽인다.
+        # [NEW - R3a] Encoder3d builds the stages at its own z_dim (enc_out_dim), while conv1's
+        #   output is z_dim*2. For the two to match, expand_encoder_head is required - that is when
+        #   enc_out_dim == z_dim*2. Otherwise conv1's output (96) and the stage width (32) disagree
+        #   and the first forward dies, so fail here instead.
         if stages_after_conv1:
             assert expand_encoder_head, \
-                "[R3a] stages_after_conv1 은 expand_encoder_head=True 전제 (스테이지 폭 == conv1 출력 폭)"
+                "[R3a] stages_after_conv1 requires expand_encoder_head=True, so the stage width equals conv1's output width"
         self.encoder = Encoder3d(dim, enc_out_dim, dim_mult, num_res_blocks,
                                  attn_scales, self.temperal_downsample, dropout,
                                  add_stages=add_encoder_stages,
@@ -1342,7 +1387,7 @@ class WanVAE_(nn.Module):
             _conv2_out = z_dim if expand_conv2 else self.prior_z_dim
             self.conv2 = CausalConv3d(z_dim, _conv2_out, 1)
             if z_dim != self.prior_z_dim:
-                # [NEW - oliviaa/geoprior] separate frozen conv2 for prior branch
+                # [NEW/geoprior] separate frozen conv2 for prior branch
                 self.conv2_prior = CausalConv3d(self.prior_z_dim, self.prior_z_dim, 1)
         else:
             self.conv2 = CausalConv3d(z_dim, z_dim, 1)
@@ -1350,21 +1395,23 @@ class WanVAE_(nn.Module):
                                  attn_scales, self.temperal_upsample, dropout,
                                  add_stages=add_decoder_stages,
                                  add_tail_stages=add_decoder_tail_stages,
-                                 add_before_head_stages=add_decoder_before_head_stages,  # [NEW - oliviaa/geoprior]
+                                 add_before_head_stages=add_decoder_before_head_stages,  # [NEW/geoprior]
                                  da_adapter=da_adapter,          # [NEW - da_adapter]
                                  da_base_split=da_base_split,
                                  da_spatial_fold=da_spatial_fold,
-                                 # [NEW - R3] stages_after_head 도 포함시킨다. 안 그러면 R3 를 켤 때
-                                 #   이 값이 False 로 떨어져 **디코더가 조용히 'middle 뒤'로 바뀐다**
-                                 #   (= R2 대비 인코더·디코더 둘 다 달라져 단일 변인이 깨짐).
-                                 #   R3 의 의도는 "인코더만 이동, 디코더는 R2 그대로" 이다.
-                                 # [NEW - R3a미러] before_conv1 이 켜지면 before_middle 은 꺼야 한다(위치 하나만).
-                                 #   안 끄면 Decoder3d assert 로 죽음 — 조용한 이중배치 방지.
-                                 upsample_stages_before_middle=((stages_after_norm or stages_after_head or stages_after_conv1) and decoder_mirror and not dec_stages_before_conv1),  # [NEW - R2/M1 패키지, R3/R3a 도 디코더는 R2 배치 유지]
-                                 upsample_stages_before_conv1=dec_stages_before_conv1,  # [NEW - R3a미러]
+                                 # [NEW - R3] stages_after_head has to be included here. Without it,
+                                 #   turning R3 on makes this False and the decoder *silently* moves
+                                 #   to 'after middle', so both encoder and decoder differ from R2
+                                 #   and the single-variable comparison breaks. R3 is meant to move
+                                 #   the encoder only and keep the decoder as R2 has it.
+                                 # [NEW - R3a mirror] when before_conv1 is on, before_middle must be
+                                 #   off - only one position. Otherwise a Decoder3d assert fires,
+                                 #   which is the guard against a silent double placement.
+                                 upsample_stages_before_middle=((stages_after_norm or stages_after_head or stages_after_conv1) and decoder_mirror and not dec_stages_before_conv1),  # [NEW - part of the R2/M1 pair; R3 and R3a keep R2's decoder placement]
+                                 upsample_stages_before_conv1=dec_stages_before_conv1,  # [NEW - R3a mirror]
                                  dual_branch=dual_branch,
-                                 prior_z_dim=self.prior_z_dim,   # [NEW - oliviaa/geoprior]
-                                 expand_conv2=expand_conv2,       # [NEW - oliviaa/geoprior]
+                                 prior_z_dim=self.prior_z_dim,   # [NEW/geoprior]
+                                 expand_conv2=expand_conv2,       # [NEW/geoprior]
                                  first_frame_inject=first_frame_inject,  # [crossattn]
                                  ff_inject_levels=ff_inject_levels,
                                  ff_window=ff_window,
@@ -1372,10 +1419,11 @@ class WanVAE_(nn.Module):
                                  ff_single_level=ff_single_level,  # [crossattn single-level]
                                  ff_dual_source=ff_dual_source)   # [dual]
 
-        # [crossattn 2026-07] 첫프레임 keyframe feature 는 frozen VAE encoder 의 return_skip
-        #   중간 feature 로 대체 → 별도 ff_encoder 없음(새 param 0). decode() 에서 self.encoder 재사용.
+        # [crossattn 2026-07] the first-frame keyframe feature comes from the frozen VAE encoder's
+        #   return_skip intermediates, so there is no separate ff_encoder and no new parameters.
+        #   decode() reuses self.encoder.
 
-        # [NEW - oliviaa/geoprior] 하단 브랜치: vanilla Wan encoder (add_stages 없음, frozen)
+        # [NEW/geoprior] the lower branch: a vanilla Wan encoder, frozen and without add_stages
         # prior branch uses prior_z_dim (Wan's fixed z_dim=16); weights copied in _video_vae_geoprior
         if dual_branch:
             self.prior_encoder = Encoder3d(dim, self.prior_z_dim * 2, dim_mult, num_res_blocks,
@@ -1384,19 +1432,19 @@ class WanVAE_(nn.Module):
             # separate projection for prior branch (conv1 handles main encoder only)
             self.prior_conv1 = CausalConv3d(self.prior_z_dim * 2, self.prior_z_dim * 2, 1)
 
-        # [NEW - oliviaa] cache count_conv3d results — avoids full module-tree traversal every step
+        # [NEW] cache count_conv3d results — avoids full module-tree traversal every step
         self._cached_dec_conv_num = count_conv3d(self.decoder)
         self._cached_enc_conv_num = count_conv3d(self.encoder)
         if dual_branch:
             self._cached_prior_conv_num = count_conv3d(self.prior_encoder)
 
     def forward(self, x):
-        # [NEW - oliviaa/B-fix] encode 의 return 가 tuple ((mu, log_var), (mu_adv, log_var_adv)) 가능
-        # 단 GeopriorVAE.forward 은 일반 reconstruction path — main branch (= first) 만 사용.
-        # 호출 측 (= GeopriorDiTAlignModel.forward 등) 에서 use_b_adaptive 시 adv branch 별도 처리.
+        # [NEW/B-fix] encode can return a tuple, ((mu, log_var), (mu_adv, log_var_adv)).
+        # GeopriorVAE.forward is the ordinary reconstruction path and uses the main branch only.
+        # Callers such as GeopriorDiTAlignModel.forward handle the adv branch when use_b_adaptive is on.
         encode_result = self.encode(x, scale=None)
         if isinstance(encode_result[0], tuple):
-            (mu, log_var), _ = encode_result    # adv branch 무시 (= 일반 forward path)
+            (mu, log_var), _ = encode_result    # ignore the adv branch on the ordinary forward path
         else:
             mu, log_var = encode_result
         z = self.reparameterize(mu, log_var)
@@ -1435,16 +1483,18 @@ class WanVAE_(nn.Module):
                         feat_cache=self._enc_feat_map,
                         feat_idx=self._enc_conv_idx)
                     out = torch.cat([out, out_], 2)
-        # [NEW - R3a] 스테이지를 conv1 **뒤**·chunk **앞**에서 실행.
-        #   · conv1 이 32²(원해상)에서 돌게 되고, 사전학습 head→conv1 이 원래 조합 그대로 붙는다.
-        #     (conv1 은 1x1 이라 해상도 무관 — 이 이동의 기대효과는 '재매개변수화 수준'이며,
-        #      이 런의 목적은 그 예측 자체의 검증이다.)
-        #   · 이 지점은 청크 결합(torch.cat) **뒤**라, 스테이지의 causal conv 가 full-T 를 한 번에 본다
-        #     → feat_cache 불요, chunked/single-pass 등가가 구조적으로 성립 (R2/R3 의 청크등가 로직 불필요).
-        #   · b_adaptive tuple 이면 두 갈래를 같은 스테이지(가중치 공유)에 각각 태운다 — R3 와 동일 규약.
+        # [NEW - R3a] run the stages *after* conv1 and *before* chunking.
+        #   - conv1 then runs at 32^2 (full resolution), and the pretrained head -> conv1 pair stays
+        #     as it was trained. conv1 is 1x1 and so resolution-independent, which means the move is
+        #     expected to be a reparameterisation; testing that prediction is the point of the run.
+        #   - this point is *after* the chunks are joined (torch.cat), so the stages' causal conv
+        #     sees the full T at once. No feat_cache is needed and chunked and single-pass are
+        #     equivalent by construction, without R2/R3's chunk-equivalence logic.
+        #   - with a b_adaptive tuple, both branches go through the same stages and share their
+        #     weights, the same convention R3 uses.
         def _r3a(y):
             return self.encoder._run_add_stages(y, None, [0]) if self.stages_after_conv1 else y
-        # [NEW - oliviaa/B-fix] out 가 tuple (y_main, y_adv) 가능 — use_b_adaptive=True + training 시
+        # [NEW/B-fix] out can be a (y_main, y_adv) tuple, when use_b_adaptive=True and training
         if isinstance(out, tuple):
             out_main, out_adv = out
             mu_main, log_var_main = _r3a(self.conv1(out_main)).chunk(2, dim=1)
@@ -1470,21 +1520,23 @@ class WanVAE_(nn.Module):
         self.clear_cache()
         return mu, log_var
 
-    # [NEW - oliviaa/geoprior] 하단 브랜치 인코딩
-    # subsample_mode에 따라 2x T+H+W 다운샘플 → frozen prior_encoder → mu_prior
+    # [NEW/geoprior] encode the lower branch: downsample T, H and W by 2 according to
+    # subsample_mode, then run the frozen prior_encoder to get mu_prior.
     def _encode_prior(self, x):
         if self.subsample_mode == 'avg_pool':
-            # CausalVAE는 첫 프레임을 따로 처리 → T가 홀수여야 latent T가 맞음
-            # avg_pool3d는 floor(T/2)를 만드므로 T가 홀수면 마지막 프레임 repeat해서 짝수로 맞춤
+            # a CausalVAE treats the first frame separately, so T has to be odd for the latent T to
+            # line up. avg_pool3d produces floor(T/2), so an odd T gets its last frame repeated to
+            # make it even.
             if x.shape[2] % 2 == 1:
                 x_pad = torch.cat([x, x[:, :, -1:, :, :]], dim=2)
             else:
                 x_pad = x
             x_sub = F.avg_pool3d(x_pad, kernel_size=(2, 2, 2), stride=(2, 2, 2))
         elif self.subsample_mode == 'spatial_avg_temporal_stride':
-            # [NEW - oliviaa] spatial 2x avg + temporal stride 2 (no temporal averaging)
-            # I2V 첫 프레임 값 보존을 위해 temporal averaging 제거. GT frame은 절반만 사용.
-            # T가 홀수면 마지막 프레임 repeat해서 짝수로 맞춤 (output T는 'avg_pool'과 동일)
+            # [NEW] spatial 2x avg + temporal stride 2 (no temporal averaging)
+            # temporal averaging is dropped so the I2V first frame keeps its values; only half the
+            # GT frames are used. An odd T gets its last frame repeated to make it even, and the
+            # output T matches the 'avg_pool' mode.
             if x.shape[2] % 2 == 1:
                 x_pad = torch.cat([x, x[:, :, -1:, :, :]], dim=2)
             else:
@@ -1498,25 +1550,28 @@ class WanVAE_(nn.Module):
             x_flat = rearrange(x_t, 'b c t h w -> (b t) c h w')
             x_flat = F.interpolate(x_flat, scale_factor=0.5, mode='bilinear', align_corners=False)
             x_sub = rearrange(x_flat, '(b t) c h w -> b c t h w', b=B)
-        # [NEW - oliviaa/f32t4] prior subsample 을 main add_stage 와 짝맞춤. temporal 미압축
-        #   (add_encoder 가 downsample2d = spatial-only 이므로 prior 도 spatial 만 줄이고 temporal 유지).
-        #   → main·prior latent 크기 일치 → concat 성립. base(×8/×4) 통과 후:
+        # [NEW/f32t4] match the prior subsample to the main add_stage, leaving time uncompressed:
+        #   add_encoder uses downsample2d, which is spatial-only, so the prior shrinks space only
+        #   and keeps time. The main and prior latents then have the same size and concatenate.
+        #   After the base (x8 / x4):
         #   bilinear_s2t1 → spatial ×16, temporal ×4 (f16t4) / bilinear_s4t1 → spatial ×32, temporal ×4 (f32t4).
         elif self.subsample_mode == 'bilinear_s2t1':
             B, C, T, H, W = x.shape
-            x_flat = rearrange(x, 'b c t h w -> (b t) c h w')  # temporal 미압축 (::2 제거)
+            x_flat = rearrange(x, 'b c t h w -> (b t) c h w')  # time left uncompressed (the ::2 is gone)
             x_flat = F.interpolate(x_flat, scale_factor=0.5, mode='bilinear', align_corners=False)  # spatial ×2
             x_sub = rearrange(x_flat, '(b t) c h w -> b c t h w', b=B)
         elif self.subsample_mode == 'bilinear_s4t1':
             B, C, T, H, W = x.shape
-            x_flat = rearrange(x, 'b c t h w -> (b t) c h w')  # temporal 미압축
-            x_flat = F.interpolate(x_flat, scale_factor=0.25, mode='bilinear', align_corners=False)  # spatial ×4 (한번에)
+            x_flat = rearrange(x, 'b c t h w -> (b t) c h w')  # time left uncompressed
+            x_flat = F.interpolate(x_flat, scale_factor=0.25, mode='bilinear', align_corners=False)  # spatial x4, in one step
             x_sub = rearrange(x_flat, '(b t) c h w -> b c t h w', b=B)
-        # [NEW 2026-08-02 AA] ×0.5 두 번 = 안티앨리어싱 4배 축소. 근거: s4t1 한방은 HF(앨리어스) 2배 실측,
-        #   학습된 s4t1 ckpt 에 eval 스왑만으로 +0.37dB (8/8 개선) — 앨리어싱이 f32 벽(법칙 대비 −2dB)의 유력 지분.
+        # [NEW 2026-08-02 AA] two x0.5 steps make the 4x reduction anti-aliased. Doing s4t1 in one
+        #   step measured twice the high-frequency aliasing, and swapping this in at eval time on an
+        #   s4t1 checkpoint already trained gave +0.37 dB, improving 8 of 8 - so aliasing is a strong
+        #   candidate for part of the f32 wall, the -2 dB against the scaling law.
         elif self.subsample_mode == 'bilinear_s4t1_2stage':
             B, C, T, H, W = x.shape
-            x_flat = rearrange(x, 'b c t h w -> (b t) c h w')  # temporal 미압축
+            x_flat = rearrange(x, 'b c t h w -> (b t) c h w')  # time left uncompressed
             x_flat = F.interpolate(x_flat, scale_factor=0.5, mode='bilinear', align_corners=False)
             x_flat = F.interpolate(x_flat, scale_factor=0.5, mode='bilinear', align_corners=False)
             x_sub = rearrange(x_flat, '(b t) c h w -> b c t h w', b=B)
@@ -1524,7 +1579,7 @@ class WanVAE_(nn.Module):
             raise ValueError(f'Unknown subsample_mode: {self.subsample_mode}')
 
         t = x_sub.shape[2]
-        # prior_encoder는 add_downsamples 없음 → base tf만
+        # prior_encoder has no add_downsamples, so only the base transform applies
         tf = 1
         for td in self.temperal_downsample:
             if td:
@@ -1556,16 +1611,19 @@ class WanVAE_(nn.Module):
             else:
                 z = z / scale[1] + scale[0]
         iter_ = z.shape[2]
-        # [crossattn 2026-07] 첫프레임 keyframe → frozen VAE encoder 중간 feature(return_skip).
-        #   chunk 무관, 한 번만 인코딩. first_frame None(=T2V/ff_drop) 또는 inject off 면 None → 기존 경로.
-        #   encoder 는 CausalConv3d(temporal) 이라 T>=3 필요 → [첫프레임 + zeros(T-1)] 로 인코딩.
-        #   각 skip 은 5D(B,C,T',H,W) → temporal idx 0(첫프레임) 슬라이스 = 2D context.
+        # [crossattn 2026-07] the first-frame keyframe becomes the frozen VAE encoder's intermediate
+        #   features (return_skip). This is independent of chunking and encoded once. With
+        #   first_frame None (T2V or ff_drop) or injection off it returns None and the original path
+        #   runs. The encoder is a temporal CausalConv3d and needs T >= 3, so it encodes
+        #   [first frame + zeros(T-1)]. Each skip is 5D (B,C,T',H,W), and slicing temporal index 0,
+        #   the first frame, gives the 2D context.
         ff_skips = None
         ff_skips_base = None   # [dual]
         if first_frame is not None and getattr(self, 'first_frame_inject', False):
-            # single-pass encoder 는 temporal downsample 마다 time_conv(kernel3,no-pad) 를 거쳐
-            #   T 를 줄이며 각 단계 입력 T>=3 필요. temporal downsample n 개 → 안전 T = 4n+1.
-            #   (실측: 이 geoprior config 3개 → T=9 에서 통과, skip 들의 temporal idx 0 은 항상 첫프레임)
+            # a single-pass encoder shrinks T through a time_conv (kernel 3, no padding) at every
+            #   temporal downsample, and each step needs T >= 3 on its input. With n temporal
+            #   downsamples a safe T is 4n+1. Measured: this geoprior config has 3, so T=9 passes,
+            #   and temporal index 0 of every skip is always the first frame.
             _n_tdown = sum(1 for td in self.temperal_downsample if td)
             for stage in self.encoder.add_downsamples:
                 for layer in stage:
@@ -1578,22 +1636,25 @@ class WanVAE_(nn.Module):
                             first_frame.shape[2], first_frame.shape[3],
                             device=first_frame.device, dtype=first_frame.dtype),
             ], dim=2)                                    # (B,3,_T,H,W)
-            # [crossattn base] feature encoder 선택:
-            #   residual(기본): self.encoder (add_downsample 포함 4레벨 skip)
-            #   base: self.prior_encoder (frozen pure Wan, add_downsample 없어 3레벨 skip @256/128/64).
-            #         full-res _ff5 그대로 통과(다운샘플 안 함). @32 없음 → decoder @32 주입은 __init__에서 이미 제외.
+            # [crossattn base] which feature encoder supplies the context:
+            #   residual (the default): self.encoder, four skip levels including add_downsample
+            #   base: self.prior_encoder, frozen pure Wan, with three skip levels (@256/128/64)
+            #         because it has no add_downsample. The full-resolution _ff5 goes through as is,
+            #         with no downsampling. There is no @32, and __init__ already excluded the
+            #         decoder's @32 injection.
             if getattr(self, 'ff_encoder_source', 'residual') == 'base' and hasattr(self, 'prior_encoder'):
                 _, _skips5 = self.prior_encoder(_ff5, return_skip=True)
             else:
-                _, _skips5 = self.encoder(_ff5, return_skip=True)   # single-pass (feat_cache 없음)
-            # 각 skip 의 temporal idx 0 = 첫프레임 → 2D (B,C,H',W')
+                _, _skips5 = self.encoder(_ff5, return_skip=True)   # single-pass, no feat_cache
+            # temporal index 0 of each skip is the first frame, giving 2D (B,C,H',W')
             ff_skips = [s[:, :, 0] for s in _skips5]
-            # [dual] dual-source: base(prior_encoder, full-res, frozen pure Wan) skip 추가 수집.
-            #   기존 'base' 단독 경로와 동일 호출 — 여기선 residual 과 병행. L1~L3 블록이 소비.
+            # [dual] also collect the base skips, from prior_encoder at full resolution (frozen pure
+            #   Wan). The call is the same as the 'base'-only path; here it runs alongside residual,
+            #   and the L1-L3 blocks consume it.
             if getattr(self, 'ff_dual_source', False) and hasattr(self, 'prior_encoder'):
                 _, _skips5b = self.prior_encoder(_ff5, return_skip=True)
                 ff_skips_base = [s[:, :, 0] for s in _skips5b]
-        # [NEW - oliviaa/geoprior] dual_branch: conv2 for z_main; conv2_prior (frozen) for z_prior
+        # [NEW/geoprior] dual_branch: conv2 for z_main; conv2_prior (frozen) for z_prior
         if self.dual_branch:
             z_main = self.conv2(z[:, :self.z_dim])              # (B, prior_z_dim, T', H', W')
             if self.z_dim == self.prior_z_dim:
@@ -1603,11 +1664,14 @@ class WanVAE_(nn.Module):
             x = torch.cat([z_main, z_p], dim=1)                 # (B, prior_z_dim*2, T', H', W')
         else:
             x = self.conv2(z)
-        # [NEW] force_single_pass: eval-mode 에서도 chunk 안 하고 single-pass decode (81f chunk 버그 회피용).
-        #   chunking 은 긴 영상 메모리 절약용이라 기본 유지, 정확한 측정 필요 시에만 플래그 켬.
-        # [NEW group-chunk] decode_chunk_latent>0: K latent position 씩 묶어 chunked decode (학습+eval 모두).
-        #   목적: 256x81 학습 시 single-pass upsample backward INT_MAX 회피하면서 frame-by-frame(느림) 안 쓰기.
-        #   feat_cache가 경계 context 이어주므로 single-pass와 동치(검증 필수). default 0 = 기존 동작 유지.
+        # [NEW] force_single_pass decodes in one pass even in eval mode, instead of chunking, which
+        #   avoids the 81-frame chunk bug. Chunking saves memory on long videos so it stays the
+        #   default; turn this on only when a measurement has to be exact.
+        # [NEW group-chunk] with decode_chunk_latent > 0, decode in chunks of K latent positions,
+        #   in both training and eval. The point is to avoid the INT_MAX in the single-pass upsample
+        #   backward when training at 256x81, without falling back to frame-by-frame, which is slow.
+        #   feat_cache carries the context across boundaries, so this is equivalent to single-pass -
+        #   verify it. The default of 0 keeps the existing behaviour.
         _chunk = getattr(self, 'decode_chunk_latent', 0)
         if _chunk and _chunk > 0:
             _outs = []
@@ -1685,7 +1749,7 @@ def _video_vae(pretrained_path=None, z_dim=None, device='cpu',
     return model
 
 
-# [NEW - oliviaa/geoprior] dual-branch VAE loader
+# [NEW/geoprior] dual-branch VAE loader
 def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                          add_encoder_stages=None, add_decoder_stages=None,
                          add_decoder_tail_stages=None,          # [NEW] stages after head (3ch RGB space)
@@ -1693,31 +1757,32 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                          dual_branch=True, subsample_mode='avg_pool',
                          prior_z_dim=16,  # [NEW] fixed Wan z_dim for prior branch
                          decoder_conv1_zmain_init='zero',  # [NEW] 'zero' or 'pretrained' for z_main ch
-                         zmain_fresh_init=False,   # [NEW - freshinit] residual 사슬(head.2/conv1/conv2) 사전학습-카피 제거 → 생성 시 기본 랜덤 유지
-                         fresh_gate_init='zero',   # [NEW - freshinit] decoder.conv1 residual 열: 'zero' | 'random' (zmain_fresh_init=True일 때만 의미)
-                         zmain_hybrid_init=False,  # [NEW - hybrid] z_main 첫 prior_z_dim 채널만 사전학습 승계, 나머지 신규 채널은 랜덤
-                         da_adapter=False,         # [NEW - da_adapter] DA-VAE식 경계 어댑터 (b/b′) — zmain_fresh_init 자동 함의
-                         da_base_split=False,      # [NEW - da_adapter] b′: 디코더 base 몫을 사전학습 conv(16→384)로 분리 보존
-                         da_spatial_fold=4,        # [NEW - da_adapter] 공간 접기/확대 배율 r (f32=4, f16=2)
-                         stages_after_norm=False,  # [NEW - R2] 인코더 위치 이동 + 디코더 M1 미러 패키지
+                         zmain_fresh_init=False,   # [NEW - freshinit] drop the pretrained copy for the residual chain (head.2/conv1/conv2), leaving the default random init
+                         fresh_gate_init='zero',   # [NEW - freshinit] the decoder.conv1 residual columns: 'zero' or 'random' (only meaningful with zmain_fresh_init=True)
+                         zmain_hybrid_init=False,  # [NEW - hybrid] inherit the pretrained weights for z_main's first prior_z_dim channels only; the new channels stay random
+                         da_adapter=False,         # [NEW - da_adapter] DA-VAE-style boundary adapter (variants b and b'); implies zmain_fresh_init
+                         da_base_split=False,      # [NEW - da_adapter] variant b': keep the decoder's base share on its own pretrained conv (16->384)
+                         da_spatial_fold=4,        # [NEW - da_adapter] the spatial fold and expansion factor r (4 for f32, 2 for f16)
+                         stages_after_norm=False,  # [NEW - R2] moves the encoder stages and pairs it with the decoder M1 mirror
                          stages_norm_before_head=False,  # [NEW - R2n]
-                         stages_after_head=False,  # [NEW - R3] 인코더 스테이지를 head conv 뒤로 (디코더는 R2 유지)
-                         stages_after_conv1=False,  # [NEW - R3a] 스테이지를 vae.conv1 뒤로 (디코더는 R2 유지)
-                         dec_stages_before_conv1=False,  # [NEW - R3a미러] 디코더 스테이지를 conv1 앞 z(64ch)로
-                         decoder_mirror=True,      # [NEW - R2 통제] False 면 인코더만 이동(디코더 현행 유지) → 파라미터 변화 0
+                         stages_after_head=False,  # [NEW - R3] encoder stages after the head conv; the decoder keeps R2's placement
+                         stages_after_conv1=False,  # [NEW - R3a] stages after vae.conv1; the decoder keeps R2's placement
+                         dec_stages_before_conv1=False,  # [NEW - R3a mirror] decoder stages in the z space (64ch) before conv1
+                         decoder_mirror=True,      # [NEW - R2 control] False moves the encoder only and leaves the decoder as it is, so the parameter count does not change
                          expand_conv2=True,  # [NEW] True: conv2 z_dim→z_dim; False: conv2 z_dim→prior_z_dim (old)
                          expand_encoder_head=False,  # [NEW] True: encoder.head outputs z_dim*2 (instead of prior_z_dim*2)
-                         use_b_adaptive=False,        # [NEW - oliviaa/B-fix]
+                         use_b_adaptive=False,        # [NEW/B-fix]
                          b_adaptive_eps=1e-6,
                          b_adaptive_max=1e7,
                          b_adaptive_disc_weight=1.0,
                          **kwargs):
-    # [NEW - da_adapter] 경계 어댑터는 head/conv1/conv2 의 사전학습 재사용이 구조적으로 불가(채널 수 상이)
-    #   → freshinit 의미(강제 pop + 카피 스킵) 자동 함의. (b′)의 디코더 base conv 이식은 shape 일치
-    #   (384,16,3³)라 load_state_dict 가 자동 수행하므로 pop 대상이 아님.
+    # [NEW - da_adapter] the boundary adapter cannot reuse the pretrained head, conv1 or conv2 at
+    #   all, since the channel counts differ, so it implies freshinit: force the pop and skip the
+    #   copies. Variant b's decoder base conv does match in shape (384,16,3^3), so load_state_dict
+    #   transplants it by itself and it is not popped.
     if da_adapter:
         zmain_fresh_init = True
-    assert not (zmain_fresh_init and zmain_hybrid_init), '[init] fresh 와 hybrid 는 동시 지정 불가'
+    assert not (zmain_fresh_init and zmain_hybrid_init), '[init] fresh and hybrid are mutually exclusive'
     cfg = dict(
         dim=96,
         z_dim=z_dim,
@@ -1742,8 +1807,8 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
         stages_norm_before_head=stages_norm_before_head,  # [NEW - R2n]
         stages_after_head=stages_after_head,  # [NEW - R3]
         stages_after_conv1=stages_after_conv1,  # [NEW - R3a]
-        dec_stages_before_conv1=dec_stages_before_conv1,  # [NEW - R3a미러]
-        decoder_mirror=decoder_mirror,        # [NEW - R2 통제]
+        dec_stages_before_conv1=dec_stages_before_conv1,  # [NEW - R3a mirror]
+        decoder_mirror=decoder_mirror,        # [NEW - R2 control]
         use_b_adaptive=use_b_adaptive,
         b_adaptive_eps=b_adaptive_eps,
         b_adaptive_max=b_adaptive_max,
@@ -1768,10 +1833,11 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
             'conv2.weight', 'conv2.bias',           # decoder input projection: input expands
             'decoder.conv1.weight', 'decoder.conv1.bias',  # decoder first conv: input expands
         ]
-        # [NEW 2026-09-10 - single32] single-branch 는 enc_out_dim 이 무조건 z_dim*2 (:1309) 라
-        #   z_dim != prior_z_dim 이면 head[-1] 이 사전학습(prior_z_dim*2)과 크기가 어긋난다.
-        #   pop 하지 않으면 load_state_dict(strict=False) 가 **size mismatch 로 RuntimeError** 를 던진다.
-        #   dual_branch=True 일 때 조건은 예전과 완전히 동일 = 기존 계보 무영향.
+        # [NEW 2026-09-10 - single32] a single branch always has enc_out_dim = z_dim*2 (see :1309),
+        #   so when z_dim != prior_z_dim the head[-1] size no longer matches the pretrained
+        #   prior_z_dim*2. Without the pop, load_state_dict(strict=False) raises a RuntimeError on
+        #   the size mismatch. With dual_branch=True the condition is exactly as before, so the
+        #   existing lineages are unaffected.
         if expand_encoder_head or not dual_branch:
             # encoder.head[-1] output expands from prior_z_dim*2 to z_dim*2 → shape mismatch
             _zdim_keys += ['encoder.head.2.weight', 'encoder.head.2.bias']
@@ -1779,12 +1845,14 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
             if k in state and state[k].shape != model.state_dict().get(k, state[k]).shape:
                 popped[k] = state.pop(k)
 
-        # [freshinit] residual 사슬(head.2/conv1/conv2)을 사전학습에서 분리.
-        #   z16(z_dim==prior_z_dim)은 shape 일치라 위 mismatch-pop에 안 걸리고 load_state_dict가
-        #   통째로 실어오므로 무조건 pop. pop된 키는 아래 카피 블록들이 fresh 분기에서 스킵되어
-        #   모듈 생성 시 기본 랜덤(kaiming_uniform a=√5)이 그대로 남는다.
-        #   conv2 예외: z_dim==prior_z_dim이면 conv2가 base(z_prior) 읽기 사슬과 공유(1720경
-        #   conv2_prior 미생성)라 랜덤화 시 base 복원이 오염됨 → 사전학습 유지.
+        # [freshinit] detach the residual chain (head.2/conv1/conv2) from the pretrained weights.
+        #   At z16 (z_dim == prior_z_dim) the shapes match, so the mismatch-pop above does not catch
+        #   them and load_state_dict would load them wholesale - hence the unconditional pop. The
+        #   copy blocks below skip popped keys on the fresh branch, leaving the default random init
+        #   from module construction (kaiming_uniform with a = sqrt(5)).
+        #   conv2 is the exception: at z_dim == prior_z_dim it is shared with the base (z_prior) read
+        #   chain, since conv2_prior is never built (see around line 1720), so randomising it would
+        #   corrupt the base reconstruction. It keeps the pretrained weights.
         if (zmain_fresh_init or zmain_hybrid_init) and dual_branch:
             _fresh_keys = ['encoder.head.2.weight', 'encoder.head.2.bias',
                            'conv1.weight', 'conv1.bias']
@@ -1807,12 +1875,16 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                 #    pretrained shape: (prior_z_dim*2, 384, 3,3,3); new shape: (z_dim*2, 384, 3,3,3)
                 #    copy: mu_old[0:prior_z_dim] → new[0:prior_z_dim]
                 #           logvar_old[prior_z_dim:] → new[z_dim:z_dim+prior_z_dim]; rest zero
-                # [freshinit] fresh면 타일/격자 카피 전체 스킵 → head[-1]·conv1은 생성 시 기본 랜덤 유지
+                # [freshinit] on the fresh branch, skip the tile and grid copies entirely, so
+                # head[-1] and conv1 keep the random init from construction
                 if expand_encoder_head and not zmain_fresh_init and not zmain_hybrid_init:
-                    # [2026-08-01 hybrid init — z48 scratch] 새 채널 zero → "사전학습 행 타일(카피)"로 교체.
-                    #   zero 는 새 채널이 콘텐츠-무상관 노이즈만 내보내 디코더 게이트 gradient 기대값 0
-                    #   (z32 시절 52k 스텝 무이득 늪). 타일이면 복제 채널이 스텝 0부터 진짜 콘텐츠 방출.
-                    #   z_dim % prior_z_dim != 0 이면 기존 zero 동작 유지. z_dim==prior_z_dim 이면 타일=1 = 기존과 동일.
+                    # [2026-08-01 hybrid init, z48 from scratch] the new channels no longer start at
+                    #   zero; they are tiled copies of the pretrained rows instead. At zero a new
+                    #   channel emits only content-uncorrelated noise, so the decoder gate's expected
+                    #   gradient is 0 - the swamp that cost 52k steps with no gain back at z32. Tiled,
+                    #   the duplicated channels emit real content from step 0.
+                    #   If z_dim % prior_z_dim != 0 the old zero behaviour stays, and at
+                    #   z_dim == prior_z_dim the tile count is 1, which is the old behaviour too.
                     half = prior_z_dim
                     _rep = (z_dim // half) if (z_dim % half == 0) else 0
                     pre_ehw = popped.get('encoder.head.2.weight')
@@ -1835,8 +1907,9 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                             new_ehb[:half] = pre_ehb[:half]
                             new_ehb[z_dim:z_dim + half] = pre_ehb[half:]
                         model.encoder.head[-1].bias.copy_(new_ehb)
-                    # conv1 (z_dim*2→z_dim*2): zero → (mu,logvar)×군별 2×2 블록 타일.
-                    #   사전학습 conv1(2h×2h)의 W_mm/W_ml/W_lm/W_ll 을 각 복제군 대각에 배치, 군간 0.
+                    # conv1 (z_dim*2 -> z_dim*2): instead of zeros, tile a 2x2 (mu, logvar) block per
+                    #   group. The pretrained conv1 (2h x 2h) contributes W_mm, W_ml, W_lm and W_ll
+                    #   on the diagonal of each duplicated group, with zeros between groups.
                     pre_c1w = popped.get('conv1.weight')
                     pre_c1b = popped.get('conv1.bias')
                     if _rep and pre_c1w is not None and pre_c1w.shape[0] == 2 * half and pre_c1w.shape[1] == 2 * half:
@@ -1864,7 +1937,8 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                 #    pretrained rows: [0:prior_z_dim]=mu_old, [prior_z_dim:prior_z_dim*2]=logvar_old
                 #    new layout after chunk(2): mu=[0:z_dim], logvar=[z_dim:z_dim*2]
                 #    → mu_old rows go to [0:prior_z_dim], logvar_old rows go to [z_dim:z_dim+prior_z_dim]
-                # [freshinit] z16 경로의 conv1 카피도 스킵 (fresh pop으로 popped에 들어와 있어도 랜덤 유지)
+                # [freshinit] skip the conv1 copy on the z16 path too: even though the fresh pop put
+                # it in popped, it keeps the random init
                 if 'conv1.weight' in popped and popped['conv1.weight'] is not None and not expand_encoder_head \
                         and not zmain_fresh_init:
                     pre_c1w = popped['conv1.weight']    # (prior_z_dim*2, prior_z_dim*2, 1,1,1)
@@ -1884,13 +1958,17 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                 #   expand_conv2=True:  pretrained(prior_z_dim→prior_z_dim) → new(z_dim→z_dim), zero-init all
                 #   expand_conv2=False: pretrained(prior_z_dim→prior_z_dim) → new(z_dim→prior_z_dim),
                 #                       copy pretrained to input ch [0:prior_z_dim], rest zero
-                # [freshinit] fresh면 conv2 카피 스킵 → 랜덤 유지 (z48 전용. z16은 공유 가드로 pop 자체를 안 해
-                # load_state_dict가 사전학습을 실었으므로 이 블록에 들어오지 않음)
+                # [freshinit] on the fresh branch, skip the conv2 copy and keep the random init. This
+                # is for z48 only: at z16 the sharing guard means conv2 is never popped, so
+                # load_state_dict already loaded the pretrained weights and this block is not reached.
                 if 'conv2.weight' in popped and popped['conv2.weight'] is not None and not zmain_fresh_init:
                     if expand_conv2:
-                        # [2026-08-01 hybrid init] zero → 사전학습 conv2(h×h) 대각 블록 타일.
-                        #   전체 zero 는 디코더 게이트 zero 와 겹쳐 이중-zero 체인 (z32 늪) — 신호를 게이트까지 배달.
-                        #   z_dim % prior_z_dim != 0 이면 기존 zero 유지. 함수보존은 decoder.conv1 z_main 열 zero 가 담당.
+                        # [2026-08-01 hybrid init] instead of zeros, tile the pretrained conv2 (h x h)
+                        #   as diagonal blocks. All-zero here would stack on top of the zero decoder
+                        #   gate and make a double-zero chain - the z32 swamp - so this delivers signal
+                        #   as far as the gate. If z_dim % prior_z_dim != 0 the old zero behaviour
+                        #   stays. Function preservation is handled by the zero z_main columns in
+                        #   decoder.conv1.
                         _c2 = popped['conv2.weight']
                         _rep2 = (z_dim // prior_z_dim) if (z_dim % prior_z_dim == 0 and _c2.shape[0] == prior_z_dim) else 0
                         if _rep2:
@@ -1921,8 +1999,8 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                 if 'decoder.conv1.weight' in popped and popped['decoder.conv1.weight'] is not None:
                     pre_dc1w = popped['decoder.conv1.weight']   # (384, prior_z_dim, 3,3,3)
                     if zmain_fresh_init and fresh_gate_init == 'random':
-                        # [freshinit -r] residual 열은 모듈 생성 시 kaiming 랜덤 유지,
-                        # base 열만 아래에서 사전학습으로 덮어씀
+                        # [freshinit -r] the residual columns keep the kaiming random init from
+                        # construction; only the base columns are overwritten with pretrained weights below
                         new_dc1w = model.decoder.conv1.weight.detach().clone()
                     else:
                         new_dc1w = torch.zeros_like(model.decoder.conv1.weight)
@@ -1932,26 +2010,29 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                     else:
                         if decoder_conv1_zmain_init == 'pretrained' and not zmain_fresh_init:
                             new_dc1w[:, :prior_z_dim, ...] = pre_dc1w   # z_main ch: pretrained copy
-                        # else: z_main ch stays zero (or fresh random — fresh_gate_init이 단독 결정)
+                        # else: z_main channels stay zero, or fresh random - fresh_gate_init alone decides
                         new_dc1w[:, prior_z_dim:, ...] = pre_dc1w       # z_prior ch: pretrained copy
                     model.decoder.conv1.weight.copy_(new_dc1w)
                     if 'decoder.conv1.bias' in popped and popped['decoder.conv1.bias'] is not None:
                         model.decoder.conv1.bias.copy_(popped['decoder.conv1.bias'])
 
-                # [NEW - hybrid] z_main 첫 prior_z_dim 채널 = 사전학습 z16 경로를 정확히 재현,
-                #   나머지 신규 채널 = 생성 시 kaiming 랜덤 유지 (타일 복제도 zero 도 아님).
-                #   근거: z16 실험에서 1:1 승계가 랜덤보다 우세(−0.14dB) + z48 타일은 복사군 corr 0.949 로 미분화.
+                # [NEW - hybrid] z_main's first prior_z_dim channels reproduce the pretrained z16 path
+                #   exactly, and the remaining new channels keep the kaiming random init from
+                #   construction - neither tiled copies nor zeros.
+                #   Why: in the z16 experiments a 1:1 inheritance beat random by 0.14 dB, and the z48
+                #   tiling left the copied groups undifferentiated, at a correlation of 0.949.
                 if zmain_hybrid_init and expand_encoder_head:
                     _h = prior_z_dim
                     _peh = popped.get('encoder.head.2.weight')
                     if _peh is not None:
-                        model.encoder.head[-1].weight[:_h].copy_(_peh[:_h])                    # mu 첫 군
-                        model.encoder.head[-1].weight[z_dim:z_dim + _h].copy_(_peh[_h:])       # logvar 첫 군
+                        model.encoder.head[-1].weight[:_h].copy_(_peh[:_h])                    # the first mu group
+                        model.encoder.head[-1].weight[z_dim:z_dim + _h].copy_(_peh[_h:])       # the first logvar group
                     _pebv = popped.get('encoder.head.2.bias')
                     if _pebv is not None:
                         model.encoder.head[-1].bias[:_h].copy_(_pebv[:_h])
                         model.encoder.head[-1].bias[z_dim:z_dim + _h].copy_(_pebv[_h:])
-                    # conv1: 첫 군의 (mu,logvar) 2×2 블록만 사전학습, 첫 군 행의 나머지 열은 0 (타 군 오염 차단)
+                    # conv1: only the first group's 2x2 (mu, logvar) block is pretrained; the rest of
+                    # that group's row is 0, which keeps the other groups from contaminating it
                     _pc1 = popped.get('conv1.weight')
                     if _pc1 is not None and _pc1.shape[0] == 2 * _h:
                         mu_s, lv_s = slice(0, _h), slice(z_dim, z_dim + _h)
@@ -1964,7 +2045,8 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                         if model.conv1.bias is not None and _pc1b is not None:
                             model.conv1.bias[mu_s] = _pc1b[:_h]
                             model.conv1.bias[lv_s] = _pc1b[_h:]
-                    # conv2: 첫 군 행만 사전학습(첫 군 열), 나머지 열 0. 타 군 행은 랜덤 유지
+                    # conv2: only the first group's row is pretrained, in the first group's columns;
+                    # the rest of that row is 0, and the other groups' rows keep the random init
                     _pc2 = popped.get('conv2.weight')
                     if _pc2 is not None and expand_conv2 and _pc2.shape[0] == _h:
                         model.conv2.weight[:_h].zero_()
@@ -1972,7 +2054,7 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                         _pc2b = popped.get('conv2.bias')
                         if model.conv2.bias is not None and _pc2b is not None:
                             model.conv2.bias[:_h] = _pc2b
-                    logging.info(f'[hybrid] z_main 첫 {_h}채널 = 사전학습 승계, 나머지 {z_dim - _h}채널 = 랜덤')
+                    logging.info(f'[hybrid] z_main: first {_h} channels inherited from pretrained, remaining {z_dim - _h} random')
 
                 # 4) conv2_prior: only when z_dim != prior_z_dim (separate input dim needed)
                 #    when z_dim == prior_z_dim: conv2 is shared for both z_main and z_prior
@@ -1987,15 +2069,16 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                         model.conv2_prior.bias.data.copy_(src_c2b)
                     model.conv2_prior.requires_grad_(False)
 
-            # prior_encoder: pretrained encoder 가중치 복사 후 freeze
+            # prior_encoder: copy the pretrained encoder weights, then freeze
             prior_state = {
                 k[len('encoder.'):]: v
                 for k, v in state.items()
                 if k.startswith('encoder.') and not k.startswith('encoder.add_downsamples')
             }
-            # expand_encoder_head=True 시 encoder.head.2.weight/bias가 popped → prior_state에서 누락됨
-            # prior_encoder.head[-1]은 항상 prior_z_dim*2 출력 → pretrained 원본 shape과 동일하므로 popped에서 복원
-            # [freshinit] fresh pop(z16 포함)도 같은 누락을 만들므로 동일하게 복원
+            # With expand_encoder_head=True, encoder.head.2.weight/bias are popped and so go missing
+            # from prior_state. prior_encoder.head[-1] always outputs prior_z_dim*2, which is the
+            # pretrained shape, so it is restored from popped.
+            # [freshinit] the fresh pop (z16 included) creates the same gap, and is restored the same way.
             if expand_encoder_head or zmain_fresh_init or zmain_hybrid_init:
                 for sfx in ('weight', 'bias'):
                     k_enc = f'encoder.head.2.{sfx}'
@@ -2016,35 +2099,41 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
             model.prior_conv1.requires_grad_(False)
 
         # ═══════════════════════════════════════════════════════════════════
-        # [NEW 2026-09-10 - single32] composite 없는 단일 인코더 전용 초기화.
-        #   위 dual 블록을 재사용하지 않고 따로 짠다. 이유:
-        #     dual 의 카피 코드는 "z_prior 16채널이 동결 Wan 이라 잠재의 절반이 sigma≈0 으로
-        #     고정된다" 는 전제로 쓰였다. single 엔 그 앵커가 없어서 신규 채널의 logvar 가
-        #     통제되지 않는다 — 실측: 신규 16채널의 logvar 평균이 -1~+4 (승계 채널은 -65),
-        #     그중 5개가 양수 → sigma 1~5 → 학습 시 latents_std 가 6~615 로 요동하고
-        #     rec 이 안 내려간다(같은 조건 composite 대조군은 2.2 로 안정).
+        # [NEW 2026-09-10 - single32] initialisation for a single encoder, with no composite.
+        #   This is written separately rather than reusing the dual block above, because the dual
+        #   copy code assumes that z_prior's 16 channels are a frozen Wan, which pins half the latent
+        #   at sigma ~= 0. A single branch has no such anchor, so the new channels' logvar is
+        #   uncontrolled: measured, the 16 new channels averaged a logvar of -1 to +4 where the
+        #   inherited ones sat at -65, and five of them were positive, giving sigma 1 to 5. During
+        #   training latents_std then swung between 6 and 615 and the reconstruction loss would not
+        #   come down, while the composite control under the same conditions held at 2.2.
         #
-        #   설계 (첫 _h = prior_z_dim 채널은 사전학습 z16 경로를 그대로 재현):
-        #     [A] head[-1]  mu/logvar 첫 군만 사전학습. 신규 군의 mu·logvar 행은 랜덤 유지
-        #                   — 여기를 0 으로 두면 아래 conv1 의 0 과 직렬이 되어 기울기가
-        #                     영영 안 흐른다. zero-gate 는 반드시 한쪽만.
-        #     [B] conv1     첫 군 행 = 사전학습 2x2 블록(타 군 열 0). 신규 mu 행은 랜덤 유지,
-        #                   **신규 logvar 행 = zero weight + bias _LV0** ← 이번 진동의 fix.
-        #                   sigma 가 상수 e^(_LV0/2) 에서 출발하고 bias/weight 로 학습된다.
-        #     [C] conv2     첫 군 행의 첫 군 열만 사전학습. 신규 행은 랜덤 유지
-        #                   (0 으로 두면 decoder 신규 열이 기울기를 못 받아 영영 안 열린다).
-        #     [D] dec.conv1 첫 군 열 = 사전학습, 신규 열 = 0 (no-op 출발).
-        #                   ★ dual 처럼 첫 열을 0 으로 두면 디코더 입력이 통째로 0 = dead start.
+        #   The design, where the first _h = prior_z_dim channels reproduce the pretrained z16 path:
+        #     [A] head[-1]  only the first mu/logvar group is pretrained. The new group's mu and
+        #                   logvar rows keep their random init - zeroing them here would put them in
+        #                   series with the zeros in conv1 below and no gradient would ever flow.
+        #                   Only one of the two may be a zero gate.
+        #     [B] conv1     the first group's row is the pretrained 2x2 block, with zeros in the
+        #                   other groups' columns. The new mu rows keep their random init, and the
+        #                   new logvar rows get zero weights with bias _LV0 - the fix for the
+        #                   oscillation. sigma then starts at the constant e^(_LV0/2) and is learned
+        #                   through the bias and weights.
+        #     [C] conv2     only the first group's column in the first group's row is pretrained. The
+        #                   new rows keep their random init; at zero the decoder's new columns would
+        #                   receive no gradient and never open.
+        #     [D] dec.conv1 the first group's columns are pretrained and the new columns are 0, a
+        #                   no-op start. Note that zeroing the first columns as dual does would make
+        #                   the whole decoder input 0 - a dead start.
         # ═══════════════════════════════════════════════════════════════════
         elif z_dim != prior_z_dim:
             _h = prior_z_dim
-            _LV0 = -10.0        # sigma = e^(-5) ~= 0.0067 (승계 채널의 실측 logvar 는 -65 근처)
+            _LV0 = -10.0        # sigma = e^(-5) ~= 0.0067; the inherited channels measure a logvar near -65
             with torch.no_grad():
                 # [A] head[-1]
                 _ph, _pb = popped.get('encoder.head.2.weight'), popped.get('encoder.head.2.bias')
                 if _ph is not None:
-                    model.encoder.head[-1].weight[:_h].copy_(_ph[:_h])                 # mu 첫 군
-                    model.encoder.head[-1].weight[z_dim:z_dim + _h].copy_(_ph[_h:])    # logvar 첫 군
+                    model.encoder.head[-1].weight[:_h].copy_(_ph[:_h])                 # the first mu group
+                    model.encoder.head[-1].weight[z_dim:z_dim + _h].copy_(_ph[_h:])    # the first logvar group
                 if _pb is not None:
                     model.encoder.head[-1].bias[:_h].copy_(_pb[:_h])
                     model.encoder.head[-1].bias[z_dim:z_dim + _h].copy_(_pb[_h:])
@@ -2061,7 +2150,7 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                     if model.conv1.bias is not None and _pc1b is not None:
                         model.conv1.bias[_mu_s] = _pc1b[:_h]
                         model.conv1.bias[_lv_s] = _pc1b[_h:]
-                model.conv1.weight[z_dim + _h:].zero_()               # 신규 logvar 행
+                model.conv1.weight[z_dim + _h:].zero_()               # the new logvar rows
                 if model.conv1.bias is not None:
                     model.conv1.bias[z_dim + _h:].fill_(_LV0)
 
@@ -2081,9 +2170,9 @@ def _video_vae_geoprior(pretrained_path=None, z_dim=None, device='cpu',
                     model.decoder.conv1.weight.copy_(_newd)
                     if _pdb is not None and model.decoder.conv1.bias is not None:
                         model.decoder.conv1.bias.copy_(_pdb)
-            logging.info(f'[single32] 첫 {_h}채널 = 사전학습 z{_h} 경로 재현 / '
-                         f'신규 {z_dim - _h}채널 = mu 랜덤 + logvar {_LV0} 출발 / '
-                         f'decoder 신규 열 = 0 (no-op 출발)')
+            logging.info(f'[single32] first {_h} channels reproduce the pretrained z{_h} path / '
+                         f'{z_dim - _h} new channels start with random mu and logvar {_LV0} / '
+                         f'new decoder columns are 0, a no-op start')
 
             logging.info(f'prior_encoder+prior_conv1+conv2_prior initialized from pretrained and frozen '
                          f'(prior_z_dim={prior_z_dim})')

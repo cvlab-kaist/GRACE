@@ -41,7 +41,7 @@ def flash_attention(q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, num_heads
         v = rearrange(v, "b s (n d) -> b n s d", n=num_heads)
         x = F.scaled_dot_product_attention(q, k, v)
         x = rearrange(x, "b n s d -> b s (n d)", n=num_heads)
-    # [NEW] v4 가장 우선 (B200 native, CuTeDSL)
+    # [NEW] v4 first (B200 native, CuTeDSL)
     elif FLASH_ATTN_4_AVAILABLE:
         q = rearrange(q, "b s (n d) -> b s n d", n=num_heads)
         k = rearrange(k, "b s (n d) -> b s n d", n=num_heads)
@@ -295,8 +295,9 @@ class Head(nn.Module):
             shift, scale = (self.modulation.unsqueeze(0).to(dtype=t_mod.dtype, device=t_mod.device) + t_mod.unsqueeze(2)).chunk(2, dim=2)
             x = (self.head(self.norm(x) * (1 + scale.squeeze(2)) + shift.squeeze(2)))
         else:
-            # [batch patch - stage2 동일] t_mod (B, dim) 2D → (B, 1, dim) 후 modulation(1,2,dim) 와 broadcast.
-            # 원본은 B=2 에서만 우연히 통과 ((1,2,dim)+(B,dim) → B>2 mismatch).
+            # [batch patch, as in stage 2] reshape t_mod (B, dim) to (B, 1, dim) so it broadcasts
+            # against modulation (1, 2, dim). Upstream only happened to work at B=2:
+            # (1,2,dim) + (B,dim) mismatches for B > 2.
             t_mod_b = t_mod.unsqueeze(1)  # (B, 1, dim)
             shift, scale = (self.modulation.to(dtype=t_mod.dtype, device=t_mod.device) + t_mod_b).chunk(2, dim=1)
             x = (self.head(self.norm(x) * (1 + scale) + shift))

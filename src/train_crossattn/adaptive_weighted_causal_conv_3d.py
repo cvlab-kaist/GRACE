@@ -1,15 +1,17 @@
-"""[NEW - oliviaa] AdaptiveWeightedCausalConv3d — (B) 식 의 정확 한 구현.
+"""AdaptiveWeightedCausalConv3d - the exact form of the (B) weighting.
 
-기존 single backward path 의 _AdaptiveWeightingFn (= z view 식, activation gradient ratio) 의
-대안. (B) 식 의 정확 한 weight gradient ratio 측정 + scale 적용.
+An alternative to the single-backward-path _AdaptiveWeightingFn, which measures an activation
+gradient ratio in z space. This one measures the weight gradient ratio exactly and applies the
+resulting scale.
 
-특징:
-  - forward = F.conv3d 직접 + return (y_main, y_adversarial) (= same value, separate backward edges)
-  - backward = manual conv weight gradient (= torch.nn.grad.conv3d_weight) + DDP all_reduce + adaptive ratio + scale
-  - scope = encoder body 까지 (= x 와 W 의 grad 둘 다 scale 적용)
-  - DDP / FSDP 호환 (= all_reduce 으로 sync)
+  - forward: F.conv3d directly, returning (y_main, y_adversarial) - the same value on two
+    separate backward edges.
+  - backward: a manual conv weight gradient (torch.nn.grad.conv3d_weight), a DDP all_reduce,
+    then the adaptive ratio and the scale.
+  - scope: through the encoder body, so the scale reaches the gradients of both x and W.
+  - works under DDP and FSDP, since ranks synchronise through all_reduce.
 
-VQGAN-style adaptive weighting 의 응용 — generator 의 학습 균형 의 의도.
+It is VQGAN-style adaptive weighting, used here to balance what the generator learns.
 """
 import torch
 import torch.nn as nn
@@ -25,7 +27,7 @@ def _zero_like_branch_grad(*branch_grads):
 
 
 class _AdaptiveWeightedConv3dFn(torch.autograd.Function):
-    """Custom autograd Function — (B) 식.
+    """Custom autograd Function for the (B) weighting.
 
     forward:
       input = (x, weight, bias, stride, padding, dilation, groups, ...)
@@ -33,13 +35,14 @@ class _AdaptiveWeightedConv3dFn(torch.autograd.Function):
 
     backward:
       - manual conv weight gradient (= torch.nn.grad.conv3d_weight) × 2
-      - DDP all_reduce 으로 norm sync (= 모든 rank 가 같은 ratio)
+      - norms synced through a DDP all_reduce, so every rank uses the same ratio
       - adaptive_weight = ‖grad_W_main‖ / ‖grad_W_adv‖ × disc_weight
-      - grad_x, grad_weight 의 align contribution 에 scale 적용
+      - the scale is applied to the align contribution of grad_x and grad_weight
 
     Mixed precision (= autocast bf16):
-      @custom_fwd / @custom_bwd decorator 으로 forward / backward 의 dtype 자동 일치.
-      (autocast 의 default = forward 시 input bf16 cast → ctx.save 의 dtype 가 bf16 → backward 시 grad_output bf16 와 일치)
+      The @custom_fwd / @custom_bwd decorators keep the forward and backward dtypes in step:
+      autocast casts the input to bf16 on the way in, so what ctx saves is bf16 and matches the
+      bf16 grad_output on the way back.
     """
 
     @staticmethod
@@ -57,10 +60,10 @@ class _AdaptiveWeightedConv3dFn(torch.autograd.Function):
         adaptive_weight_max,
         disc_weight,
     ):
-        # [FIX v2 - oliviaa/B-fix] 2backward 와 dtype 정확 일치 위해:
-        #   ctx.save = 원본 dtype (= float32) 유지 (= autograd 의 자동 cast emulation)
-        #   forward 의 F.conv3d 는 cast 된 dtype (= bf16) — autocast 의 안 의 동작 모방
-        # 이렇게 하면 backward 의 grad_W 계산 = float32 (= 2backward 와 동일)
+        # [FIX v2] to match the two-backward path's dtypes exactly:
+        #   what ctx saves keeps the original dtype (float32), emulating autograd's own cast;
+        #   the F.conv3d in forward runs on the cast dtype (bf16), as it would inside autocast.
+        # grad_W in backward is then computed in float32, the same as two-backward.
         if torch.is_autocast_enabled():
             _ac_dtype = torch.get_autocast_gpu_dtype()
             _x_fwd = x.to(_ac_dtype) if x.dtype != _ac_dtype else x
@@ -69,7 +72,7 @@ class _AdaptiveWeightedConv3dFn(torch.autograd.Function):
         else:
             _x_fwd, _w_fwd, _b_fwd = x, weight, bias
 
-        # ctx.save 는 원본 dtype (= backward 의 자동 cast 의 emulation 위해)
+        # ctx saves the original dtype, to emulate the automatic cast on the way back
         ctx.save_for_backward(x, weight, bias)
         ctx.meta = (
             stride,
@@ -81,7 +84,7 @@ class _AdaptiveWeightedConv3dFn(torch.autograd.Function):
             disc_weight,
         )
 
-        # forward = cast 된 dtype (= autocast 의 자동 cast 와 동일)
+        # forward runs on the cast dtype, as autocast would do it
         y = F.conv3d(
             _x_fwd,
             _w_fwd,
@@ -93,8 +96,8 @@ class _AdaptiveWeightedConv3dFn(torch.autograd.Function):
         )
 
         # Same forward value, separate backward edges.
-        # [FIX - oliviaa] return y, y 시 autograd 가 same tensor → single output 처리 가능 →
-        # backward 시 separate grad 받기 위해 별도 tensor (= y.clone()) 으로 분리
+        # [FIX] returning y twice lets autograd see one tensor and treat it as a single output,
+        # so split it into a separate tensor (y.clone()) to get separate gradients back.
         # Intended use:
         #   y_main -> reconstruction / perceptual / NLL loss
         #   y_adv  -> generator adversarial / align loss
@@ -114,9 +117,9 @@ class _AdaptiveWeightedConv3dFn(torch.autograd.Function):
             disc_weight,
         ) = ctx.meta
 
-        # [FIX - oliviaa/B-fix verify] verify-style call (= autograd.grad(single_loss, W)) 시
-        # 한 branch 만 non-None. 기존 _zero_like_branch_grad 가 None 자리 0 으로 채워 ratio = 0/x = 0
-        # → grad_W = 0 (= bug). 해결: 한 branch 만 들어오면 plain conv backward, adaptive weighting skip.
+        # [FIX] a verify-style call, autograd.grad(single_loss, W), leaves only one branch non-None.
+        # _zero_like_branch_grad used to fill the None with zeros, making the ratio 0/x = 0 and
+        # grad_W zero. Now a single branch takes a plain conv backward and skips adaptive weighting.
         if grad_y_main is None and grad_y_adversarial is None:
             return (None,) * 10
         if grad_y_main is None or grad_y_adversarial is None:
@@ -131,18 +134,18 @@ class _AdaptiveWeightedConv3dFn(torch.autograd.Function):
             _gb = _gy.sum(dim=(0, 2, 3, 4)) if bias is not None else None
             return (_gx, _gW, _gb, None, None, None, None, None, None, None)
 
-        # [FIX v2 - oliviaa/B-fix] 2backward 와 dtype 정확 일치 위해:
-        #   - ctx.saved x, weight = 원본 dtype (= float32)
-        #   - grad_y = bf16 (= autocast forward 의 결과)
-        #   - grad_y 를 weight 의 dtype (= float32) 으로 cast → 모든 backward 계산 float32
-        #   - autograd 의 자동 cast 의 정확 emulation
-        _target_dtype = weight.dtype  # = 원본 (= float32, 2backward 와 동일)
+        # [FIX v2] to match the two-backward path's dtypes exactly:
+        #   - the saved x and weight are the original dtype (float32)
+        #   - grad_y arrives as bf16, out of the autocast forward
+        #   - cast grad_y to weight's dtype, so every backward computation runs in float32
+        # which is exactly what autograd's automatic cast does.
+        _target_dtype = weight.dtype  # the original float32, as in two-backward
         if grad_y_main.dtype != _target_dtype:
             grad_y_main = grad_y_main.to(_target_dtype)
         if grad_y_adversarial.dtype != _target_dtype:
             grad_y_adversarial = grad_y_adversarial.to(_target_dtype)
 
-        # ─── manual conv weight gradient × 2 (= sum 전 별도) ──────────
+        # --- manual conv weight gradient, twice, kept separate before the sum ---
         grad_weight_main = torch.nn.grad.conv3d_weight(
             input=x,
             weight_size=weight.shape,
@@ -162,11 +165,11 @@ class _AdaptiveWeightedConv3dFn(torch.autograd.Function):
             groups=groups,
         )
 
-        # ─── DDP all_reduce + adaptive ratio (= 2backward 와 정확 일치) ───────
-        # [FIX v4 - oliviaa/B-fix] eps 의 mathematical 처리 = 2backward 와 정확 일치
+        # --- DDP all_reduce, then the adaptive ratio, matching two-backward exactly ---
+        # [FIX v4] eps is handled the same way two-backward handles it
         # 2backward: ‖a‖ / (‖b‖ + eps)
-        # (B):       ‖a‖ / (‖b‖ + eps)  ← 수정 (= 이전 sqrt(‖a‖²/(‖b‖²+eps)) 와 다른 함수)
-        # all_reduce 의 의 norm² 의 sum (= global norm² = sum_per_rank(per_rank_norm²)) → sqrt
+        # (B):       ‖a‖ / (‖b‖ + eps)  <- the fix; the old sqrt(‖a‖²/(‖b‖²+eps)) is a different function
+        # all_reduce sums the squared norms into a global norm², then takes the square root
         n_main = torch.linalg.vector_norm(grad_weight_main).pow(2)
         n_adv  = torch.linalg.vector_norm(grad_weight_adversarial).pow(2)
         if dist.is_available() and dist.is_initialized():
@@ -180,16 +183,17 @@ class _AdaptiveWeightedConv3dFn(torch.autograd.Function):
         adaptive_weight = torch.clamp(adaptive_weight_raw, 0.0, adaptive_weight_max)
         adaptive_weight = adaptive_weight.detach() * disc_weight
 
-        # _last_c 저장 (= logging 위해 — _AdaptiveWeightingFn 와 호환)
+        # keep _last_c for logging, the same field _AdaptiveWeightingFn uses
         _AdaptiveWeightedConv3dFn._last_c = adaptive_weight.detach()
         _AdaptiveWeightedConv3dFn._last_c_raw = adaptive_weight_raw.detach()
-        # [DEBUG v23] (B) backward 의 intermediate quantity log (= train.py 의 2bwd 측정 과 비교)
+        # [DEBUG v23] log the intermediate quantities of the (B) backward, to compare against
+        # the two-backward measurement in train.py
         _AdaptiveWeightedConv3dFn._last_grad_y_main_norm = grad_y_main.detach().float().norm()
         _AdaptiveWeightedConv3dFn._last_grad_y_adv_norm = grad_y_adversarial.detach().float().norm()
         _AdaptiveWeightedConv3dFn._last_grad_W_main_norm = global_norm_main.detach()
         _AdaptiveWeightedConv3dFn._last_grad_W_adv_norm = global_norm_adv.detach()
 
-        # ─── scale 적용 한 grad_y → grad_x, grad_weight 계산 ─────────
+        # --- apply the scale to grad_y, then compute grad_x and grad_weight ---
         grad_y = grad_y_main + adaptive_weight * grad_y_adversarial
 
         grad_x = torch.nn.grad.conv3d_input(
@@ -231,7 +235,7 @@ class AdaptiveWeightedConv3d(nn.Module):
     Backward behaves like:
       grad = grad_main + (disc_weight * adaptive_weight) * grad_adversarial
       adaptive_weight = ‖∇_W grad_main‖ / (‖∇_W grad_adv‖ + eps)
-      (모든 rank 에서 sync — DDP all_reduce 으로)
+      (synced across ranks through a DDP all_reduce)
     """
 
     def __init__(
@@ -278,7 +282,7 @@ class AdaptiveWeightedCausalConv3d(nn.Conv3d):
 
     During backward, the adversarial branch is rescaled by an adaptive weight
     computed from the ratio of the convolution weight-gradient norms.
-    DDP / FSDP 환경 에서 all_reduce 으로 모든 rank 가 같은 ratio 사용.
+    Under DDP or FSDP, an all_reduce gives every rank the same ratio.
 
     Use return_duplicate_y=False for normal single-output behavior.
     """
@@ -293,7 +297,7 @@ class AdaptiveWeightedCausalConv3d(nn.Conv3d):
     ):
         super().__init__(*args, **kwargs)
 
-        # CausalConv3d 의 비대칭 padding 처리
+        # CausalConv3d's asymmetric padding
         self._padding = (
             self.padding[2],
             self.padding[2],

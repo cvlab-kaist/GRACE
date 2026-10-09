@@ -108,14 +108,16 @@ but the videos will not be bit-identical to ours.
 | **Python** | 3.11 or 3.12 |
 | **PyTorch** | 2.5.1+cu124 — the plain PyPI wheel |
 | **GPU** | one NVIDIA A100 80GB |
-| **FlashAttention** | not installed; attention falls back FA4 → FA3 → FA2 → PyTorch SDPA |
+| **FlashAttention** | not installed — the dispatcher tries FA4 → FA3 → FA2 and lands on PyTorch SDPA, which is itself a flash kernel |
 
 Three things that catch people out:
 
 - **The usual `--index-url https://download.pytorch.org/whl/cu124` may not resolve.** Some proxies block
   that host. The PyPI wheel above is a cu124 build and needs no extra index.
-- **Leave FlashAttention out while you are checking reproduction.** It is optional and only makes things
-  faster, but it switches the attention kernel, and the videos stop matching ours.
+- **FlashAttention buys almost nothing here, and it changes the output.** PyTorch's SDPA already
+  dispatches to a flash kernel (measured on an A100: 0.140 ms, same as forcing the flash backend, against
+  2.503 ms for the math one), and at 1001 tokens self-attention is 0.57 s of a 75.6 s video — under 1%.
+  Installing it swaps one flash kernel for another, so videos stop matching ours for no real speedup.
 - **A byte match only holds within one environment.** The same command on the same machine rewrites a
   byte-identical mp4. A clean clone elsewhere gives the *same sample* but not the same bytes — ours came
   out at 24.5 dB PSNR, with half the pixels within ±2. Judge a reproduction by its scores, not its hashes.

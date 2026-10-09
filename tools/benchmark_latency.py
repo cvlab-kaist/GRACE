@@ -45,7 +45,7 @@ def parse():
 
 
 class Timer:
-    """영상 1편 단위 상태. CUDA event 쌍 + 호스트 perf_counter."""
+    """Per-video timing state: one pair of CUDA events plus the host perf_counter."""
 
     def __init__(self, task, torch):
         self.task, self.torch = task, torch
@@ -95,7 +95,7 @@ class Timer:
         self.torch.cuda.synchronize()
         wall = time.perf_counter() - self.wall_start
         core_start = self.enc_start if self.task == "i2v" else self.dit_first
-        if core_start is None:   # i2v 인데 encode 가 안 불린 경우 등 — DiT 기준으로 폴백
+        if core_start is None:   # e.g. an i2v run where encode was never called - fall back to the DiT mark
             core_start = self.dit_first
         ms = lambda a, b: (a.elapsed_time(b) / 1e3) if (a is not None and b is not None) else None
         rec = dict(
@@ -109,7 +109,7 @@ class Timer:
             max_reserved_gib=self.torch.cuda.max_memory_reserved() / 2**30,
         )
         parts = [x for x in (rec["encode_s"] if self.task == "i2v" else None, rec["denoise_s"], rec["decode_s"]) if x]
-        rec["gap_s"] = rec["core_cuda_s"] - sum(parts)   # 경계 안인데 stage 밖인 시간(offload 왕복 등)
+        rec["gap_s"] = rec["core_cuda_s"] - sum(parts)   # time inside the window but outside any stage (offload round-trips and such)
         self.records.append(rec)
         n = len(self.records)
         print(f"[e2e] #{n} core_cuda {rec['core_cuda_s']:.2f}s wall {rec['core_wall_s']:.2f}s | "
@@ -131,9 +131,9 @@ def merge_lora(dit):
             if isinstance(child, LoraLayer):
                 setattr(parent, name, child.base_layer); swapped += 1
     left = sum(1 for m in dit.modules() if isinstance(m, LoraLayer))
-    assert left == 0, f"LoRA 래퍼 {left}개 잔존"
+    assert left == 0, f"{left} LoRA wrappers are still in place"
     n = sum(p.numel() for p in dit.parameters())
-    print(f"[e2e] LoRA merge: fold {merged}, 래퍼 제거 {swapped}, params {n/1e9:.2f}B", flush=True)
+    print(f"[e2e] LoRA merge: folded {merged}, wrappers removed {swapped}, params {n/1e9:.2f}B", flush=True)
 
 
 def main():
@@ -169,7 +169,7 @@ def main():
         print("[e2e] hooks installed (dit fwd / vae.encode / vae.decode)", flush=True)
         return r
     MI.setup_davae_dit = _setup
-    M.setup_davae_dit = _setup      # t2v 는 from-import 로 이름을 복사해 갖고 있다
+    M.setup_davae_dit = _setup      # t2v holds its own copy of the name, from a from-import
 
     sys.argv = [M.__file__] + rest
     t0 = time.time()
@@ -183,8 +183,8 @@ def main():
         task=a.task, n_videos=len(recs), warmup=a.warmup, n_timed=len(timed),
         merge_lora=merge, dit_offload_decode=offload,
         gpu=torch.cuda.get_device_name(0), torch=torch.__version__,
-        boundary=("첫 VAE encode 시작 → 최종 VAE decode 끝" if a.task == "i2v"
-                  else "첫 DiT forward → 최종 VAE decode 끝"),
+        boundary=("first VAE encode to the end of the final VAE decode" if a.task == "i2v"
+                  else "first DiT forward to the end of the final VAE decode"),
         median=dict(core_cuda_s=med("core_cuda_s"), core_wall_s=med("core_wall_s"),
                     encode_s=med("encode_s"), denoise_s=med("denoise_s"), decode_s=med("decode_s"),
                     gap_s=med("gap_s"), max_allocated_gib=med("max_allocated_gib")),

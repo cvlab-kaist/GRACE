@@ -11,7 +11,7 @@ class ModelLogger:
         self._optimizer = None
         self._scheduler = None
         self._accelerator = None
-        # [NEW] dataloader resume용 — runner가 매 step 직전에 갱신
+        # [NEW] for dataloader resume - the runner refreshes this just before every step
         self._current_epoch = 0
         self._current_step_in_epoch = 0
 
@@ -32,7 +32,7 @@ class ModelLogger:
             os.makedirs(self.output_path, exist_ok=True)
             path = os.path.join(self.output_path, file_name)
             accelerator.save(state_dict, path, safe_serialization=True)
-        # [NEW] epoch 단위 저장 시에도 accelerator.save_state로 optimizer/scheduler 전체 저장
+        # [NEW] save per-epoch too, through accelerator.save_state, so optimizer and scheduler go with it
         if self._accelerator is not None:
             accel_state_dir = os.path.join(self.output_path, file_name.replace('.safetensors', '_accel_state'))
             self._accelerator.save_state(accel_state_dir)
@@ -60,11 +60,11 @@ class ModelLogger:
             os.makedirs(self.output_path, exist_ok=True)
             path = os.path.join(self.output_path, file_name)
             accelerator.save(state_dict, path, safe_serialization=True)
-        # [NEW] accelerator.save_state로 optimizer/scheduler/model 전체 저장
+        # [NEW] accelerator.save_state writes optimizer, scheduler and model together
         if self._accelerator is not None:
             accel_state_dir = os.path.join(self.output_path, file_name.replace('.safetensors', '_accel_state'))
             self._accelerator.save_state(accel_state_dir)
-            # num_steps도 같이 저장
+            # keep num_steps with it
             if accelerator.is_main_process:
                 import json as _json
                 with open(os.path.join(accel_state_dir, 'custom_state.json'), 'w') as _f:

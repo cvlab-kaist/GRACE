@@ -1,6 +1,6 @@
 # [Source: Wan VAE] wan/modules/vae.py
-# [Modified - oliviaa] Added extra encoder/decoder stages for higher compression.
-# All modifications are marked with [NEW - oliviaa] or [Modified - oliviaa].
+# [Modified] Added extra encoder/decoder stages for higher compression.
+# All modifications are marked with [NEW] or [Modified].
 # Copyright 2024-2025 The Alibaba Wan Team Authors. All rights reserved.
 import logging
 
@@ -72,7 +72,7 @@ class Resample(nn.Module):
     def __init__(self, dim, mode):
         assert mode in ('none', 'upsample2d', 'upsample3d', 'downsample2d',
                         'downsample3d',
-                        'downsample_temporal', 'upsample_temporal')  # [NEW - oliviaa]
+                        'downsample_temporal', 'upsample_temporal')  # [NEW]
         super().__init__()
         self.dim = dim
         self.mode = mode
@@ -88,7 +88,7 @@ class Resample(nn.Module):
                 nn.Conv2d(dim, dim // 2, 3, padding=1))
             self.time_conv = CausalConv3d(
                 dim, dim * 2, (3, 1, 1), padding=(1, 0, 0))
-        # [NEW - oliviaa] temporal만 upsample — spatial 유지, 채널 유지
+        # [NEW] upsample time only - spatial size and channel count stay
         elif mode == 'upsample_temporal':
             self.resample = nn.Identity()
             self.time_conv = CausalConv3d(
@@ -104,7 +104,7 @@ class Resample(nn.Module):
                 nn.Conv2d(dim, dim, 3, stride=(2, 2)))
             self.time_conv = CausalConv3d(
                 dim, dim, (3, 1, 1), stride=(2, 1, 1), padding=(0, 0, 0))
-        # [NEW - oliviaa] temporal만 downsample — spatial 유지, 채널 유지
+        # [NEW] downsample time only - spatial size and channel count stay
         elif mode == 'downsample_temporal':
             self.resample = nn.Identity()
             self.time_conv = CausalConv3d(
@@ -115,7 +115,7 @@ class Resample(nn.Module):
 
     def forward(self, x, feat_cache=None, feat_idx=[0]):
         b, c, t, h, w = x.size()
-        # [Modified - oliviaa] upsample_temporal은 upsample3d와 temporal 로직 동일
+        # [Modified] upsample_temporal shares upsample3d's temporal logic
         if self.mode in ('upsample3d', 'upsample_temporal'):
             if feat_cache is not None:
                 idx = feat_idx[0]
@@ -156,7 +156,7 @@ class Resample(nn.Module):
         x = self.resample(x)  # upsample_temporal/downsample_temporal: nn.Identity()
         x = rearrange(x, '(b t) c h w -> b c t h w', t=t)
 
-        # [Modified - oliviaa] downsample_temporal은 downsample3d와 temporal 로직 동일
+        # [Modified] downsample_temporal shares downsample3d's temporal logic
         if self.mode in ('downsample3d', 'downsample_temporal'):
             if feat_cache is not None:
                 idx = feat_idx[0]
@@ -297,7 +297,7 @@ class Encoder3d(nn.Module):
                  attn_scales=[],
                  temperal_downsample=[True, True, False],
                  dropout=0.0,
-                 add_stages=None):  # [NEW - oliviaa] list of {'mode': str, 'num_res_blocks': int}
+                 add_stages=None):  # [NEW] list of {'mode': str, 'num_res_blocks': int}
         super().__init__()
         self.dim = dim
         self.z_dim = z_dim
@@ -331,11 +331,11 @@ class Encoder3d(nn.Module):
                 scale /= 2.0
         self.downsamples = nn.Sequential(*downsamples)
 
-        # [NEW - oliviaa] Added downsample stages between downsamples and middle.
+        # [NEW] Added downsample stages between downsamples and middle.
         # Each stage: ResBlock(out_dim, out_dim) x N + Resample(out_dim, mode).
         # Downsample preserves channels, so stages can be stacked freely.
-        # init 옵션: "default" (PyTorch 기본), "zero" (zero init),
-        #           "wan" (Wan 스타일 identity init), "pretrained_copy" (가장 가까운 stage에서 복사)
+        # init choices: "default" (PyTorch's own), "zero", "wan" (Wan-style identity init),
+        #               "pretrained_copy" (copy from the nearest stage)
         self.add_downsamples = nn.ModuleList()
         if add_stages:
             for stage_cfg in add_stages:
@@ -343,7 +343,7 @@ class Encoder3d(nn.Module):
                 for _ in range(stage_cfg.get('num_res_blocks', 2)):
                     layers.append(ResidualBlock(out_dim, out_dim, dropout))
                 resample = Resample(out_dim, mode=stage_cfg['mode'])
-                # [NEW - oliviaa] init 옵션
+                # [NEW] init choice
                 init_mode = stage_cfg.get('init', 'default')
                 if init_mode == 'zero':
                     for p in resample.parameters():
@@ -351,8 +351,8 @@ class Encoder3d(nn.Module):
                 elif init_mode == 'wan' and hasattr(resample, 'time_conv'):
                     resample.init_weight(resample.time_conv)
                 elif init_mode == 'pretrained_copy':
-                    # 가장 가까운 pretrained stage에서 weight 복사
-                    # encoder downsamples 끝에서 ResBlock(384,384)×2 + Resample(downsample3d) 찾기
+                    # copy weights from the nearest pretrained stage: look at the end of the
+                    # encoder downsamples for ResBlock(384,384) x2 plus Resample(downsample3d)
                     src_resblocks = [m for m in self.downsamples if isinstance(m, ResidualBlock) and m.in_dim == out_dim and m.out_dim == out_dim]
                     src_resamples = [m for m in self.downsamples if isinstance(m, Resample) and 'downsample' in m.mode]
                     n_blocks = stage_cfg.get('num_res_blocks', 2)
@@ -397,7 +397,7 @@ class Encoder3d(nn.Module):
             else:
                 x = layer(x)
 
-        ## [NEW - oliviaa] added downsample stages
+        ## [NEW] added downsample stages
         for stage in self.add_downsamples:
             for layer in stage:
                 if feat_cache is not None:
@@ -442,7 +442,7 @@ class Decoder3d(nn.Module):
                  attn_scales=[],
                  temperal_upsample=[False, True, True],
                  dropout=0.0,
-                 add_stages=None):  # [NEW - oliviaa] list of {'mode': str, 'num_res_blocks': int}
+                 add_stages=None):  # [NEW] list of {'mode': str, 'num_res_blocks': int}
         super().__init__()
         self.dim = dim
         self.z_dim = z_dim
@@ -463,13 +463,13 @@ class Decoder3d(nn.Module):
             ResidualBlock(dims[0], dims[0], dropout), AttentionBlock(dims[0]),
             ResidualBlock(dims[0], dims[0], dropout))
 
-        # [NEW - oliviaa] Added upsample stages between middle and upsamples.
-        # upsample3d/2d: Resample이 채널을 절반으로 줄임 (dim -> dim//2)
-        #   → 기존 stage0 입력(384ch)과 맞추려면 미리 2배 확장 필요
+        # [NEW] Added upsample stages between middle and upsamples.
+        # upsample3d/2d: Resample halves the channels (dim -> dim//2), so to line up with the
+        #   existing stage-0 input of 384 channels the width has to be doubled first
         #   → ResBlock(dim, dim*2) x N + Resample(dim*2) -> dim*2//2 = dim
-        # upsample_temporal: Resample이 채널을 유지함 (dim -> dim)
-        #   → 확장 불필요, ResBlock(dim, dim) x N + Resample(dim) -> dim
-        # init 옵션: "default" (PyTorch 기본), "zero" (zero init), "wan" (Wan 스타일 identity init)
+        # upsample_temporal: Resample keeps the channels (dim -> dim), so no widening is needed:
+        #   ResBlock(dim, dim) x N then Resample(dim) -> dim
+        # init choices: "default" (PyTorch's own), "zero", "wan" (Wan-style identity init)
         inner_dim = dims[0]  # 384 for default config
         self.add_upsamples = nn.ModuleList()
         if add_stages:
@@ -478,12 +478,12 @@ class Decoder3d(nn.Module):
                 mode = stage_cfg['mode']
                 n_blocks = stage_cfg.get('num_res_blocks', 2)
                 if mode == 'upsample_temporal':
-                    # [NEW - oliviaa] upsample_temporal은 채널 안 줄이므로 확장 불필요
+                    # [NEW] upsample_temporal does not shrink the channels, so no widening
                     for _ in range(n_blocks):
                         layers.append(ResidualBlock(inner_dim, inner_dim, dropout))
                     resample = Resample(inner_dim, mode=mode)
                 else:
-                    # upsample3d/2d: 채널 절반 보상을 위해 2배로 확장 후 Resample이 줄임
+                    # upsample3d/2d: double the width to offset the halving Resample does
                     expanded_dim = inner_dim * 2
                     for j in range(n_blocks):
                         if j == 0:
@@ -491,7 +491,7 @@ class Decoder3d(nn.Module):
                         else:
                             layers.append(ResidualBlock(expanded_dim, expanded_dim, dropout))
                     resample = Resample(expanded_dim, mode=mode)
-                # [NEW - oliviaa] init 옵션
+                # [NEW] init choice
                 init_mode = stage_cfg.get('init', 'default')
                 if init_mode == 'zero':
                     for p in resample.parameters():
@@ -499,9 +499,9 @@ class Decoder3d(nn.Module):
                 elif init_mode == 'wan' and hasattr(resample, 'time_conv'):
                     resample.init_weight2(resample.time_conv)
                 elif init_mode == 'pretrained_copy':
-                    # 가장 가까운 pretrained stage에서 Resample weight만 복사
-                    # (ResBlock은 채널이 달라서 복사 불가 — 384→768 vs 384→384)
-                    # self.upsamples가 아래에서 생성되므로 여기서는 mark만 해두고 나중에 처리
+                    # copy only the Resample weights from the nearest pretrained stage; the
+                    # ResBlock cannot be copied because its widths differ (384->768 vs 384->384).
+                    # self.upsamples is built further down, so just mark it here and handle it later.
                     resample._deferred_pretrained_copy = True
                 layers.append(resample)
                 self.add_upsamples.append(nn.Sequential(*layers))
@@ -525,9 +525,9 @@ class Decoder3d(nn.Module):
                 scale *= 2.0
         self.upsamples = nn.Sequential(*upsamples)
 
-        # [NEW - oliviaa] Deferred pretrained_copy init for add_upsamples
-        # self.upsamples가 생성된 후에 처리
-        # Resample dim이 다를 수 있으므로 (768 vs 384) strict=False로 시도, 실패 시 skip
+        # [NEW] Deferred pretrained_copy init for add_upsamples
+        # run this once self.upsamples exists. The Resample dim may differ (768 vs 384), so try
+        # with strict=False and skip on failure.
         src_resamples = [m for m in self.upsamples if isinstance(m, Resample) and 'upsample' in m.mode]
         for stage in self.add_upsamples:
             for layer in stage:
@@ -536,7 +536,7 @@ class Decoder3d(nn.Module):
                         try:
                             layer.load_state_dict(src_resamples[0].state_dict())
                         except RuntimeError:
-                            # shape mismatch (e.g., 768 vs 384) — Resample copy 불가, skip
+                            # shape mismatch (e.g. 768 vs 384): the Resample cannot be copied, skip
                             pass
                     if hasattr(layer, '_deferred_pretrained_copy'):
                         del layer._deferred_pretrained_copy
@@ -571,7 +571,7 @@ class Decoder3d(nn.Module):
             else:
                 x = layer(x)
 
-        ## [NEW - oliviaa] added upsample stages
+        ## [NEW] added upsample stages
         for stage in self.add_upsamples:
             for layer in stage:
                 if feat_cache is not None:
@@ -624,8 +624,8 @@ class WanVAE_(nn.Module):
                  attn_scales=[],
                  temperal_downsample=[True, True, False],
                  dropout=0.0,
-                 add_encoder_stages=None,   # [NEW - oliviaa]
-                 add_decoder_stages=None):  # [NEW - oliviaa]
+                 add_encoder_stages=None,   # [NEW]
+                 add_decoder_stages=None):  # [NEW]
         super().__init__()
         self.dim = dim
         self.z_dim = z_dim
@@ -638,14 +638,14 @@ class WanVAE_(nn.Module):
         # modules
         self.encoder = Encoder3d(dim, z_dim * 2, dim_mult, num_res_blocks,
                                  attn_scales, self.temperal_downsample, dropout,
-                                 add_stages=add_encoder_stages)   # [Modified - oliviaa]
+                                 add_stages=add_encoder_stages)   # [Modified]
         self.conv1 = CausalConv3d(z_dim * 2, z_dim * 2, 1)
         self.conv2 = CausalConv3d(z_dim, z_dim, 1)
         self.decoder = Decoder3d(dim, z_dim, dim_mult, num_res_blocks,
                                  attn_scales, self.temperal_upsample, dropout,
-                                 add_stages=add_decoder_stages)   # [Modified - oliviaa]
+                                 add_stages=add_decoder_stages)   # [Modified]
 
-    # [Modified - oliviaa] forward passes scale=None to skip normalization during training
+    # [Modified] forward passes scale=None to skip normalization during training
     def forward(self, x):
         mu, log_var = self.encode(x, scale=None)
         z = self.reparameterize(mu, log_var)
@@ -656,16 +656,16 @@ class WanVAE_(nn.Module):
         self.clear_cache()
         ## cache
         t = x.shape[2]
-        # [Modified - oliviaa] 원본: 하드코딩 4 (temporal 4x 기준)
-        # 변경: add_stages에 downsample3d가 추가되면 chunk 크기도 커져야 함
-        # 예: 원본 4x + add 1개 downsample3d = 8x → chunk 크기 8
+        # [Modified] upstream hardcodes 4, assuming a 4x temporal stride. Adding a downsample3d
+        # through add_stages makes the stride larger, and the chunk size has to follow:
+        # 4x plus one added downsample3d is 8x, so the chunk size is 8.
         tf = 1
         for td in self.temperal_downsample:
             if td:
                 tf *= 2
         for stage in self.encoder.add_downsamples:
             for layer in stage:
-                # [Modified - oliviaa] downsample_temporal도 temporal 2x 줄임
+                # [Modified] downsample_temporal also halves the time axis
                 if isinstance(layer, Resample) and layer.mode in ('downsample3d', 'downsample_temporal'):
                     tf *= 2
         iter_ = 1 + (t - 1) // tf
@@ -683,7 +683,7 @@ class WanVAE_(nn.Module):
                     feat_idx=self._enc_conv_idx)
                 out = torch.cat([out, out_], 2)
         mu, log_var = self.conv1(out).chunk(2, dim=1)
-        # [Modified - oliviaa] scale이 None이면 정규화 건너뜀 (학습 시)
+        # [Modified] a scale of None skips normalisation, which is what training wants
         if scale is not None:
             if isinstance(scale[0], torch.Tensor):
                 mu = (mu - scale[0].view(1, self.z_dim, 1, 1, 1)) * scale[1].view(
@@ -691,12 +691,12 @@ class WanVAE_(nn.Module):
             else:
                 mu = (mu - scale[0]) * scale[1]
         self.clear_cache()
-        return mu, log_var  # [Modified - oliviaa] log_var도 반환
+        return mu, log_var  # [Modified] log_var is returned as well
 
     def decode(self, z, scale):
         self.clear_cache()
         # z: [b,c,t,h,w]
-        # [Modified - oliviaa] scale이 None이면 역정규화 건너뜀 (학습 시)
+        # [Modified] a scale of None skips denormalisation, which is what training wants
         if scale is not None:
             if isinstance(scale[0], torch.Tensor):
                 z = z / scale[1].view(1, self.z_dim, 1, 1, 1) + scale[0].view(
@@ -726,7 +726,7 @@ class WanVAE_(nn.Module):
         eps = torch.randn_like(std)
         return eps * std + mu
 
-    # [Modified - oliviaa] scale 인자 추가 — encode 시그니처 변경에 맞춤
+    # [Modified] takes a scale argument, to match the new encode signature
     def sample(self, imgs, scale=None, deterministic=False):
         mu, log_var = self.encode(imgs, scale)
         if deterministic:
@@ -745,11 +745,11 @@ class WanVAE_(nn.Module):
 
 
 def _video_vae(pretrained_path=None, z_dim=None, device='cpu',
-               add_encoder_stages=None, add_decoder_stages=None,  # [NEW - oliviaa]
+               add_encoder_stages=None, add_decoder_stages=None,  # [NEW]
                **kwargs):
     """
     [Source: Wan VAE]
-    [Modified - oliviaa] Added add_encoder_stages/add_decoder_stages params,
+    [Modified] Added add_encoder_stages/add_decoder_stages params,
     strict=False loading for added stage keys.
     """
     cfg = dict(
@@ -760,8 +760,8 @@ def _video_vae(pretrained_path=None, z_dim=None, device='cpu',
         attn_scales=[],
         temperal_downsample=[False, True, True],
         dropout=0.0,
-        add_encoder_stages=add_encoder_stages,  # [NEW - oliviaa]
-        add_decoder_stages=add_decoder_stages,  # [NEW - oliviaa]
+        add_encoder_stages=add_encoder_stages,  # [NEW]
+        add_decoder_stages=add_decoder_stages,  # [NEW]
     )
     cfg.update(**kwargs)
 
@@ -769,7 +769,7 @@ def _video_vae(pretrained_path=None, z_dim=None, device='cpu',
 
     if pretrained_path is not None:
         logging.info(f'loading {pretrained_path}')
-        # [Modified - oliviaa] strict=False — added stage keys will be missing in pretrained ckpt
+        # [Modified] strict=False — added stage keys will be missing in pretrained ckpt
         missing, unexpected = model.load_state_dict(
             torch.load(pretrained_path, map_location=device), strict=False)
         logging.info(f'Loaded: {len(missing)} missing, {len(unexpected)} unexpected keys')
@@ -810,7 +810,7 @@ class WanVAE:
         videos: A list of videos each with shape [C, T, H, W].
         """
         with amp.autocast(dtype=self.dtype):
-            # [Modified - oliviaa] encode now returns (mu, log_var), 추론 시 mu만 사용
+            # [Modified] encode now returns (mu, log_var); inference uses mu only
             return [
                 self.model.encode(u.unsqueeze(0), self.scale)[0].float().squeeze(0)
                 for u in videos
