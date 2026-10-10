@@ -1,0 +1,501 @@
+[w3] idx=3,19,35,51,67,83,99
+/mnt/kakao/vcga/oliviaa.young/kinemadae_venv/lib/python3.12/site-packages/huggingface_hub/constants.py:298: FutureWarning: The `HF_HUB_ENABLE_HF_TRANSFER` environment variable is deprecated as 'hf_transfer' is not used anymore. Please use `HF_XET_HIGH_PERFORMANCE` instead to enable high performance transfer with Xet. Visit https://huggingface.co/docs/huggingface_hub/package_reference/environment_variables#hfxethighperformance for more details.
+  warnings.warn(
+[2026-10-09 18:42:41,975] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[diffsynth] /mnt/kakao/vcga/oliviaa.young/grace-inference/third_party/DiffSynth-Studio/diffsynth/pipelines/wan_video.py
+            rope_pos_scale applied=True
+/mnt/kakao/vcga/oliviaa.young/grace-inference/src/train_crossattn/grace_geoprior.py:1822: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state = torch.load(pretrained_path, map_location=device)
+WARNING:root:[GeopriorVAE-crossattn] unexpected (non-ff): ['align_projections.0.0.weight', 'align_projections.0.0.bias', 'align_projections.0.1.weight', 'align_projections.0.1.bias', 'align_projections.1.0.weight']
+[diffsynth] /mnt/kakao/vcga/oliviaa.young/grace-inference/third_party/DiffSynth-Studio/diffsynth/pipelines/wan_video.py
+            rope_pos_scale applied=True
+  [prompt] applying gpt_enhanced augmented prompts
+    aesthetic_quality        replaced (93)
+    appearance_style         replaced (90)
+    background_consistency   replaced (86)
+    color                    replaced (85)
+    dynamic_degree           replaced (72)
+    human_action             replaced (100)
+    imaging_quality          replaced (93)
+    motion_smoothness        replaced (72)
+    multiple_objects         replaced (82)
+    object_class             replaced (79)
+    overall_consistency      replaced (93)
+    scene                    replaced (86)
+    spatial_relationship     replaced (84)
+    subject_consistency      replaced (72)
+    temporal_flickering      replaced (75)
+    temporal_style           replaced (100)
+[plan] 16 dimensions x up to 999 = 1362 videos  (seed=0)
+   human_action             pool 100 -> 100
+   multiple_objects         pool  82 -> 82
+   spatial_relationship     pool  84 -> 84
+   color                    pool  85 -> 85
+   object_class             pool  79 -> 79
+   scene                    pool  86 -> 86
+   appearance_style         pool  90 -> 90
+   temporal_style           pool 100 -> 100
+   overall_consistency      pool  93 -> 93
+   background_consistency   pool  86 -> 86
+   subject_consistency      pool  72 -> 72
+   dynamic_degree           pool  72 -> 72
+   motion_smoothness        pool  72 -> 72
+   imaging_quality          pool  93 -> 93
+   aesthetic_quality        pool  93 -> 93
+   temporal_flickering      pool  75 -> 75
+[plan] manifest → /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/manifest.json
+
+[load] T2V pipeline (no CLIP)
+Loading models from: [
+    "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-T2V-14B/diffusion_pytorch_model-00001-of-00006.safetensors",
+    "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-T2V-14B/diffusion_pytorch_model-00002-of-00006.safetensors",
+    "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-T2V-14B/diffusion_pytorch_model-00003-of-00006.safetensors",
+    "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-T2V-14B/diffusion_pytorch_model-00004-of-00006.safetensors",
+    "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-T2V-14B/diffusion_pytorch_model-00005-of-00006.safetensors",
+    "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-T2V-14B/diffusion_pytorch_model-00006-of-00006.safetensors"
+]
+Loaded model: {
+    "model_name": "wan_video_dit",
+    "model_class": "diffsynth.models.wan_video_dit.WanModel",
+    "extra_kwargs": {
+        "has_image_input": false,
+        "patch_size": [
+            1,
+            2,
+            2
+        ],
+        "in_dim": 16,
+        "dim": 5120,
+        "ffn_dim": 13824,
+        "freq_dim": 256,
+        "text_dim": 4096,
+        "out_dim": 16,
+        "num_heads": 40,
+        "num_layers": 40,
+        "eps": 1e-06
+    }
+}
+Loading models from: "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-I2V-14B-480P/models_t5_umt5-xxl-enc-bf16.pth"
+Detected non-safetensors files, which may cause slower loading. It's recommended to convert it to a safetensors file.
+Loaded model: {
+    "model_name": "wan_video_text_encoder",
+    "model_class": "diffsynth.models.wan_video_text_encoder.WanTextEncoder",
+    "extra_kwargs": null
+}
+Loading models from: "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-I2V-14B-480P/Wan2.1_VAE.pth"
+Detected non-safetensors files, which may cause slower loading. It's recommended to convert it to a safetensors file.
+Loaded model: {
+    "model_name": "wan_video_vae",
+    "model_class": "diffsynth.models.wan_video_vae.WanVideoVAE",
+    "extra_kwargs": null
+}
+Using wan_video_text_encoder from "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-I2V-14B-480P/models_t5_umt5-xxl-enc-bf16.pth".
+Using wan_video_dit from [
+    "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-T2V-14B/diffusion_pytorch_model-00001-of-00006.safetensors",
+    "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-T2V-14B/diffusion_pytorch_model-00002-of-00006.safetensors",
+    "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-T2V-14B/diffusion_pytorch_model-00003-of-00006.safetensors",
+    "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-T2V-14B/diffusion_pytorch_model-00004-of-00006.safetensors",
+    "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-T2V-14B/diffusion_pytorch_model-00005-of-00006.safetensors",
+    "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-T2V-14B/diffusion_pytorch_model-00006-of-00006.safetensors"
+].
+Using wan_video_vae from "/mnt/kakao/vcga/oliviaa.young/KinemaDAE/checkpoints_persistent/Wan2.1-I2V-14B-480P/Wan2.1_VAE.pth".
+No wan_video_image_encoder models available. This is not an error.
+No wan_video_motion_controller models available. This is not an error.
+No wan_video_vace models available. This is not an error.
+No wan_video_vap models available. This is not an error.
+No wans2v_audio_encoder models available. This is not an error.
+No wan_video_animate_adapter models available. This is not an error.
+  has_image_input=False (T2V confirmed)
+
+[load] Geoprior VAE (plain, not crossattn/ff)
+  latent_channels=32  temporal_factor=8  upsampling_factor=16  spatial_tile=True
+  [decode] spatial_tile=True tile=(20, 28) stride=(10, 14), DiT offload=False, save_latents=False
+  units[1] NoiseInitializer → GRACE (latent_ch=32)
+  removed ImageEmbedderVAE (25 -> 24) - t2v has no input image
+
+[load] DiT surgery + LoRA + checkpoint
+DiT checkpoint loaded: 1090 keys, missing=810, unexpected=0
+  patch_embedding: OK
+  head (main+prior): OK
+  LoRA: OK
+  t2_projection: loaded (async ckpt)
+  [lora] folded 400 layers, unwrapped 400
+  patch_embedding.weight=(5120, 32, 1, 2, 2)
+  t2_projection |w|max=5.4443e-02 (async training confirmed)
+  rope_pos_scale=(2.0, 2.0, 2.0)
+
+[TIMING] load 2153.2s
+[only_idx] generating only [3, 19, 35, 51, 67, 83, 99] (the plan is unchanged, so idx<->prompt still holds)
+
+[human_action] 03/99  A person standing in front of a bathroom mirror, leaning slightly forward with one hand on
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+[patchify-warn] latent HxW=(11, 23, 40) is not a multiple of 2 - the last row and column are dropped. Pick a resolution that is a multiple of the VAE stride x2.
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/human_action/03_A_person_standing_in_front_of_a_bathroom_mirror_leaning_slightly_forward_with_one_hand_on_.mp4  (143.7s)
+
+[human_action] 19/99  A person gracefully shuffles a deck of cards on a wooden table in a cozy living room. The 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/human_action/19_A_person_gracefully_shuffles_a_deck_of_cards_on_a_wooden_table_in_a_cozy_living_room_The_i.mp4  (129.1s)
+
+[human_action] 35/99  CG game concept digital art, a person standing in a dimly lit, rustic forest clearing. The
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/human_action/35_CG_game_concept_digital_art_a_person_standing_in_a_dimly_lit_rustic_forest_clearing_They_a.mp4  (129.6s)
+
+[human_action] 51/99  A person is cheerleading at a lively high school football game. The individual is wearing 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/human_action/51_A_person_is_cheerleading_at_a_lively_high_school_football_game_The_individual_is_wearing_a.mp4  (132.3s)
+
+[human_action] 67/99  A person riding a majestic white horse, their attire blending seamlessly with the horse's 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/human_action/67_A_person_riding_a_majestic_white_horse_their_attire_blending_seamlessly_with_the_horses_co.mp4  (129.9s)
+
+[human_action] 83/99  A graceful woman in flowing white robes, adorned with intricate silver jewelry, stands gra
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/human_action/83_A_graceful_woman_in_flowing_white_robes_adorned_with_intricate_silver_jewelry_stands_grace.mp4  (129.2s)
+
+[human_action] 99/99  CG game concept digital art, a person in a casual outfit, cutting a large ripe watermelon 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/human_action/99_CG_game_concept_digital_art_a_person_in_a_casual_outfit_cutting_a_large_ripe_watermelon_wi.mp4  (129.1s)
+
+[multiple_objects] 03/81  A cozy living room scene captured in soft lighting, featuring a comfortable wooden chair p
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/multiple_objects/03_A_cozy_living_room_scene_captured_in_soft_lighting_featuring_a_comfortable_wooden_chair_pl.mp4  (128.2s)
+
+[multiple_objects] 19/81  CG kitchen concept art, a bunch of broccoli sitting on a wooden cutting board, surrounded 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/multiple_objects/19_CG_kitchen_concept_art_a_bunch_of_broccoli_sitting_on_a_wooden_cutting_board_surrounded_by.mp4  (129.1s)
+
+[multiple_objects] 35/81  A modern smartphone lying flat on a wooden desk, next to a leather-bound hardcover novel. 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/multiple_objects/35_A_modern_smartphone_lying_flat_on_a_wooden_desk_next_to_a_leather-bound_hardcover_novel_Th.mp4  (129.5s)
+
+[multiple_objects] 51/81  A rustic landscape painting, a majestic white horse standing proudly in the foreground, it
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/multiple_objects/51_A_rustic_landscape_painting_a_majestic_white_horse_standing_proudly_in_the_foreground_its_.mp4  (130.5s)
+
+[multiple_objects] 67/81  The video takes place on a snow-covered mountainside on a winter day, where a pair of slee
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/multiple_objects/67_The_video_takes_place_on_a_snow-covered_mountainside_on_a_winter_day_where_a_pair_of_sleek.mp4  (128.9s)
+
+[spatial_relationship] 03/83  A sleek black wine glass sits elegantly on a polished wooden table, its contents glowing u
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/spatial_relationship/03_A_sleek_black_wine_glass_sits_elegantly_on_a_polished_wooden_table_its_contents_glowing_un.mp4  (129.0s)
+
+[spatial_relationship] 19/83  A majestic elephant stands gracefully in the foreground, with a vibrant green landscape st
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/spatial_relationship/19_A_majestic_elephant_stands_gracefully_in_the_foreground_with_a_vibrant_green_landscape_str.mp4  (130.3s)
+
+[spatial_relationship] 35/83  A cozy living room scene captured in a warm and inviting style, showcasing a comfortable q
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/spatial_relationship/35_A_cozy_living_room_scene_captured_in_a_warm_and_inviting_style_showcasing_a_comfortable_qu.mp4  (130.1s)
+
+[spatial_relationship] 51/83  CG food concept digital art, a vibrant green broccoli sitting atop a perfectly ripe yellow
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/spatial_relationship/51_CG_food_concept_digital_art_a_vibrant_green_broccoli_sitting_atop_a_perfectly_ripe_yellow_.mp4  (128.9s)
+
+[spatial_relationship] 67/83  CG game concept digital art, a front view of a small bathroom scene. A hair dryer stands e
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/spatial_relationship/67_CG_game_concept_digital_art_a_front_view_of_a_small_bathroom_scene_A_hair_dryer_stands_ele.mp4  (129.3s)
+
+[spatial_relationship] 83/83  The video takes place in a contemporary kitchen where a sleek, modern kitchen appliance co
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/spatial_relationship/83_The_video_takes_place_in_a_contemporary_kitchen_where_a_sleek_modern_kitchen_appliance_com.mp4  (129.3s)
+
+[color] 03/84  The video takes place on the coast where a sleek, vibrant orange sports car glides effortl
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/color/03_The_video_takes_place_on_the_coast_where_a_sleek_vibrant_orange_sports_car_glides_effortle.mp4  (131.5s)
+
+[color] 19/84  The video takes place indoors where a vibrant purple suitcase stands alone on a polished w
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/color/19_The_video_takes_place_indoors_where_a_vibrant_purple_suitcase_stands_alone_on_a_polished_w.mp4  (128.4s)
+
+[color] 35/84  A blue vase stands gracefully in a minimalist living room. The vase is of ceramic material
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/color/35_A_blue_vase_stands_gracefully_in_a_minimalist_living_room_The_vase_is_of_ceramic_material_.mp4  (128.8s)
+
+[color] 51/84  The video takes place on a rainy city street where a vibrant yellow umbrella stands out ag
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/color/51_The_video_takes_place_on_a_rainy_city_street_where_a_vibrant_yellow_umbrella_stands_out_ag.mp4  (131.0s)
+
+[color] 67/84  A blue ceramic bowl sits on a rustic wooden table in a cozy kitchen. The bowl is filled wi
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/color/67_A_blue_ceramic_bowl_sits_on_a_rustic_wooden_table_in_a_cozy_kitchen_The_bowl_is_filled_wit.mp4  (129.0s)
+
+[color] 83/84  The video takes place on the coast where a sleek, emerald-green sports car glistens under 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/color/83_The_video_takes_place_on_the_coast_where_a_sleek_emerald-green_sports_car_glistens_under_t.mp4  (130.0s)
+
+[object_class] 03/78  CG game concept digital art, a backpack lying on a wooden floor. The backpack is large and
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/object_class/03_CG_game_concept_digital_art_a_backpack_lying_on_a_wooden_floor_The_backpack_is_large_and_s.mp4  (128.8s)
+
+[object_class] 19/78  CG game concept digital art, a detailed baseball glove made of leather, with intricate sti
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/object_class/19_CG_game_concept_digital_art_a_detailed_baseball_glove_made_of_leather_with_intricate_stitc.mp4  (128.0s)
+
+[object_class] 35/78  A whimsical scene captured in a vibrant summer day, featuring a colorful kite soaring high
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/object_class/35_A_whimsical_scene_captured_in_a_vibrant_summer_day_featuring_a_colorful_kite_soaring_high_.mp4  (129.6s)
+
+[object_class] 51/78  A functional fire hydrant stands prominently in a bustling urban street at dusk. The hydra
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/object_class/51_A_functional_fire_hydrant_stands_prominently_in_a_bustling_urban_street_at_dusk_The_hydran.mp4  (128.9s)
+
+[object_class] 67/78  A sleek wine glass sits on a polished wooden table. The glass is of a clear and delicate d
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/object_class/67_A_sleek_wine_glass_sits_on_a_polished_wooden_table_The_glass_is_of_a_clear_and_delicate_de.mp4  (129.0s)
+
+[scene] 03/85  The video takes place in a quaint bakery shop, bathed in warm, golden light, which showcas
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/scene/03_The_video_takes_place_in_a_quaint_bakery_shop_bathed_in_warm_golden_light_which_showcases_.mp4  (129.8s)
+
+[scene] 19/85  CG game concept digital art, vast sandy desert stretching endlessly under a blazing sun. T
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/scene/19_CG_game_concept_digital_art_vast_sandy_desert_stretching_endlessly_under_a_blazing_sun_The.mp4  (129.7s)
+
+[scene] 35/85  The video takes place at an evening fairground where a vibrant carousel spins under a twil
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/scene/35_The_video_takes_place_at_an_evening_fairground_where_a_vibrant_carousel_spins_under_a_twil.mp4  (130.9s)
+
+[scene] 51/85  The video takes place in a futuristic science museum, with sleek, glass-paneled walls and 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/scene/51_The_video_takes_place_in_a_futuristic_science_museum_with_sleek_glass-paneled_walls_and_in.mp4  (129.4s)
+
+[scene] 67/85  CG animation digital art, a majestic windmill standing tall in a vast open field. The wind
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/scene/67_CG_animation_digital_art_a_majestic_windmill_standing_tall_in_a_vast_open_field_The_windmi.mp4  (130.0s)
+
+[scene] 83/85  The video takes place at a grand, historic mansion that stands majestically atop a hill, i
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/scene/83_The_video_takes_place_at_a_grand_historic_mansion_that_stands_majestically_atop_a_hill_its.mp4  (128.0s)
+
+[appearance_style] 03/89  The entire video is rendered in black and white. The video takes place on a bustling city 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/appearance_style/03_The_entire_video_is_rendered_in_black_and_white_The_video_takes_place_on_a_bustling_city_s.mp4  (130.4s)
+
+[appearance_style] 19/89  The entire video is rendered as a watercolor painting. The video takes place in a sunlit p
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/appearance_style/19_The_entire_video_is_rendered_as_a_watercolor_painting_The_video_takes_place_in_a_sunlit_pa.mp4  (128.7s)
+
+[appearance_style] 35/89  Black and white vintage film photography, a playful panda with fluffy fur, wearing a small
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/appearance_style/35_Black_and_white_vintage_film_photography_a_playful_panda_with_fluffy_fur_wearing_a_small_c.mp4  (129.6s)
+
+[appearance_style] 51/89  The entire video is rendered in the Ukiyo-e style of Hokusai. The video takes place on the
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/appearance_style/51_The_entire_video_is_rendered_in_the_Ukiyo-e_style_of_Hokusai_The_video_takes_place_on_the_.mp4  (130.7s)
+
+[appearance_style] 67/89  The entire video is rendered in an animated style. The video features an animated style sc
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/appearance_style/67_The_entire_video_is_rendered_in_an_animated_style_The_video_features_an_animated_style_sce.mp4  (129.6s)
+
+[appearance_style] 83/89  Animated style, Gwen Stacy sitting on a cozy armchair in a dimly lit library. She wears a 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/appearance_style/83_Animated_style_Gwen_Stacy_sitting_on_a_cozy_armchair_in_a_dimly_lit_library_She_wears_a_fl.mp4  (128.6s)
+
+[temporal_style] 03/99  CG game concept digital art, Gwen Stacy reading a book titled "The Amazing Spider-Man" und
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/temporal_style/03_CG_game_concept_digital_art_Gwen_Stacy_reading_a_book_titled_The_Amazing_Spider-Man_under_.mp4  (130.0s)
+
+[temporal_style] 19/99  The video takes place on a stunning coastal beach in spring, with golden sands stretching 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/temporal_style/19_The_video_takes_place_on_a_stunning_coastal_beach_in_spring_with_golden_sands_stretching_u.mp4  (129.2s)
+
+[temporal_style] 35/99  The video takes place beneath the surface of the sea, where a majestic great white shark g
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/temporal_style/35_The_video_takes_place_beneath_the_surface_of_the_sea_where_a_majestic_great_white_shark_gl.mp4  (129.9s)
+
+[temporal_style] 51/99  The video takes place on the Seine, where a charming boat glides gracefully along the sere
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/temporal_style/51_The_video_takes_place_on_the_Seine_where_a_charming_boat_glides_gracefully_along_the_seren.mp4  (130.3s)
+
+[temporal_style] 67/99  The video takes place on the Seine in Paris, where a charming boat, adorned with colorful 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/temporal_style/67_The_video_takes_place_on_the_Seine_in_Paris_where_a_charming_boat_adorned_with_colorful_fl.mp4  (129.6s)
+
+[temporal_style] 83/99  The video takes place on a dimly lit city street at night, where a sophisticated couple, d
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/temporal_style/83_The_video_takes_place_on_a_dimly_lit_city_street_at_night_where_a_sophisticated_couple_dre.mp4  (126.9s)
+
+[temporal_style] 99/99  CG game concept digital art, Gwen Stacy reading a book under a dimly lit treehouse at nigh
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/temporal_style/99_CG_game_concept_digital_art_Gwen_Stacy_reading_a_book_under_a_dimly_lit_treehouse_at_night.mp4  (129.8s)
+
+[overall_consistency] 03/92  CG animation digital art, the video takes place in a serene bamboo forest, where two panda
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/overall_consistency/03_CG_animation_digital_art_the_video_takes_place_in_a_serene_bamboo_forest_where_two_pandas_.mp4  (128.6s)
+
+[overall_consistency] 19/92  A憨态可掬的大熊猫坐在一个充满童趣的秋千上，背景是一个色彩鲜艳的儿童乐园。熊猫毛色黑白分明，圆滚滚的身体在秋千上轻轻摆动，眼神好奇地四处张望。它的一只前爪抓住秋千杆，另一只前爪轻轻
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/overall_consistency/19_ACG_The_camera_holds_a_fixed_angle_with_no_noticeable_camera_movement_throughout_The_overa.mp4  (130.0s)
+
+[overall_consistency] 35/92  A Mars rover moving on the red sandy Martian surface. The rover is equipped with advanced 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/overall_consistency/35_A_Mars_rover_moving_on_the_red_sandy_Martian_surface_The_rover_is_equipped_with_advanced_c.mp4  (130.4s)
+
+[overall_consistency] 51/92  A majestic jellyfish floating gracefully through the oceanic depths. The jellyfish has int
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/overall_consistency/51_A_majestic_jellyfish_floating_gracefully_through_the_oceanic_depths_The_jellyfish_has_intr.mp4  (130.0s)
+
+[overall_consistency] 67/92  The video takes place at an outdoor swimming pool where a cool cat, sporting sleek black s
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/overall_consistency/67_The_video_takes_place_at_an_outdoor_swimming_pool_where_a_cool_cat_sporting_sleek_black_su.mp4  (130.1s)
+
+[overall_consistency] 83/92  The video takes place in a photography studio, where a joyful dog, a golden retriever, sit
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/overall_consistency/83_The_video_takes_place_in_a_photography_studio_where_a_joyful_dog_a_golden_retriever_sits_p.mp4  (128.6s)
+
+[background_consistency] 03/85  An ancient archway made of intricate stone carvings and moss-covered stones. The archway s
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/background_consistency/03_An_ancient_archway_made_of_intricate_stone_carvings_and_moss-covered_stones_The_archway_st.mp4  (129.8s)
+
+[background_consistency] 19/85  The video takes place in a serene marshland that stretches out under a golden sunset, with
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/background_consistency/19_The_video_takes_place_in_a_serene_marshland_that_stretches_out_under_a_golden_sunset_with_.mp4  (130.7s)
+
+[background_consistency] 35/85  A medieval-style barn standing tall amidst a vast grassy field. The barn has weathered woo
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/background_consistency/35_A_medieval-style_barn_standing_tall_amidst_a_vast_grassy_field_The_barn_has_weathered_wood.mp4  (128.7s)
+
+[background_consistency] 51/85  The video takes place in a spacious indoor gymnasium with polished wooden floors and high 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/background_consistency/51_The_video_takes_place_in_a_spacious_indoor_gymnasium_with_polished_wooden_floors_and_high_.mp4  (130.2s)
+
+[background_consistency] 67/85  The video takes place in a bright, spacious classroom filled with natural light streaming 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/background_consistency/67_The_video_takes_place_in_a_bright_spacious_classroom_filled_with_natural_light_streaming_t.mp4  (129.7s)
+
+[background_consistency] 83/85  The video takes place on a deserted highway where a vintage gas station stands alone, bath
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/background_consistency/83_The_video_takes_place_on_a_deserted_highway_where_a_vintage_gas_station_stands_alone_bathe.mp4  (129.1s)
+
+[subject_consistency] 03/71  A majestic bird soaring gracefully through a dense snowy forest. The bird has glossy feath
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/subject_consistency/03_A_majestic_bird_soaring_gracefully_through_a_dense_snowy_forest_The_bird_has_glossy_feathe.mp4  (132.5s)
+
+[subject_consistency] 19/71  CG game concept digital art, a large brown bear standing tall in a dense forest clearing, 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/subject_consistency/19_CG_game_concept_digital_art_a_large_brown_bear_standing_tall_in_a_dense_forest_clearing_it.mp4  (126.7s)
+
+[subject_consistency] 35/71  A playful feline sprinting joyfully across a lush green meadow dotted with wildflowers. Th
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/subject_consistency/35_A_playful_feline_sprinting_joyfully_across_a_lush_green_meadow_dotted_with_wildflowers_The.mp4  (132.9s)
+
+[subject_consistency] 51/71  A person enjoying a juicy beef burger, sitting at a rustic wooden table outdoors under a c
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/subject_consistency/51_A_person_enjoying_a_juicy_beef_burger_sitting_at_a_rustic_wooden_table_outdoors_under_a_cl.mp4  (129.3s)
+
+[subject_consistency] 67/71  The video takes place on the open grasslands of the African savannah, where a lone zebra g
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/subject_consistency/67_The_video_takes_place_on_the_open_grasslands_of_the_African_savannah_where_a_lone_zebra_ga.mp4  (131.6s)
+
+[dynamic_degree] 03/71  CG animation digital art, a large wooden sailboat speeding across a calm ocean at night. T
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/dynamic_degree/03_CG_animation_digital_art_a_large_wooden_sailboat_speeding_across_a_calm_ocean_at_night_The.mp4  (129.7s)
+
+[dynamic_degree] 19/71  CG game concept digital art, a large brown bear standing tall in a dense forest clearing, 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/dynamic_degree/19_CG_game_concept_digital_art_a_large_brown_bear_standing_tall_in_a_dense_forest_clearing_it.mp4  (129.5s)
+
+[dynamic_degree] 35/71  The video takes place in an open meadow on a clear day, where a joyful golden retriever wi
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/dynamic_degree/35_The_video_takes_place_in_an_open_meadow_on_a_clear_day_where_a_joyful_golden_retriever_wit.mp4  (131.9s)
+
+[dynamic_degree] 51/71  The video takes place at a city intersection where a vibrant city bus, painted in bright y
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/dynamic_degree/51_The_video_takes_place_at_a_city_intersection_where_a_vibrant_city_bus_painted_in_bright_ye.mp4  (130.3s)
+
+[dynamic_degree] 67/71  The video takes place at a river crossing on the open savannah at the end of the day, wher
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/dynamic_degree/67_The_video_takes_place_at_a_river_crossing_on_the_open_savannah_at_the_end_of_the_day_where.mp4  (129.3s)
+
+[motion_smoothness] 03/71  The video takes place in a winter landscape where a lone bicycle, with its sleek frame and
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/motion_smoothness/03_The_video_takes_place_in_a_winter_landscape_where_a_lone_bicycle_with_its_sleek_frame_and_.mp4  (129.5s)
+
+[motion_smoothness] 19/71  CG animation digital art, an airplane smoothly landing on a bustling airport runway. The p
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/motion_smoothness/19_CG_animation_digital_art_an_airplane_smoothly_landing_on_a_bustling_airport_runway_The_pla.mp4  (131.2s)
+
+[motion_smoothness] 35/71  An aircraft in mid-flight, a large commercial jetliner taking off from an airport runway a
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/motion_smoothness/35_An_aircraft_in_mid-flight_a_large_commercial_jetliner_taking_off_from_an_airport_runway_at.mp4  (130.7s)
+
+[motion_smoothness] 51/71  The video takes place on a mountain road where a sleek, black motorcycle with chrome accen
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/motion_smoothness/51_The_video_takes_place_on_a_mountain_road_where_a_sleek_black_motorcycle_with_chrome_accent.mp4  (131.2s)
+
+[motion_smoothness] 67/71  A majestic elephant with a vibrant tusk and sleek fur running swiftly towards a herd of it
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/motion_smoothness/67_A_majestic_elephant_with_a_vibrant_tusk_and_sleek_fur_running_swiftly_towards_a_herd_of_it.mp4  (130.2s)
+
+[imaging_quality] 03/92  The video takes place in a studio setting where a mesmerizing splash of turquoise water er
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/imaging_quality/03_The_video_takes_place_in_a_studio_setting_where_a_mesmerizing_splash_of_turquoise_water_er.mp4  (129.8s)
+
+[imaging_quality] 19/92  Digital art, a raccoon-like turtle with a brown shell and webbed feet, standing on a rocky
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/imaging_quality/19_Digital_art_a_raccoon-like_turtle_with_a_brown_shell_and_webbed_feet_standing_on_a_rocky_s.mp4  (130.2s)
+
+[imaging_quality] 35/92  A majestic jellyfish floating gracefully through the oceanic depths. The jellyfish has int
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/imaging_quality/35_A_majestic_jellyfish_floating_gracefully_through_the_oceanic_depths_The_jellyfish_has_intr.mp4  (129.8s)
+
+[imaging_quality] 51/92  The video takes place in a brightly lit calculus classroom, where a bewildered panda sits 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/imaging_quality/51_The_video_takes_place_in_a_brightly_lit_calculus_classroom_where_a_bewildered_panda_sits_a.mp4  (129.5s)
+
+[imaging_quality] 67/92  3D model of a 1800s Victorian house, standing tall and grand amidst a lush green garden. T
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/imaging_quality/67_3D_model_of_a_1800s_Victorian_house_standing_tall_and_grand_amidst_a_lush_green_garden_The.mp4  (131.6s)
+
+[imaging_quality] 83/92  The video takes place in a photography studio, where a joyful dog, a golden retriever, sit
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/imaging_quality/83_The_video_takes_place_in_a_photography_studio_where_a_joyful_dog_a_golden_retriever_sits_p.mp4  (128.8s)
+
+[aesthetic_quality] 03/92  The video takes place in a vibrant field of yellow flowers that sways gently in the breeze
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/aesthetic_quality/03_The_video_takes_place_in_a_vibrant_field_of_yellow_flowers_that_sways_gently_in_the_breeze.mp4  (132.2s)
+
+[aesthetic_quality] 19/92  Aerial panoramic video from a drone capturing the ethereal beauty of a fantastical realm. 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/aesthetic_quality/19_Aerial_panoramic_video_from_a_drone_capturing_the_ethereal_beauty_of_a_fantastical_realm_I.mp4  (130.8s)
+
+[aesthetic_quality] 35/92  CG game concept digital art, a majestic great white shark swimming gracefully in a crystal
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/aesthetic_quality/35_CG_game_concept_digital_art_a_majestic_great_white_shark_swimming_gracefully_in_a_crystal-.mp4  (129.2s)
+
+[aesthetic_quality] 51/92  The video takes place in the neon-lit streets of Cyberpunk Beijing, where a colossal robot
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/aesthetic_quality/51_The_video_takes_place_in_the_neon-lit_streets_of_Cyberpunk_Beijing_where_a_colossal_robot_.mp4  (129.7s)
+
+[aesthetic_quality] 67/92  Oil painting of the Bund in Shanghai, a bustling urban skyline with tall modern buildings 
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/aesthetic_quality/67_Oil_painting_of_the_Bund_in_Shanghai_a_bustling_urban_skyline_with_tall_modern_buildings_a.mp4  (128.5s)
+
+[aesthetic_quality] 83/92  Modern art museum interior, vibrant with colorful abstract paintings adorning the walls. S
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/aesthetic_quality/83_Modern_art_museum_interior_vibrant_with_colorful_abstract_paintings_adorning_the_walls_Sof.mp4  (119.6s)
+
+[temporal_flickering] 03/74  A tranquil tableau in the quaint village square, a traditional wrought-iron streetlamp cas
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/temporal_flickering/03_A_tranquil_tableau_in_the_quaint_village_square_a_traditional_wrought-iron_streetlamp_cast.mp4  (117.3s)
+
+[temporal_flickering] 19/74  CG game concept digital art, a tranquil tableau featuring a serene cup resting on a polish
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/temporal_flickering/19_CG_game_concept_digital_art_a_tranquil_tableau_featuring_a_serene_cup_resting_on_a_polishe.mp4  (112.1s)
+
+[temporal_flickering] 35/74  In a serene still frame, a weathered wooden park bench sits against a backdrop of lush gre
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/temporal_flickering/35_In_a_serene_still_frame_a_weathered_wooden_park_bench_sits_against_a_backdrop_of_lush_gree.mp4  (107.1s)
+
+[temporal_flickering] 51/74  A tranquil tableau of a rugged cliff standing tall against a backdrop of a vast, clear blu
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/temporal_flickering/51_A_tranquil_tableau_of_a_rugged_cliff_standing_tall_against_a_backdrop_of_a_vast_clear_blue.mp4  (107.1s)
+
+[temporal_flickering] 67/74  In a serene still frame, a tranquil pond was fringed by weeping cherry trees, their blosso
+[dual-t2v] Δ=0.15 shift_main=3.0 σ_main 1.000→0.066 / σ_prior 1.000→0.020
+  saved /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3/temporal_flickering/67_In_a_serene_still_frame_a_tranquil_pond_was_fringed_by_weeping_cherry_trees_their_blossoms.mp4  (107.8s)
+
+[TIMING] 92 videos in 11844.2s (128.7s/video), total 13997.3s
+Done! /mnt/kakao/vcga/oliviaa.young/grace-inference/_t2v736native_2n/w3
+[w3] rc=0

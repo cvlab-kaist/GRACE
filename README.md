@@ -15,7 +15,7 @@
 [![HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97%20Weights-GRACE-ffcc4d?style=for-the-badge)](https://huggingface.co/chimaharicox/GRACE)
 
 This is our official implementation of the paper **"Generation-Aware Latent Compression for Efficient Video Generation"** by
-[Jiyoung Kim](https://scholar.google.com/citations?user=DqG-ybIAAAAJ&hl=ko)<sup>1</sup>, [Paul Hyunbin Cho](https://github.com/paulcho98)<sup>1</sup>, [Jisu Nam](https://nam-jisu.github.io/)<sup>1</sup>, Donghoon Lee<sup>2</sup>, Hyunsung Go<sup>2</sup>, Yeonkyeong Lee<sup>2</sup>, Hansaem Kim<sup>2</sup>, Seungryong Kim<sup>1</sup>.
+[Jiyoung Kim](https://rlawldud53.github.io/)<sup>1</sup>, [Paul Hyunbin Cho](https://github.com/paulcho98)<sup>1</sup>, [Jisu Nam](https://nam-jisu.github.io/)<sup>1</sup>, Donghoon Lee<sup>2</sup>, Hyunsung Go<sup>2</sup>, Yeonkyeong Lee<sup>2</sup>, Hansaem Kim<sup>2</sup>, Seungryong Kim<sup>1</sup>.
 
 <sup>1</sup> KAIST AI &nbsp;&nbsp;&nbsp; <sup>2</sup> Kakao Corp.
 
