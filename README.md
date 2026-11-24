@@ -291,11 +291,15 @@ so leave it alone unless you want the unfolded path on purpose.
 These commands are for trying the model out. Reproducing the numbers in the tables needs the prompt sets
 this repo ships — see [Evaluation](#-evaluation) above.
 
-## 📄 License
+## License
 
-Our code is released under the MIT License. `third_party/DiffSynth-Studio` is redistributed under its original
-Apache-2.0 license. Wan2.1 base weights are **not** redistributed here; obtain them from the official release and
-follow their license.
+- **Code**: MIT License (see `LICENSE`).
+- **Model checkpoints**: CC BY-NC 4.0, for non-commercial research use
+  (see `LICENSE-WEIGHTS`).
+- **Training data**: The checkpoints were trained on Panda-70M. Please follow
+  the terms of the dataset when using the checkpoints.
+- **Base model**: Wan2.1 weights are not redistributed here. Please obtain
+  them from the official release and follow their license.
 
 ## 📚 BibTeX
 
