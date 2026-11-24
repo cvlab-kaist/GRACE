@@ -22,6 +22,15 @@ SOFTWARE.
 
 ---
 
+Scope. The MIT License above applies to the source code in this repository
+only. It does not apply to the released model checkpoints.
+
+Model checkpoints. The GRACE checkpoints are released under the Creative
+Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0)
+for non-commercial research use. See LICENSE-WEIGHTS for the full text.
+The checkpoints were trained on Panda-70M, which is distributed for
+non-commercial research purposes.
+
 third_party/DiffSynth-Studio is redistributed under the Apache License 2.0;
 see third_party/DiffSynth-Studio/LICENSE for its full text and copyright.
 
